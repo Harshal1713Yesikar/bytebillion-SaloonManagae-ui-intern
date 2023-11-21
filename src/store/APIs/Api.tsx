@@ -490,36 +490,7 @@ export const createInventoryCategory: any = async (inventoryCategoryData: any) =
     return err;
   }
 }
-export const singleCouponDetails: any = async (singleCouponData: any) => {
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_Accept_Single_Coupon_API}`,
-      singleCouponData,
-      { headers }
-    );
 
-    return res;
-  } catch (err) {
-    return err;
-  }
-}
-export const updateCouponDetails: any = async (customerId: any, organizationId: any, couponId: any, singleCouponData: any) => {
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_Accept_Update_Coupon_API}`,
-      {
-        customerId: customerId,
-        organizationId: organizationId,
-        couponId: couponId,
-        coupons: singleCouponData
-      },
-      { headers }
-    );
-    return res;
-  } catch (err) {
-    return err;
-  }
-}
 
 export async function deleteCoupon(couponData: any) {
 
@@ -768,47 +739,6 @@ export async function getAllBatchList(customerId: any, organizationId: any) {
 }
 
 
-export async function listSingleBatch(customerId: any, organizationId: any, batchId: any) {
-
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_SINGLE_BATCH_DETAIL_API}`,
-      {
-        customerId: customerId,
-        organizationId: organizationId,
-        batchId: batchId,
-      }
-      ,
-      { headers }
-    );
-
-    return res.data;
-  } catch (err) {
-    console.log(err)
-  }
-
-}
-
-
-export async function updateBatch(customerId: any, organizationId: any, batchId: any, data: any) {
-
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_UPDATE_BATCH_API}`,
-      {
-        customerId: customerId,
-        organizationId: organizationId,
-        batchId: batchId,
-        batch: data,
-      }
-      ,
-      { headers }
-    );
-
-    return res.data;
-  } catch (err) { }
-}
-
 export async function updateStudentInBatch(customerId: any, organizationId: any, batchId: any, newStudent: any, newCourse: any) {
 
   try {
@@ -997,53 +927,7 @@ export const listOrganizationCourse: any = createAsyncThunk(
   }
 )
 
-export async function singleOrgCourseDetails(customerId: any, organizationId: any, courseId: any) {
 
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_Organization_Courses_SingleList}`,
-      {
-        customerId: customerId,
-        organizationId: organizationId,
-        courseId: courseId,
-      }
-      ,
-      { headers }
-    );
-    return res;
-  } catch (err) {
-    console.log(err)
-  }
-
-}
-
-export const UpdateOrgCourse: any = async ({ organizationId, customerId, courseDetails, courseId, courseName, courseDescription, courseFee, courseFeeDescription, maxPaymentInstallment, courseDuration }: any) => {
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_Organization_Courses_Update}`,
-      {
-        customerId: customerId,
-        organizationId: organizationId,
-        courseId: courseId,
-        course: {
-          courseName: courseName,
-          courseDescription: courseDescription,
-          courseFee: courseFee,
-          courseFeeDescription: courseFeeDescription,
-          maxPaymentInstallment: maxPaymentInstallment,
-          courseDuration: courseDuration
-        }
-      },
-      { headers }
-    );
-
-    return res;
-  } catch (err) {
-    console.log(err)
-
-    return err;
-  }
-}
 export const createCourse: any = async ({ id, customerId, courseDetails }: any) => {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_Organization_Course_Create}`,
