@@ -1,5 +1,4 @@
 import { format, differenceInDays, addDays } from 'date-fns'
-import RechartsBarChart from 'src/pages/dashboards/analytics/DuePaymentChart'
 
 export const getDateRange = (startDate: Date, endDate: Date) => {
   const days = differenceInDays(endDate, startDate)

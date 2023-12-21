@@ -2,9 +2,7 @@ html,
 body {
   min-height: 100%;
 }
-p {
-  margin-bottom: 0;
-}
+
 #__next {
   height: 100%;
 }
@@ -22,42 +20,3 @@ code {
 code[class*='language-'] {
   padding: 0;
 }
-
-.iconContainer {
-  display: inline-block; /* Make the div only as wide as its contents */
-  height: fit-content;
-  border-radius: 50%;
-}
-
-.iconContainer:hover {
-  background-color: rgb(147, 147, 147);
-  color: white;
-}
-.error-field {
-  border-color: red; /* Example: change border color to red */
-}
-
-.error-message {
-  color: red;
-  font-size: 14px; /* You can adjust the font size as needed */
-}
-
-.dialogTitle {
-  background-color: #f0f0f0;
-}
-.name {
-  font-size: 24px;
-  margin: 10px 0;
-}
-.subHeading {
-  font-size: 20px;
-  margin-top: 5px;
-  color: #666;
-}
-.hide-export-label .MuiButton-label {
-  display: none;
-}
-.hoverRow.TableRow:hover {
-  cursor: pointer;
-}
-

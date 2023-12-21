@@ -1,5 +1,3 @@
-
-
 // ** MUI Imports
 import IconButton from '@mui/material/IconButton'
 
@@ -9,10 +7,6 @@ import Icon from 'src/@core/components/icon'
 // ** Types Import
 import { Mode } from 'src/@core/layouts/types'
 import { Settings } from 'src/@core/context/settingsContext'
-
-
-
-
 
 interface Props {
   settings: Settings
@@ -35,14 +29,10 @@ const ModeToggler = (props: Props) => {
     }
   }
 
-
   return (
-    <>
-      <IconButton color='inherit' aria-haspopup='true' onClick={handleModeToggle}>
-        <Icon icon={settings.mode === 'dark' ? 'bx:sun' : 'bx:moon'} />
-      </IconButton>
-
-    </>
+    <IconButton color='inherit' aria-haspopup='true' onClick={handleModeToggle}>
+      <Icon icon={settings.mode === 'dark' ? 'bx:sun' : 'bx:moon'} />
+    </IconButton>
   )
 }
 

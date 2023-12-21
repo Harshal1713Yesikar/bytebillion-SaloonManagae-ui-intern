@@ -6,8 +6,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext",
-      "es2016"
+      "esnext"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -32,8 +31,7 @@
   },
   "include": [
     "src",
-    "declaration.d.ts",
-    "src/pages/dashboards/analytics/.tsx"
+    "declaration.d.ts"
   ],
   "exclude": [
     "node_modules"

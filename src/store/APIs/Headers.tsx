@@ -1,2 +1,9 @@
-const headers: any = { 'content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': process.env.NEXT_PUBLIC_OCP_APIM_SUBSCRIPTION_KEY_KAROMANAGE_APIM }
-export default headers
+import React from 'react'
+
+const Headers = () => {
+    return (
+        <div>Headers</div>
+    )
+}
+
+export default Headers

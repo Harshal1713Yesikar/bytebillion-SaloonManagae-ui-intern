@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react'
 
+
 // ** MUI Imports
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -86,13 +87,18 @@ const UserLayout = ({ children, contentHeightFixed }: Props) => {
             // navItems: horizontalMenuItems
           },
           appBar: {
-            content: () => <HorizontalAppBarContent hidden={hidden} settings={settings} saveSettings={saveSettings} />
+            content: () => <HorizontalAppBarContent settings={settings} saveSettings={saveSettings} />
           }
         }
       })}
     >
-      <AuthenticatedTemplate>{children}</AuthenticatedTemplate>
-      <UnauthenticatedTemplate>no</UnauthenticatedTemplate>
+      <AuthenticatedTemplate >
+        {children}
+      </AuthenticatedTemplate>
+      <UnauthenticatedTemplate>
+        no
+      </UnauthenticatedTemplate>
+
     </Layout>
   )
 }

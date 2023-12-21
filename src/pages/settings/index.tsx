@@ -1,21 +1,9 @@
-// ** Next Import
-import { GetStaticProps, GetStaticPaths, GetStaticPropsContext, InferGetStaticPropsType } from 'next/types'
+import React from 'react'
 
-// ** Third Party Imports
-import axios from 'axios'
-
-// ** Types
-import { InvoiceType } from 'src/types/apps/invoiceTypes'
-
-
-// ** Demo Components Imports
-import UserViewPage from './UserViewPage'
-
-const Settings = () => {
-
-  return <UserViewPage />
+ const Settings = () => {
+  return (
+    <div>Settings</div>
+  )
 }
 
-
-export default Settings
-
+export default Settings;

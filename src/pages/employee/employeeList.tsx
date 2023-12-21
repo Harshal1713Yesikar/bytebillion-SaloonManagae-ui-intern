@@ -1,9 +1,8 @@
 import React from 'react'
-import EmployeeTable from 'src/views/tabel/employeeTabel/employeeTabel';
 
 const EmployeeList = () => {
   return (
-    <div> <EmployeeTable /></div>
+    <div>employeeList</div>
   )
 }
 export default EmployeeList;

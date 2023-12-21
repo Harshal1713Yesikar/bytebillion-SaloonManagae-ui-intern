@@ -14,7 +14,6 @@ import CardContent from '@mui/material/CardContent'
 import ToggleButton from '@mui/material/ToggleButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Snackbar from '@mui/material/Snackbar'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -22,7 +21,6 @@ import Icon from 'src/@core/components/icon'
 // ** Third Party Components
 import Prism from 'prismjs'
 import toast from 'react-hot-toast'
-import Alert from '@mui/material/Alert'
 
 // ** Types
 import { CardSnippetProps } from './types'
@@ -37,9 +35,6 @@ const CardSnippet = (props: CardSnippetProps) => {
   // ** States
   const [showCode, setShowCode] = useState<boolean>(false)
   const [tabValue, setTabValue] = useState<'tsx' | 'jsx'>(code.tsx !== null ? 'tsx' : 'jsx')
-  const [snackbarColor, setSnackbarColor] = useState(true)
-  const [snackbaropen, setSnackbaropen] = useState<any>(false)
-  const [responseMessage, setResponseMessage] = useState<string>("")
 
   // ** Hooks
   const clipboard = useClipboard()
@@ -62,9 +57,9 @@ const CardSnippet = (props: CardSnippetProps) => {
 
   const handleClick = () => {
     clipboard.copy(codeToCopy())
-    setSnackbarColor(true)
-    setSnackbaropen(true)
-    setResponseMessage('The source code has been copied to your clipboard')
+    toast.success('The source code has been copied to your clipboard.', {
+      duration: 2000
+    })
   }
 
   const renderCode = () => {
@@ -76,80 +71,67 @@ const CardSnippet = (props: CardSnippetProps) => {
   }
 
   return (
-    <>
-      <Card
-        className={className}
-        sx={{ '& .MuiCardHeader-action': { lineHeight: 0.8 }, ...sx }}
-        id={id || `card-snippet--${title.toLowerCase().replace(/ /g, '-')}`}
-      >
-        <CardHeader
-          title={title}
-          {...(hidden
-            ? {}
-            : {
+    <Card
+      className={className}
+      sx={{ '& .MuiCardHeader-action': { lineHeight: 0.8 }, ...sx }}
+      id={id || `card-snippet--${title.toLowerCase().replace(/ /g, '-')}`}
+    >
+      <CardHeader
+        title={title}
+        {...(hidden
+          ? {}
+          : {
               action: (
                 <IconButton onClick={() => setShowCode(!showCode)}>
                   <Icon icon='bx:code' fontSize={20} />
                 </IconButton>
               )
             })}
-        />
-        <CardContent>{children}</CardContent>
-        {hidden ? null : (
-          <Collapse in={showCode}>
-            <Divider sx={{ my: '0 !important' }} />
+      />
+      <CardContent>{children}</CardContent>
+      {hidden ? null : (
+        <Collapse in={showCode}>
+          <Divider sx={{ my: '0 !important' }} />
 
-            <CardContent sx={{ position: 'relative', '& pre': { m: '0 !important', maxHeight: 500 } }}>
-              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                <ToggleButtonGroup
-                  exclusive
-                  size='small'
-                  color='primary'
-                  value={tabValue}
-                  onChange={(e, newValue) => (newValue !== null ? setTabValue(newValue) : null)}
-                >
-                  {code.tsx !== null ? (
-                    <ToggleButton value='tsx'>
-                      <Icon icon='bxl:typescript' fontSize={20} />
-                    </ToggleButton>
-                  ) : null}
-                  {code.jsx !== null ? (
-                    <ToggleButton value='jsx'>
-                      <Icon icon='bxl:javascript' fontSize={20} />
-                    </ToggleButton>
-                  ) : null}
-                </ToggleButtonGroup>
-              </Box>
-              <Tooltip title='Copy the source' placement='top'>
-                <IconButton
-                  onClick={handleClick}
-                  sx={{
-                    top: '5rem',
-                    color: 'grey.100',
-                    right: '2.5625rem',
-                    position: 'absolute'
-                  }}
-                >
-                  <Icon icon='bx:copy' fontSize={20} />
-                </IconButton>
-              </Tooltip>
-              <div>{renderCode()}</div>
-            </CardContent>
-          </Collapse>
-        )}
-
-      </Card>
-      <Snackbar open={snackbaropen} onClose={() => setSnackbaropen(false)} autoHideDuration={3000}>
-        <Alert
-          variant="filled"
-          elevation={3}
-          onClose={() => setSnackbaropen(false)}
-          severity={snackbarColor === true ? 'success' : 'error'} // Change the severity based on message type
-        >
-          {responseMessage}
-        </Alert>
-      </Snackbar>
-    </>
+          <CardContent sx={{ position: 'relative', '& pre': { m: '0 !important', maxHeight: 500 } }}>
+            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <ToggleButtonGroup
+                exclusive
+                size='small'
+                color='primary'
+                value={tabValue}
+                onChange={(e, newValue) => (newValue !== null ? setTabValue(newValue) : null)}
+              >
+                {code.tsx !== null ? (
+                  <ToggleButton value='tsx'>
+                    <Icon icon='bxl:typescript' fontSize={20} />
+                  </ToggleButton>
+                ) : null}
+                {code.jsx !== null ? (
+                  <ToggleButton value='jsx'>
+                    <Icon icon='bxl:javascript' fontSize={20} />
+                  </ToggleButton>
+                ) : null}
+              </ToggleButtonGroup>
+            </Box>
+            <Tooltip title='Copy the source' placement='top'>
+              <IconButton
+                onClick={handleClick}
+                sx={{
+                  top: '5rem',
+                  color: 'grey.100',
+                  right: '2.5625rem',
+                  position: 'absolute'
+                }}
+              >
+                <Icon icon='bx:copy' fontSize={20} />
+              </IconButton>
+            </Tooltip>
+            <div>{renderCode()}</div>
+          </CardContent>
+        </Collapse>
+      )}
+    </Card>
   )
 }
 

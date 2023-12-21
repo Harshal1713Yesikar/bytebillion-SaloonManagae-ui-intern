@@ -35,22 +35,22 @@ export type NotificationsType = {
   title: string
   subtitle: string
 } & (
-    | { avatarAlt: string; avatarImg: string; avatarText?: never; avatarColor?: never; avatarIcon?: never }
-    | {
+  | { avatarAlt: string; avatarImg: string; avatarText?: never; avatarColor?: never; avatarIcon?: never }
+  | {
       avatarAlt?: never
       avatarImg?: never
       avatarText: string
       avatarIcon?: never
       avatarColor?: ThemeColor
     }
-    | {
+  | {
       avatarAlt?: never
       avatarImg?: never
       avatarText?: never
       avatarIcon: ReactNode
       avatarColor?: ThemeColor
     }
-  )
+)
 interface Props {
   settings: Settings
   notifications: NotificationsType[]
@@ -162,31 +162,17 @@ const NotificationDropdown = (props: Props) => {
 
   return (
     <Fragment>
-
       <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
-        {
-          notifications.length ?
-
-            <Badge
-              color='error'
-              variant='standard'
-              invisible={!notifications.length}
-
-              sx={{
-                '& .MuiBadge-badge': { top: 4, right: 40, boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}` }
-              }}
-            >
-              <Icon icon='bx:bell' />
-            </Badge>
-            :
-            <Badge
-              color='error'
-              variant='standard'
-              invisible={!notifications.length}
-            >
-              <Icon icon='bx:bell' />
-            </Badge>
-        }
+        <Badge
+          color='error'
+          variant='dot'
+          invisible={!notifications.length}
+          sx={{
+            '& .MuiBadge-badge': { top: 4, right: 4, boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}` }
+          }}
+        >
+          <Icon icon='bx:bell' />
+        </Badge>
       </IconButton>
       <Menu
         anchorEl={anchorEl}

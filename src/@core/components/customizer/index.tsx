@@ -15,10 +15,6 @@ import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import MuiDrawer, { DrawerProps } from '@mui/material/Drawer'
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-// import Typography from '@mui/material/Typography';
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -313,7 +309,7 @@ const Customizer = () => {
             </Typography>
 
             {/* Menu Layout */}
-            {/* <Box sx={{ mb: layout === 'horizontal' && appBar === 'hidden' ? {} : 5 }}>
+            <Box sx={{ mb: layout === 'horizontal' && appBar === 'hidden' ? {} : 5 }}>
               <Typography>Menu Layout</Typography>
               <RadioGroup
                 row
@@ -330,7 +326,7 @@ const Customizer = () => {
                 <FormControlLabel value='vertical' label='Vertical' control={<Radio />} />
                 <FormControlLabel value='horizontal' label='Horizontal' control={<Radio />} />
               </RadioGroup>
-            </Box> */}
+            </Box>
 
             {/* Menu Toggle */}
             {navHidden || layout === 'horizontal' ? null : (

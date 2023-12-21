@@ -1,9 +1,11 @@
+
+
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react'
 
 // ** Next Imports
+import { redirect } from 'next/navigation';
 
-import { ReactNode } from 'react'
-import DashboardLayout from './home'
+import { ReactNode } from 'react';
 
 
 /**
@@ -13,6 +15,7 @@ import DashboardLayout from './home'
 //   return '/home'
 // }
 
+
 interface Props {
   children: ReactNode
 }
@@ -20,15 +23,17 @@ interface Props {
 const Home = ({ children }: Props) => {
   // ** Hooks
 
+
+
   return (
     <>
-
-
-      <AuthenticatedTemplate><DashboardLayout /></AuthenticatedTemplate>
-      <UnauthenticatedTemplate>no</UnauthenticatedTemplate>
-
-    </>
-  )
+      <AuthenticatedTemplate >
+        {children}
+      </AuthenticatedTemplate>
+      <UnauthenticatedTemplate>
+        no
+      </UnauthenticatedTemplate>
+    </>)
 }
 
 export default Home
