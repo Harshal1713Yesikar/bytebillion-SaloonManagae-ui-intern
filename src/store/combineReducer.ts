@@ -1,6 +1,7 @@
 import allInventoryListReducer from './APIs/inventoryReducer/allInventoryListReducer'
 import { configureStore } from '@reduxjs/toolkit'
 import logger from 'redux-logger'
+
 import chartApiReducer from './APIs/dashboardReducer/chartApiReducer'
 import receivedPaymentApiReducer from './APIs/dashboardReducer/receivedPaymentApiReducer'
 import getAllStudentCountReducer from './APIs/dashboardReducer/getAllStudentCountReducer'
