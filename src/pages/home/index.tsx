@@ -7,6 +7,7 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { Icon } from '@iconify/react'
 // import "../../../styles/global.css"
+console.log("asuadhgfjhgh")
 
 const Home = () => {
   const container = {
@@ -110,6 +111,7 @@ const Home = () => {
             </CardContent>
           </Card>
         </Grid>
+
         <Grid sx={{}}>
           <Card>
             <div style={{margin:"30px"}}>
