@@ -58,6 +58,7 @@ import 'src/iconify-bundle/icons-bundle-react'
 
 // ** Global css styles
 import '../../styles/globals.css'
+
 import { msalConfig } from 'src/config/authConfig'
 import { PublicClientApplication } from "@azure/msal-browser";
 import AuthIllustrationWrapper from 'src/views/pages/auth/AuthIllustrationWrapper'

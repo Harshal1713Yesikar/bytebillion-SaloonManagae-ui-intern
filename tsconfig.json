@@ -30,6 +30,7 @@
     }
   },
   "include": [
+    "globals.d.ts",
     "src",
     "declaration.d.ts"
   ],

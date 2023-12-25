@@ -2,42 +2,66 @@
 import { HorizontalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): HorizontalNavItemsType => [
+  // {
+  //   title: 'Dashboard',
+  //   path: '/home',
+  //   icon: 'bx:home-circle',
+  // },
+
   {
-    title: 'Dashboard',
+    title: 'Home',
     path: '/home',
     icon: 'bx:home-circle',
   },
   {
-    title: 'Student',
+    title: 'Quick Sale',
+    path: '/quicksale',
     icon: 'bx:home-circle',
-    children: [
-      {
-        title: 'Students',
-        path: '/student/studentList'
-
-      },
-      {
-        title: 'Student Admission',
-        path: '/student/studentAdmission'
-      },
-      
-    ]
   },
   {
-    title: 'Employee',
+    title: 'Calender',
+    path: '/calender',
     icon: 'bx:home-circle',
-    children: [
-      {
-        title: 'Employee',
-        path: '/employee/employeeList'
-
-      },
-      {
-        title: 'Employee Admission',
-        path: '/employee/employeeAdmission'
-      },
-      
-    ]
+  },
+  {
+    title: 'Manage Satff',
+    path: '/managesatff',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Products',
+    path: '/products',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Clients',
+    path: '/clients',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Appointments',
+    path: '/appointments',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Report',
+    path: '/report',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Integration',
+    path: '/integration',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Sale Tools',
+    path: '/saletools',
+    icon: 'bx:home-circle',
+  },
+  {
+    title: 'Expense',
+    path: '/expense',
+    icon: 'bx:home-circle',
   },
  
   {
@@ -54,6 +78,5 @@ const navigation = (): HorizontalNavItemsType => [
     title: 'Settings',
     icon: 'bx:shield',
   }
-]
-
+] 
 export default navigation
