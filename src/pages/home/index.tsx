@@ -1,7 +1,7 @@
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import { Box, StyledEngineProvider, colors } from '@mui/material'
+import { Box, Button, StyledEngineProvider, colors } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
@@ -176,9 +176,9 @@ const Home = () => {
           </Card>
         </Grid>
         <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
-          
-            <button style={button}>+ Add Deshlets</button>
-          
+          <div>
+            <Button style={{margin:"10px"}} variant="contained">+ Add Deshlets</Button>
+          </div>
         </Grid>
         <Grid container item gap={10} xs={40} mb={10}>
           <Card style={box}>
@@ -231,11 +231,12 @@ const Home = () => {
           </Card>
         </Grid>
 
-        <Grid>
+        <Grid >
           <Card>
             <div style={{ margin: "30px" }}>
-              <button style={button1}>Quick Sale</button>
-              <button style={button2}>Appointments</button>
+
+              <Button style={{margin:"10px"}} variant="contained">Quick Sale</Button>
+              <Button  variant="contained">Appointments</Button>
             </div>
           </Card>
 
