@@ -88,19 +88,19 @@ const Index = () => {
     </LocalizationProvider>
       </Container>
       <div style={{ margin: '5px' }}>
-        <Button variant='contained' sx={{ background: 'black', marginRight: '10px' }}>
+        <Button variant='contained' sx={{ marginRight: '10px' }}>
           Add Services
         </Button>
-        <Button variant='contained' sx={{ background: 'black', marginRight: '10px' }}>
+        <Button variant='contained' sx={{ marginRight: '10px' }}>
           Add Product
         </Button>
-        <Button variant='contained' sx={{ background: 'black', marginRight: '10px' }}>
+        <Button variant='contained' sx={{ marginRight: '10px' }}>
           Add Membership
         </Button>
-        <Button variant='contained' sx={{ background: 'black', marginRight: '10px' }}>
+        <Button variant='contained' sx={{marginRight: '10px' }}>
           Add Package
         </Button>
-        <Button variant='contained' sx={{ background: 'black', marginRight: '10px' }}>
+        <Button variant='contained' sx={{ marginRight: '10px' }}>
           Gift Card
         </Button>
       </div>
