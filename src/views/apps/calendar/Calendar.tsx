@@ -1,173 +1,107 @@
-// ** React Import
-import { useEffect, useRef } from 'react'
 
-// ** Full Calendar & it's Plugins
-import FullCalendar from '@fullcalendar/react'
-import listPlugin from '@fullcalendar/list'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
 
-// ** Icon Imports
-import Icon from 'src/@core/components/icon'
+// import React from 'react'
 
-// ** Types
-import { CalendarType } from 'src/types/apps/calendarTypes'
+// import FullCalendar from '@fullcalendar/react';
+// // import dayGridPlugin from '@fullcalendar/daygrid';
+// // import timeGridPlugin from '@fullcalendar/timegrid';
+// // import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 
-const blankEvent = {
-  title: '',
-  start: '',
-  end: '',
-  allDay: false,
-  url: '',
-  extendedProps: {
-    calendar: '',
-    guests: [],
-    location: '',
-    description: ''
-  }
-}
 
-const Calendar = (props: CalendarType) => {
-  // ** Props
-  const {
-    store,
-    dispatch,
-    direction,
-    updateEvent,
-    calendarApi,
-    calendarsColor,
-    setCalendarApi,
-    handleSelectEvent,
-    handleLeftSidebarToggle,
-    handleAddEventSidebarToggle
-  } = props
+// // import "@fullcalendar/core/main.css";
+// import "@fullcalendar/daygrid/main.css";
+// function Calendar() {
 
-  // ** Refs
-  const calendarRef = useRef()
+//   // calendarComponentRef = React.createRef();
+//   // state = {
+//   //   events: [
+//   //     { id: 1, title: "event 1", date: "2019-12-01" },
+//   //     {
+//   //       title: "event 2",
+//   //       start: "2019-12-01",
+//   //       end: "2019-12-05",
+//   //       allDay: true,
+//   //       HostName: "William"
+//   //     },
+//   //     {
+//   //       title: "event 3",
+//   //       start: "2019-12-05",
+//   //       end: "2019-12-07",
+//   //       allDay: true
+//   //     },
+//   //     {
+//   //       title: "event 4",
+//   //       start: "2019-12-05",
+//   //       end: "2019-12-07",
+//   //       allDay: true
+//   //     },
+//   //     {
+//   //       title: "event 5",
+//   //       start: "2019-12-05",
+//   //       end: "2019-12-07",
+//   //       allDay: true
+//   //     },
+//   //     {
+//   //       title: "event 6",
+//   //       start: "2019-12-05",
+//   //       end: "2019-12-07",
+//   //       allDay: true
+//   //     }
+//   //   ]
+//   // };
 
-  useEffect(() => {
-    if (calendarApi === null) {
-      // @ts-ignore
-      setCalendarApi(calendarRef.current.getApi())
-    }
-  }, [calendarApi, setCalendarApi])
+//   const handleDateClick = (arg:any) => {
+//     alert(arg.dateStr);
+//   };
 
-  if (store) {
-    // ** calendarOptions(Props)
-    const calendarOptions = {
-      events: store.events.length ? store.events : [],
-      plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-        start: 'sidebarToggle, prev, next, title',
-        end: 'dayGridMonth,timeGridWeek,timeGridDay, Month'
-      },
-      views: {
-        week: {
-          titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
-        }
-      },
+// //  const handleSelectedDates = (info:any) => {
+// //     alert("selected " + info.startStr + " to " + info.endStr);
+// //     const title = prompt("What's the name of the title");
+// //     console.log(info);
+// //     if (title != null) {
+// //       const newEvent = {
+// //         title,
+// //         start: info.startStr,
+// //         end: info.endStr
+// //       };
+// //       const data = [...this.state.events, newEvent];
+// //       this.setState({ events: data });
+// //       console.log("here", data);
+// //     } else {
+// //       console.log("nothing");
+// //     }
+// //   };
+//   return (
+    
+//       <div>
+//         <FullCalendar
+//           // schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+//           // ref={this.calendarComponentRef}
+//           // defaultView="dayGridMonth"
+//           // dateClick={this.handleDateClick}
+//           displayEventTime={true}
+//           // header={{
+//           //   left: "prev,next today",
+//           //   center: "title",
+//           //   right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+//           // }}
+//           selectable={true}
+//           plugins={[
+//             dayGridPlugin,
+//             interactionPlugin,
+//             timeGridPlugin,
+//             resourceTimeGridPlugin
+//           ]}
+//           // eventClick={event => {
+//           //   console.log(event.event._def.publicId);
+//           // }}
+//           // events={this.state.events}
+//           // select={this.handleSelectedDates}
+//           // eventLimit={3}
+//         />
+//       </div>
+    
+//   )
+// }
 
-      /*
-      Enable dragging and resizing event
-      ? Docs: https://fullcalendar.io/docs/editable
-    */
-      editable: true,
-
-      /*
-      Enable resizing event from start
-      ? Docs: https://fullcalendar.io/docs/eventResizableFromStart
-    */
-      eventResizableFromStart: true,
-
-      /*
-      Automatically scroll the scroll-containers during event drag-and-drop and date selecting
-      ? Docs: https://fullcalendar.io/docs/dragScroll
-    */
-      dragScroll: true,
-
-      /*
-      Max number of events within a given day
-      ? Docs: https://fullcalendar.io/docs/dayMaxEvents
-    */
-      dayMaxEvents: 2,
-
-      /*
-      Determines if day names and week names are clickable
-      ? Docs: https://fullcalendar.io/docs/navLinks
-    */
-      navLinks: true,
-
-      eventClassNames({ event: calendarEvent }: any) {
-        // @ts-ignore
-        const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
-
-        return [
-          // Background Color
-          `bg-${colorName}`
-        ]
-      },
-
-      eventClick({ event: clickedEvent }: any) {
-        dispatch(handleSelectEvent(clickedEvent))
-        handleAddEventSidebarToggle()
-
-        // * Only grab required field otherwise it goes in infinity loop
-        // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-        // event.value = grabEventDataFromEventApi(clickedEvent)
-
-        // isAddNewEventSidebarActive.value = true
-      },
-
-      customButtons: {
-        sidebarToggle: {
-          text: <Icon icon='bx:menu' />,
-          click() {
-            handleLeftSidebarToggle()
-          }
-        }
-      },
-
-      dateClick(info: any) {
-        const ev = { ...blankEvent }
-        ev.start = info.date
-        ev.end = info.date
-        ev.allDay = true
-
-        // @ts-ignore
-        dispatch(handleSelectEvent(ev))
-        handleAddEventSidebarToggle()
-      },
-
-      /*
-      Handle event drop (Also include dragged event)
-      ? Docs: https://fullcalendar.io/docs/eventDrop
-      ? We can use `eventDragStop` but it doesn't return updated event so we have to use `eventDrop` which returns updated event
-    */
-      eventDrop({ event: droppedEvent }: any) {
-        dispatch(updateEvent(droppedEvent))
-      },
-
-      /*
-      Handle event resize
-      ? Docs: https://fullcalendar.io/docs/eventResize
-    */
-      eventResize({ event: resizedEvent }: any) {
-        dispatch(updateEvent(resizedEvent))
-      },
-
-      ref: calendarRef,
-
-      // Get direction from app state (store)
-      direction
-    }
-
-    // @ts-ignore
-    return <FullCalendar {...calendarOptions} />
-  } else {
-    return null
-  }
-}
-
-export default Calendar
+// export default Calendar

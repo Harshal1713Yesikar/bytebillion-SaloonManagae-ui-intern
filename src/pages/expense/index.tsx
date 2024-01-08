@@ -2,7 +2,7 @@ import React from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { Grid, TextField, InputAdornment } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import an appropriate icon for your needs
+// import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import an appropriate icon for your needs
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -110,7 +110,7 @@ const Index = () => {
           <DatePicker
             value={null} // Set the initial value as needed
             onChange={(date) => console.log(date)} // Handle date change as needed
-            renderInput={(startProps, endProps) => (
+            renderInput={(startProps:any, endProps:any) => (
               <>
                 <TextField {...startProps} variant="standard" helperText="" placeholder="Batch Start Date" />
                 <TextField {...endProps} variant="standard" helperText="" placeholder="Batch End Date" />
@@ -123,27 +123,27 @@ const Index = () => {
             endText="Batch End Date"
 
 //           // Other props as needed
-//           />
-//         </LocalizationProvider>
-//       </Grid>
-//       <Grid style={{ marginLeft: "10px" }}>
-//         <LocalizationProvider dateAdapter={AdapterDayjs}>
-//           <DatePicker
-//             value={null} // Set the initial value as needed
-//             onChange={(date) => console.log(date)} // Handle date change as needed
-//             renderInput={(startProps, endProps) => (
-//               <>
-//                 <TextField {...startProps} variant="standard" helperText="" placeholder="Batch Start Date" />
-//                 <TextField {...endProps} variant="standard" helperText="" placeholder="Batch End Date" />
-//               </>
-//             )}
-//             inputFormat="dd/MM/yyyy"
-//             autoComplete="off"
-//             required
-//             startText="Batch Start Date"
-//             endText="Batch End Date"
+          />
+        </LocalizationProvider>
+      </Grid>
+      <Grid style={{ marginLeft: "10px" }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            value={null} // Set the initial value as needed
+            onChange={(date) => console.log(date)} // Handle date change as needed
+            renderInput={(startProps:any, endProps:any) => (
+              <>
+                <TextField {...startProps} variant="standard" helperText="" placeholder="Batch Start Date" />
+                <TextField {...endProps} variant="standard" helperText="" placeholder="Batch End Date" />
+              </>
+            )}
+            inputFormat="dd/MM/yyyy"
+            autoComplete="off"
+            required
+            startText="Batch Start Date"
+            endText="Batch End Date"
 
-          // Other props as needed
+          Other props as needed
           />
         </LocalizationProvider>
       </Grid>
@@ -202,7 +202,8 @@ const Index = () => {
           />
         </Paper>
       </Grid>
-      <Stack container alignItems="center" justifyContent="center" style={{ margin: '10px' }} direction="row" spacing={2}>        <Button variant="outlined" >
+      <Stack container  sx={{ margin: '10px',display:'flex' ,alignItems:"center", justifyContent:"center"}}  spacing={2}>     
+         <Button variant="outlined" >
         Previous
       </Button>
         <Button variant="contained">
@@ -214,4 +215,4 @@ const Index = () => {
   );
 };
 
-// export default Index;
+export default Index;
