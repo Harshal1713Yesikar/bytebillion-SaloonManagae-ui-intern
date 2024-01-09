@@ -386,7 +386,8 @@ const Settings = () => {
               Specify region Specific setting  for your Bussiness
             </Typography>
             <CardContent>
-          <PickersSourceCode popperPlacement={undefined}/>
+          <PickersTime popperPlacement={undefined}/>
+          
               <CardContent>
             <Typography style={{ borderBottom: ' 1px solid'}}></Typography>
           </CardContent>

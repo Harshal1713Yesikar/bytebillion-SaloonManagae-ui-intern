@@ -30,20 +30,20 @@ const PickersTime = ({ popperPlacement }: { popperPlacement: ReactDatePickerProp
           id='time-only-picker'
           popperPlacement={popperPlacement}
           onChange={(date: Date) => setTime(date)}
-          customInput={<CustomInput label='Time Only' />}
+          customInput={<CustomInput label='Opning TIme' />}
         />
       </div>
       <div>
         <DatePicker
           showTimeSelect
-          timeFormat='HH:mm'
+          selected={time}
           timeIntervals={15}
-          selected={dateTime}
-          id='date-time-picker'
-          dateFormat='MM/dd/yyyy h:mm aa'
+          showTimeSelectOnly
+          dateFormat='h:mm aa'
+          id='time-only-picker'
           popperPlacement={popperPlacement}
-          onChange={(date: Date) => setDateTime(date)}
-          customInput={<CustomInput label='Date & Time' />}
+          onChange={(date: Date) => setTime(date)}
+          customInput={<CustomInput label='Closing Time' />}
         />
       </div>
     </Box>
