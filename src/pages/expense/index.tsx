@@ -1,217 +1,300 @@
-import React from 'react';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { Grid, TextField, InputAdornment } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import an appropriate icon for your needs
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Stack from '@mui/material/Stack';
+// ** React Imports
+import { ChangeEvent, useEffect, useState } from 'react'
 
-// import "../../../styles/global.css"
-import { useState } from 'react'
+// ** MUI Imports
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
+import CardHeader from '@mui/material/CardHeader'
+import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
+
+// ** Custom Components
+import CustomChip from 'src/@core/components/mui/chip'
+import CustomAvatar from 'src/@core/components/mui/avatar'
+
+import QuickSearchToolbar from 'src/views/table/TableFilter'
+
+// ** Types Imports
+import { ThemeColor } from 'src/@core/layouts/types'
+import { DataGridRowType } from 'src/@fake-db/types'
 
 
+// ** Utils Import
+import { getInitials } from 'src/@core/utils/get-initials'
+import { Button, Container, Grid, Icon } from '@mui/material'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
-interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { loadCSS } from 'fg-loadcss';
+
+interface StatusObj {
+  [key: number]: {
+    title: string
+    color: ThemeColor
+  }
 }
 
-const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
-  },
-];
+// ** renders client column
+const renderClient = (params: GridRenderCellParams) => {
+  const { row } = params
+  const stateNum = Math.floor(Math.random() * 6)
+  const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
+  const color = states[stateNum]
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
+  if (row.avatar.length) {
+    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+  } else {
+    return (
+      <CustomAvatar
+        skin='light'
+        color={color as ThemeColor}
+        sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
+      >
+        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+      </CustomAvatar>
+    )
+  }
 }
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number,
-): Data {
-  const density = population / size;
-
-  return { name, code, population, size, density };
+const statusObj: StatusObj = {
+  1: { title: 'current', color: 'primary' },
+  2: { title: 'professional', color: 'success' },
+  3: { title: 'rejected', color: 'error' },
+  4: { title: 'resigned', color: 'warning' },
+  5: { title: 'applied', color: 'info' }
 }
 
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
+const escapeRegExp = (value: string) => {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
+const columns: GridColumns = [
+  {
+    flex: 0.275,
+    minWidth: 290,
+    field: 'full_name',
+    headerName: 'Name',
+    renderCell: (params: GridRenderCellParams) => {
+      const { row } = params
+
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {renderClient(params)}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+              {row.full_name}
+            </Typography>
+            <Typography noWrap variant='caption'>
+              {row.email}
+            </Typography>
+          </Box>
+        </Box>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 120,
+    headerName: 'Date',
+    field: 'start_date',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.start_date}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 110,
+    field: 'salary',
+    headerName: 'Salary',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.salary}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.125,
+    field: 'age',
+    minWidth: 80,
+    headerName: 'Age',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.age}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 140,
+    field: 'status',
+    headerName: 'Status',
+    renderCell: (params: GridRenderCellParams) => {
+      const status = statusObj[params.row.status]
+
+      return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
+    }
+  }
+]
 
 const Index = () => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // ** States
+  const [data] = useState<DataGridRowType[]>([])
+  const [pageSize, setPageSize] = useState<number>(7)
+  const [searchText, setSearchText] = useState<string>('')
+  const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+  const handleSearch = (searchValue: string) => {
+    setSearchText(searchValue)
+    const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
+    const filteredRows = data.filter(row => {
+      return Object.keys(row).some(field => {
+        // @ts-ignore
+        return searchRegex.test(row[field].toString())
+      })
+    })
+    if (searchValue.length) {
+      setFilteredData(filteredRows)
+    } else {
+      setFilteredData([])
+    }
+  }
+
+  const [age, setAge] = useState('');
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  useEffect(() => {
+    const node = loadCSS(
+      'https://use.fontawesome.com/releases/v5.14.0/css/all.css',
+
+      // Inject before JSS
+      document.querySelector('#font-awesome-css') || document.head.firstChild,
+    );
+
+    return () => {
+      node.parentNode!.removeChild(node);
+    };
+  }, []);
+
 
   return (
-    <>    <Grid container justifyContent="flex-start" alignItems="center" style={{ padding: '20px' }}>
-      <Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <Card>
+      <Grid style={{ display: 'flex' }}>
+        <Grid style={{ marginLeft: "20px", padding: "10px" }}>
+          <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
+          <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
+        </Grid>
+        <Icon style={{ display: "flex", justifyContent: "center" }} baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
+      </Grid>
+      <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
+        <Grid style={{ display: 'flex', flexDirection: "column" }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <Typography>Date</Typography>
+            <DatePicker
+              label="From"
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  style: { width: '150px' }
+                }
+              }}
+            />
+          </LocalizationProvider>
+        </Grid>
+        <LocalizationProvider dateAdapter={AdapterDayjs} >
           <DatePicker
-            value={null} // Set the initial value as needed
-            onChange={(date) => console.log(date)} // Handle date change as needed
-            renderInput={(startProps, endProps) => (
-              <>
-                <TextField {...startProps} variant="standard" helperText="" placeholder="Batch Start Date" />
-                <TextField {...endProps} variant="standard" helperText="" placeholder="Batch End Date" />
-              </>
-            )}
-            inputFormat="dd/MM/yyyy"
-            autoComplete="off"
-            required
-            startText="Batch Start Date"
-            endText="Batch End Date"
-
-          // Other props as needed
+            label="To"
+            slotProps={{
+              textField: {
+                size: 'small',
+                style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
+              }
+            }}
           />
         </LocalizationProvider>
-      </Grid>
-      <Grid style={{ marginLeft: "10px" }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            value={null} // Set the initial value as needed
-            onChange={(date) => console.log(date)} // Handle date change as needed
-            renderInput={(startProps, endProps) => (
-              <>
-                <TextField {...startProps} variant="standard" helperText="" placeholder="Batch Start Date" />
-                <TextField {...endProps} variant="standard" helperText="" placeholder="Batch End Date" />
-              </>
-            )}
-            inputFormat="dd/MM/yyyy"
-            autoComplete="off"
-            required
-            startText="Batch Start Date"
-            endText="Batch End Date"
+        <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
+          <Typography>Client Type</Typography>
+          <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
+            <InputLabel id="demo-select-small-label">All Clients</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={age}
+              label="All Clients"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
+          <Button variant='contained' >
+            Search
+          </Button>
+        </Grid>
+        <Box>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel id="demo-select-small-label">Action</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={age}
+              label="Age"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Container>
+      <DataGrid
+        autoHeight
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[7, 10, 25, 50]}
 
-          // Other props as needed
-          />
-        </LocalizationProvider>
-      </Grid>
-      <Button style={{ marginLeft: "10px" }} variant="contained" disableElevation>
-        Disable elevation
-      </Button>
-    </Grid>
-      <Grid>
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                        {columns.map((column) => {
-                          const value = row[column.id];
-
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === 'number'
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </Grid>
-      <Stack container alignItems="center" justifyContent="center" style={{ margin: '10px' }} direction="row" spacing={2}>        <Button variant="outlined" >
-        Previous
-      </Button>
-        <Button variant="contained">
+        components={{ Toolbar: QuickSearchToolbar }}
+        rows={filteredData.length ? filteredData : data}
+        onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+        componentsProps={{
+          baseButton: {
+            variant: 'outlined'
+          },
+          toolbar: {
+            value: searchText,
+            clearSearch: () => handleSearch(''),
+            onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+          }
+        }}
+      />
+      <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
+        <Button variant='outlined' >
+          Previous
+        </Button>
+        <Button variant='contained' >
           Next
         </Button>
-      </Stack>
-    </>
+      </Grid>
+    </Card>
+  )
+}
 
-  );
-};
-
-export default Index;
+export default Index

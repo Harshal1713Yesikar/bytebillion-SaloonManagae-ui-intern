@@ -5,7 +5,7 @@ import { ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
-import { GridToolbarExport } from '@mui/x-data-grid'
+import { GridToolbarFilterButton } from '@mui/x-data-grid'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -16,7 +16,7 @@ interface Props {
   onChange: (e: ChangeEvent) => void
 }
 
-const ServerSideToolbar = (props: Props) => {
+const QuickSearchToolbar = (props: Props) => {
   return (
     <Box
       sx={{
@@ -25,10 +25,10 @@ const ServerSideToolbar = (props: Props) => {
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        p: theme => `${theme.spacing(2, 6, 4, 6)} !important`
+        p: theme => theme.spacing(2, 6, 4, 6)
       }}
     >
-      <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+      <GridToolbarFilterButton />
       <TextField
         size='small'
         value={props.value}
@@ -53,10 +53,6 @@ const ServerSideToolbar = (props: Props) => {
           },
           '& .MuiInputBase-root > svg': {
             mr: 2
-          },
-          '& .MuiInput-underline:before': {
-            borderBottom: 1,
-            borderColor: 'divider'
           }
         }}
       />
@@ -64,4 +60,4 @@ const ServerSideToolbar = (props: Props) => {
   )
 }
 
-export default ServerSideToolbar
+export default QuickSearchToolbar
