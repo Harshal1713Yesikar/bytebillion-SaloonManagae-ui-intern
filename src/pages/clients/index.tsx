@@ -11,7 +11,6 @@ import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-
 import QuickSearchToolbar from 'src/views/table/TableFilter'
 
 // ** Types Imports
@@ -187,12 +186,14 @@ const Index = () => {
 
   return (
     <Card>
-      <Grid style={{ display: 'flex' }}>
-        <Grid style={{ marginLeft: "20px", padding: "10px" }}>
-          <CardHeader style={{ padding: "0px" }} title='Quick Filter' />
+      <Grid style={{ display: 'flex', width: "100%" }}>
+        <Grid style={{ marginLeft: "20px", padding: "10px", width: "100%" }}>
+          <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
+        <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
+          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} />
+        </Grid>
       </Grid>
       <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
         <Grid style={{ display: 'flex', flexDirection: "column" }}>
@@ -215,7 +216,7 @@ const Index = () => {
             slotProps={{
               textField: {
                 size: 'small',
-                style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
+                style: { width: '250px', marginLeft: "5px", marginTop: "25px" }
               }
             }}
           />
@@ -245,7 +246,7 @@ const Index = () => {
             Search
           </Button>
         </Grid>
-        <Box>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
           <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
             <InputLabel id="demo-select-small-label">Action</InputLabel>
             <Select

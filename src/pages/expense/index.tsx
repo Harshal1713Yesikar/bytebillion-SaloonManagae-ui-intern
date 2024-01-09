@@ -187,84 +187,88 @@ const Index = () => {
 
   return (
     <Card>
-      <Grid style={{ display: 'flex' }}>
-        <Grid style={{ marginLeft: "20px", padding: "10px" }}>
+      <Grid style={{ display: 'flex', width: "100%" }}>
+        <Grid style={{ marginLeft: "20px", padding: "10px", width: "100%" }}>
           <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Icon style={{ display: "flex", justifyContent: "center" }} baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
+        <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
+          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} />
+        </Grid>
       </Grid>
-      <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
-        <Grid style={{ display: 'flex', flexDirection: "column" }}>
+      <Grid style={{ display: "flex", width: "100%" }}>
+        <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex", margin: "20px" }}>
+          <Grid style={{ display: 'flex', flexDirection: "column" }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} >
+              <Typography>Date</Typography>
+              <DatePicker
+                label="From"
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    style: { width: '150px' }
+                  }
+                }}
+              />
+            </LocalizationProvider>
+          </Grid>
           <LocalizationProvider dateAdapter={AdapterDayjs} >
-            <Typography>Date</Typography>
             <DatePicker
-              label="From"
+              label="To"
               slotProps={{
                 textField: {
                   size: 'small',
-                  style: { width: '150px' }
+                  style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
                 }
               }}
             />
           </LocalizationProvider>
-        </Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
-          <DatePicker
-            label="To"
-            slotProps={{
-              textField: {
-                size: 'small',
-                style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
-              }
-            }}
-          />
-        </LocalizationProvider>
-        <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
-          <Typography>Client Type</Typography>
-          <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
-            <InputLabel id="demo-select-small-label">All Clients</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={age}
-              label="All Clients"
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
-          <Button variant='contained' >
-            Search
-          </Button>
-        </Grid>
-        <Box>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">Action</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={age}
-              label="Age"
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Container>
+          <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
+            <Typography>Client Type</Typography>
+            <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
+              <InputLabel id="demo-select-small-label">All Clients</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={age}
+                label="All Clients"
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
+            <Button variant='contained' >
+              Search
+            </Button>
+          </Grid>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Action</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={age}
+                label="Age"
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Container>
+      </Grid>
       <DataGrid
         autoHeight
         columns={columns}
