@@ -120,7 +120,7 @@ const CrmTopProducts = () => {
             <Typography variant='h6' sx={{ mr: 1.5 }}>
               Top Products by
               <Typography variant='h6' component='span' sx={{ ml: 1.5, color: 'primary.main' }}>
-                Sales
+                Sales 
               </Typography>
             </Typography>
           }

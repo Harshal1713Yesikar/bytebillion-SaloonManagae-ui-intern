@@ -17,14 +17,13 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { Controller, useForm } from 'react-hook-form'
 import IconButton from '@mui/material/IconButton'
 import PickersSourceCode from 'src/views/form/form-elements/pickers/PickersSourceCode'
-// import IconButton from '@mui/material/IconButton'
-// import Icon from 'src/@core/components/icon'
-// import Link from 'src/@core/theme/overrides/link'
 import CardSnippet from 'src/@core/components/card-snippet'
 import PickersTime from 'src/views/form/form-elements/pickers/PickersTime'
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker'
 import * as source from 'src/views/form/form-elements/pickers/PickersSourceCode'
 import { useTheme } from '@mui/material/styles'
+import Dashboard from '../dashboard'
+
 
 const defaultValues = {
   companyName: '',
@@ -89,6 +88,7 @@ const Settings = () => {
 
   return (
     <>
+      <Dashboard/>
       <Grid>
         <Card>
           <CardContent>
