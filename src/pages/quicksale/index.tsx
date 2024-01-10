@@ -9,6 +9,7 @@ import Select from '@mui/material/Select'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
+import YourComponentToBeCalled from 'src/pages/calender/index'
 
 // import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
@@ -29,6 +30,7 @@ const rows = [
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('')
+  const [showComponents, setShowComponents] = useState<any[]>([]);
 
   const handleChanges = (event: any) => {
     setSearchTerm(event.target.value)
@@ -45,6 +47,21 @@ const Index = () => {
   const handleChange = (event: any) => {
     setAge(event.target.value as string);
   };
+
+
+  const handleAddComponent = () => {
+    setShowComponents((prevComponents) => [...prevComponents, true]);
+  };
+
+  const handleRemoveComponent = (index: number) => {
+    setShowComponents((prevComponents) => {
+      const updatedComponents = [...prevComponents];
+      updatedComponents.splice(index, 1);
+
+      return updatedComponents;
+    });
+  };
+
 
   return (
     <>
@@ -89,7 +106,7 @@ const Index = () => {
             </LocalizationProvider>
           </Container>
           <div style={{ margin: '5px' }}>
-            <Button variant='contained' sx={{ marginRight: '10px' }}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddComponent}>
               Add Services
             </Button>
             <Button variant='contained' sx={{ marginRight: '10px' }}>
@@ -105,6 +122,9 @@ const Index = () => {
               Gift Card
             </Button>
           </div>
+          {showComponents.map((index) => (
+            <YourComponentToBeCalled key={index} index={index} onRemove={() => handleRemoveComponent(showComponents.length - 1)} />
+          ))}
 
           <div style={{ display: 'flex', marginTop: '20px' }}>
             <Grid style={{ marginLeft: "1px" }}>
