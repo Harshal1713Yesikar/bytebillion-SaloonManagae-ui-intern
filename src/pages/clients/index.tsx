@@ -19,7 +19,7 @@ import { DataGridRowType } from 'src/@fake-db/types'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Container, Grid } from '@mui/material'
+import { Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Menu, TextField } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -29,6 +29,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
 import Icon from '@mui/material/Icon';
+import { Router, useRouter } from 'next/router'
 
 interface StatusObj {
   [key: number]: {
@@ -164,11 +165,22 @@ const Index = () => {
     }
   }
 
-  const [age, setAge] = useState('');
+  const [client, setClient] = useState('');
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+  const handleClient = (event: SelectChangeEvent) => {
+    setClient(event.target.value);
   };
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
 
   useEffect(() => {
     const node = loadCSS(
@@ -184,6 +196,29 @@ const Index = () => {
   }, []);
 
 
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
+  const [group, setGroup] = useState('');
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleSave = () => {
+    // Handle saving data or any other logic here
+    closeModal();
+  };
+
+  const router = useRouter();
+  const handleCustomer = () => {
+    router.push('../second-page/ClientCustomerCreate');
+  }
+
   return (
     <Card>
       <Grid style={{ display: 'flex', width: "100%" }}>
@@ -191,9 +226,52 @@ const Index = () => {
           <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
-          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} />
+        <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
+          <Icon
+            baseClassName="fas"
+            className="fa-plus-circle"
+            sx={{ fontSize: 40, color: 'black', cursor: 'pointer' }}
+            onClick={openModal}
+          />
         </Grid>
+
+        <Dialog open={isModalOpen} onClose={closeModal}>
+          <DialogTitle>Add Client</DialogTitle>
+          <DialogContent>
+            <Grid style={{ display: 'flex' }}>
+              <TextField
+                sx={{ m: 5, width: "40%" }}
+                label="Name"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                sx={{ m: 5, width: "40%" }}
+                label="Contact"
+                fullWidth
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+              />
+            </Grid>
+            <Typography sx={{ fontSize: 20 }}>Select Group</Typography>
+            <TextField
+              sx={{ m: 5, width: "90%" }}
+              label="Group"
+              fullWidth
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleSave} variant="contained" color="primary">
+              Save
+            </Button>
+            <Button onClick={closeModal} variant="contained" color="secondary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
       <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
         <Grid style={{ display: 'flex', flexDirection: "column" }}>
@@ -228,9 +306,9 @@ const Index = () => {
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={age}
+              value={client}
               label="All Clients"
-              onChange={handleChange}
+              onChange={handleClient}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -247,23 +325,14 @@ const Index = () => {
           </Button>
         </Grid>
         <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">Action</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={age}
-              label="Age"
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
+          <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+            Open Menu
+          </Button>
+          <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
+            <MenuItem onClick={handleCustomer}>Client Groups</MenuItem>
+            <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
+            <MenuItem onClick={handleClose}>Import Client</MenuItem>
+          </Menu>
         </Box>
       </Container>
       <DataGrid

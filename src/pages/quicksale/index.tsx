@@ -9,12 +9,16 @@ import Select from '@mui/material/Select'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
-import YourComponentToBeCalled from 'src/pages/calender/index'
+import AddProduct from 'src/views/forms/quickSaleFormTable/addProducts'
+import AddService from 'src/views/forms/quickSaleFormTable/addServices'
+import AddMemberShip from 'src/views/forms/quickSaleFormTable/addMemberShip'
+import AddPackage from 'src/views/forms/quickSaleFormTable/addpackage'
 
 // import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
+import { useRouter } from 'next/router'
 
 const createData = (name: string, calories: number, fat: number, carbs: number, protein: number) => {
   return { name, calories, fat, carbs, protein }
@@ -24,21 +28,23 @@ const rows = [
   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
   createData('Eclair', 262, 16.0, 24, 6.0),
-
 ]
-
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [showComponents, setShowComponents] = useState<any[]>([]);
+  const [showService, setShowService] = useState<any[]>([]);
+  const [showProduct, setShowProduct] = useState<any[]>([]);
+  const [showMemberShip, setShowMemberShip] = useState<any[]>([]);
+  const [showPackage, setShowPackage] = useState<any[]>([]);
+
 
   const handleChanges = (event: any) => {
     setSearchTerm(event.target.value)
   }
-  const [searchsTerm, setSearchsTerm] = useState('')
+  const [percentage, setPercentage] = useState('')
 
   const handleChanged = (event: any) => {
-    setSearchsTerm(event.target.value)
+    setPercentage(event.target.value)
   }
 
 
@@ -49,18 +55,71 @@ const Index = () => {
   };
 
 
-  const handleAddComponent = () => {
-    setShowComponents((prevComponents) => [...prevComponents, true]);
+  const handleAddService = () => {
+    setShowService((prevService) => [...prevService, true]);
   };
 
-  const handleRemoveComponent = (index: number) => {
-    setShowComponents((prevComponents) => {
-      const updatedComponents = [...prevComponents];
-      updatedComponents.splice(index, 1);
+  const handleRemoveService = (index: number) => {
+    setShowService((prevService) => {
+      const updatedService = [...prevService];
+      updatedService.splice(index, 1);
 
-      return updatedComponents;
+      return updatedService;
     });
   };
+
+  const handleAddProduct = () => {
+    setShowProduct((prevProduct) => [...prevProduct, true]);
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    setShowProduct((prevProduct) => {
+      const updatedProduct = [...prevProduct];
+      updatedProduct.splice(index, 1);
+
+      return updatedProduct;
+    });
+  };
+
+  const handleAddMemberShip = () => {
+    setShowMemberShip((prevMemberShip) => [...prevMemberShip, true]);
+  };
+
+  const handleRemoveMemberShip = (index: number) => {
+    setShowMemberShip((prevMemberShip) => {
+      const updateMemberShip = [...prevMemberShip];
+      updateMemberShip.splice(index, 1);
+
+      return updateMemberShip;
+    });
+  };
+
+  const handlePackage = () => {
+    setShowPackage((prevPackage) => [...prevPackage, true]);
+  };
+
+  const handleRemovePackage = (index: number) => {
+    setShowPackage((prevPackage) => {
+      const updatePackage = [...prevPackage];
+      updatePackage.splice(index, 1);
+
+      return updatePackage;
+    });
+  };
+
+  const handleResetClick = () => {
+    // Display a confirmation dialog
+    const isConfirmed = window.confirm("Are you sure you want to reset?");
+
+    // If the user confirms, refresh the page
+    if (isConfirmed) {
+      window.location.reload();
+    }
+  };
+  const router = useRouter();
+  const handleBack = () => {
+    router.push('./home');
+  }
 
 
   return (
@@ -69,7 +128,7 @@ const Index = () => {
         <Card style={{ padding: "20px" }}>
           <Grid style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography style={{ fontSize: "30px" }}>Create Invoice</Typography>
-            <Button style={{ marginBottom: "10px" }} variant="outlined">Outlined</Button>
+            <Button style={{ marginBottom: "10px" }} variant="outlined" onClick={handleBack}>Back</Button>
           </Grid>
           <Container style={{ border: '2px solid lightGray', borderRadius: '10px' }}>
             <TextField
@@ -106,25 +165,38 @@ const Index = () => {
             </LocalizationProvider>
           </Container>
           <div style={{ margin: '5px' }}>
-            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddComponent}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddService}>
               Add Services
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddProduct} >
               Add Product
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddMemberShip} >
               Add Membership
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handlePackage}>
               Add Package
             </Button>
             <Button variant='contained' sx={{ marginRight: '10px' }}>
               Gift Card
             </Button>
           </div>
-          {showComponents.map((index) => (
-            <YourComponentToBeCalled key={index} index={index} onRemove={() => handleRemoveComponent(showComponents.length - 1)} />
+          {showService.map((index) => (
+            <AddService key={index} index={index} onRemove={() => handleRemoveService(showService.length - 1)} />
           ))}
+
+          {showProduct.map((index) => (
+            <AddProduct key={index} index={index} onRemove={() => handleRemoveProduct(showProduct.length - 1)} />
+          ))}
+
+          {showMemberShip.map((index) => (
+            <AddMemberShip key={index} index={index} onRemove={() => handleRemoveMemberShip(showMemberShip.length - 1)} />
+          ))}
+
+          {showPackage.map((index) => (
+            <AddPackage key={index} index={index} onRemove={() => handleRemovePackage(showPackage.length - 1)} />
+          ))}
+
 
           <div style={{ display: 'flex', marginTop: '20px' }}>
             <Grid style={{ marginLeft: "1px" }}>
@@ -188,7 +260,7 @@ const Index = () => {
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
-                  value={searchsTerm}
+                  value={percentage}
                   label="Age"
                   onChange={handleChanged}
                 >
@@ -232,8 +304,6 @@ const Index = () => {
                   <FormControlLabel value="Online" control={<Radio />} label="Online" />
                   <FormControlLabel value="Check" control={<Radio />} label="Check" />
                   <FormControlLabel value="Card" control={<Radio />} label="Card" />
-
-
                 </RadioGroup>
               </FormControl>
               <Grid >
@@ -312,7 +382,7 @@ const Index = () => {
         </Card>
       </Grid>
       <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button style={{ margin: "10px" }} variant="contained">Reset</Button>
+        <Button style={{ margin: "10px" }} variant="contained" onClick={handleResetClick}>Reset</Button>
         <Button style={{ margin: "10px" }} variant="contained">Generate Bill</Button>
       </Grid>
     </>
