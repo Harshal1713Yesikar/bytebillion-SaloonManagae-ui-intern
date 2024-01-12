@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { Card, Grid } from '@mui/material'
+import { Card, CardContent, Grid } from '@mui/material'
 import { TextField, Box } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -19,19 +19,21 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 // import Icon from 'src/@core/components/icon'
 import { Icon } from '@iconify/react'
 
-const ListSimple = () => {
+const Dashboard = () => {
   const [age, setAge] = useState('')
 
   const handleChange = (event: SelectChangeEvent) => {
     setAge(event.target.value)
   }
 
+ 
+
   return (
-    <Fragment>
-        <Grid container spacing={1}>
-          <Card style={{ width: '20%',borderRadius:"15px"}}>
+    <>
+           <Card style={{ width:'100%',borderRadius:"10px"}}>
+            <CardContent >
               <h3 style={{borderBottom:"1px solid gray", margin:"20px" }}>Your Bussiness</h3>
-              <List component='nav' aria-label='main mailbox' sx={{ width:'500px',marginTop:"-20px"}}>
+              <List component='nav' aria-label='main mailbox' sx={{}}>
                 <ListItem disablePadding>
                   <ListItemButton>
                     <ListItemText primary='Bussiness Details' />
@@ -83,35 +85,22 @@ const ListSimple = () => {
               <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px',marginBottom:"15px",marginTop:"-20px" }}>
                 <ListItem disablePadding>
                   <ListItemButton>
-                    <ListItemText primary='Sales' />
+                    <ListItemText primary='Manage Staff' />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton component='a' href='#simple-list'>
-                    <ListItemText primary='Customer' />
+                    <ListItemText primary='Commission' />
                   </ListItemButton>
                 </ListItem>
 
                 <ListItem disablePadding>
                   <ListItemButton component='a' href='#simple-list'>
                 
-                    <ListItemText primary='Staff' />
+                    <ListItemText primary='Role' />
                   </ListItemButton>
                 </ListItem>
 
-                <ListItem disablePadding>
-                  <ListItemButton component='a' href='#simple-list'>
-              
-                    <ListItemText primary='Appointment' />
-                  </ListItemButton>
-                </ListItem>
-
-                <ListItem disablePadding>
-                  <ListItemButton component='a' href='#simple-list'>
-                 
-                    <ListItemText primary='Inventory' />
-                  </ListItemButton>
-                </ListItem>
               </List>
               <Divider sx={{ marginTop:-5 }} />
               <h3 style={{borderBottom:"1px solid gray",margin:"20px"}}>Stock </h3>
@@ -248,9 +237,10 @@ const ListSimple = () => {
                 </ListItem>
               </List>
            
+            </CardContent>
           </Card>
-        </Grid>
-    </Fragment>
+        
+    </>
   )
 }
-export default ListSimple
+export default Dashboard
