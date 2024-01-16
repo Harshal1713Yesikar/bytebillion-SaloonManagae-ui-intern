@@ -29,7 +29,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
 import Icon from '@mui/material/Icon';
-import { Router, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 
 interface StatusObj {
   [key: number]: {
@@ -216,8 +216,35 @@ const Index = () => {
 
   const router = useRouter();
   const handleCustomer = () => {
-    router.push('../second-page/ClientCustomerCreate');
+    router.push('../second-page/clientCustomerCreate');
   }
+
+
+  const [openImportDialog, setOpenImportDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+  const handleImportClick = () => {
+    handleClose();
+    setOpenImportDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenImportDialog(false);
+  };
+
+  const handleFileChange = (event: any) => {
+    // Handle file selection here
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleImportSubmit = () => {
+    // Handle import logic here using the selected file
+    // You can dispatch an action or call a function to handle the import
+    // Remember to close the dialog after import is done
+    handleDialogClose();
+  };
+
 
   return (
     <Card>
@@ -326,13 +353,31 @@ const Index = () => {
         </Grid>
         <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
           <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
-            Open Menu
+            Action
           </Button>
-          <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
-            <MenuItem onClick={handleCustomer}>Client Groups</MenuItem>
-            <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
-            <MenuItem onClick={handleClose}>Import Client</MenuItem>
-          </Menu>
+          <Grid>
+            <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
+              <MenuItem onClick={handleCustomer}>Client Groups</MenuItem>
+              <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
+              <MenuItem onClick={handleImportClick}>Import Client</MenuItem>
+            </Menu>
+          </Grid>
+          <Dialog open={openImportDialog} onClose={handleDialogClose} fullWidth>
+            <DialogTitle>Import Client</DialogTitle>
+            <DialogContent>
+              {/* File input for importing */}
+              <TextField
+                type="file"
+                onChange={handleFileChange}
+                inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleImportSubmit} color="primary" variant='contained'>
+                Import
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Container>
       <DataGrid

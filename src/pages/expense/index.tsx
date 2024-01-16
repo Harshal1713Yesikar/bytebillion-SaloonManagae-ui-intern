@@ -21,7 +21,7 @@ import { DataGridRowType } from 'src/@fake-db/types'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Container, Grid, Icon } from '@mui/material'
+import { Button, Container, Grid, Icon, Menu } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -30,6 +30,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
+import { useRouter } from 'next/router'
 
 interface StatusObj {
   [key: number]: {
@@ -184,6 +185,21 @@ const Index = () => {
     };
   }, []);
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+  const router = useRouter();
+  const handleBack = () => {
+    router.push('./expense/createExpense');
+  }
+
+
 
   return (
     <Card>
@@ -193,7 +209,7 @@ const Index = () => {
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
         <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
-          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} />
+          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} onClick={handleBack} />
         </Grid>
       </Grid>
       <Grid style={{ display: "flex", width: "100%" }}>
@@ -249,23 +265,16 @@ const Index = () => {
             </Button>
           </Grid>
           <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small-label">Action</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={age}
-                label="Age"
-                onChange={handleChange}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            </FormControl>
+            <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+              Action
+            </Button>
+            <Grid>
+              <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
+                <MenuItem onClick={handleClose}>Client Groups</MenuItem>
+                <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
+                <MenuItem onClick={handleClose}>Import Client</MenuItem>
+              </Menu>
+            </Grid>
           </Box>
         </Container>
       </Grid>
