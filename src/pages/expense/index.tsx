@@ -21,7 +21,7 @@ import { DataGridRowType } from 'src/@fake-db/types'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Container, Grid, Icon, Menu } from '@mui/material'
+import { Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, Menu, TextField } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -31,6 +31,9 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
 import { useRouter } from 'next/router'
+import PrintIcon from '@mui/icons-material/Print';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 
 interface StatusObj {
   [key: number]: {
@@ -199,7 +202,35 @@ const Index = () => {
     router.push('./expense/createExpense');
   }
 
+  const routers = useRouter();
+  const handleExpensecate = () => {
+    routers.push('../expense/createCategory');
+  }
 
+  const [openImportDialog, setOpenImportDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+  const handleImportClick = () => {
+    handleClose();
+    setOpenImportDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenImportDialog(false);
+  };
+
+  const handleFileChange = (event: any) => {
+    // Handle file selection here
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleImportSubmit = () => {
+    // Handle import logic here using the selected file
+    // You can dispatch an action or call a function to handle the import
+    // Remember to close the dialog after import is done
+    handleDialogClose();
+  };
 
   return (
     <Card>
@@ -209,7 +240,7 @@ const Index = () => {
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
         <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
-          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black" }} onClick={handleBack} />
+          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black", cursor: 'pointer' }} onClick={handleBack} />
         </Grid>
       </Grid>
       <Grid style={{ display: "flex", width: "100%" }}>
@@ -265,16 +296,35 @@ const Index = () => {
             </Button>
           </Grid>
           <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
-            <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+            <Grid sx={{ mt: 2, cursor: 'pointer' }}>
+              <PrintIcon />
+            </Grid>
+            <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick} endIcon={<ArrowDropDownIcon />} size='small'>
               Action
             </Button>
             <Grid>
               <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
-                <MenuItem onClick={handleClose}>Client Groups</MenuItem>
-                <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
-                <MenuItem onClick={handleClose}>Import Client</MenuItem>
+                <MenuItem onClick={handleExpensecate}>Category</MenuItem>
+                <MenuItem onClick={handleClose}>Simple File</MenuItem>
+                <MenuItem onClick={handleImportClick}>Import Expenses</MenuItem>
               </Menu>
             </Grid>
+            <Dialog open={openImportDialog} onClose={handleDialogClose} fullWidth>
+              <DialogTitle>Import Client</DialogTitle>
+              <DialogContent>
+                {/* File input for importing */}
+                <TextField
+                  type="file"
+                  onChange={handleFileChange}
+                  inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleImportSubmit} color="primary" variant='contained'>
+                  Import
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         </Container>
       </Grid>

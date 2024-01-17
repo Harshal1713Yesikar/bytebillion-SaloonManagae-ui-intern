@@ -13,6 +13,8 @@ import AddProduct from 'src/views/forms/quickSaleFormTable/addProducts'
 import AddService from 'src/views/forms/quickSaleFormTable/addServices'
 import AddMemberShip from 'src/views/forms/quickSaleFormTable/addMemberShip'
 import AddPackage from 'src/views/forms/quickSaleFormTable/addpackage'
+import AddIcon from '@mui/icons-material/Add';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 
 // import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
@@ -165,19 +167,19 @@ const Index = () => {
             </LocalizationProvider>
           </Container>
           <div style={{ margin: '5px' }}>
-            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddService}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddService} startIcon={<AddIcon />}>
               Add Services
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddProduct} >
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddProduct} startIcon={<AddIcon />}>
               Add Product
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddMemberShip} >
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddMemberShip} startIcon={<AddIcon />}>
               Add Membership
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handlePackage}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handlePackage} startIcon={<AddIcon />}>
               Add Package
             </Button>
-            <Button variant='contained' sx={{ marginRight: '10px' }}>
+            <Button variant='contained' sx={{ marginRight: '10px' }} startIcon={<CardGiftcardIcon />}>
               Gift Card
             </Button>
           </div>

@@ -3,8 +3,10 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import React, { useState } from 'react'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const AddExpense = () => {
+
+const AddExpense = ({ onRemove }: { index: number; onRemove: () => void }) => {
   const [category, setCategory] = useState('');
 
   const handleCategory = (event: SelectChangeEvent) => {
@@ -19,7 +21,7 @@ const AddExpense = () => {
 
   return (
     <>
-      <Grid sx={{ display: 'flex' }}>
+      <Grid sx={{ display: 'flex', backgroundColor: "rgb(238, 238, 238)", ml: 1, mr: 1 }}>
         <TextField
           sx={{ m: 2, width: "20%" }}
           label="Payee"
@@ -89,6 +91,9 @@ const AddExpense = () => {
           fullWidth
           size='small'
         />
+        <Grid item xs={8} sx={{ mt: 4, cursor: 'pointer ' }} onClick={onRemove}>
+          <DeleteIcon />
+        </Grid>
       </Grid>
     </>
   )

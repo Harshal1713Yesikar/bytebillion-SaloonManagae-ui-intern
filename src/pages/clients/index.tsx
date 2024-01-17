@@ -30,6 +30,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
 import Icon from '@mui/material/Icon';
 import { useRouter } from 'next/router'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 
 interface StatusObj {
   [key: number]: {
@@ -352,7 +354,7 @@ const Index = () => {
           </Button>
         </Grid>
         <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
-          <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+          <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick} endIcon={<ArrowDropDownIcon />}>
             Action
           </Button>
           <Grid>
