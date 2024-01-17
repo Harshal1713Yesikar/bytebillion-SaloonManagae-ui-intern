@@ -18,11 +18,13 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import { AES, enc } from 'crypto-js'
 import UserViewLeft from 'src/@core/components/user/UserViewLeft'
+
 // import UserViewConnection from 'src/@core/components/user/UserViewConnection';
 import JoinUsingLink from 'src/views/forms/organizaitoncreation/OrganizationLink'
 import OrgCreation from 'src/views/forms/organizaitoncreation/orgCreation'
 import InvoiceAndReceiptDesign from 'src/@core/components/user/UserViewSecurity'
 import { useTheme } from '@emotion/react'
+
 // import MailSender from './MailSender';
 // ** Icon Imports
 import Checkbox from '@mui/material/Checkbox'
@@ -64,6 +66,7 @@ import {
   Snackbar,
   Alert
 } from '@mui/material'
+
 type Props = {
   tab: string
   invoiceData: InvoiceType[]
@@ -142,6 +145,7 @@ const connectedAccountsArr: ConnectedAccountsType[] = [
 ]
 
 const UserViewConnection = () => {
+  
   let mainId = ''
   let userDetails: any
   const dispatch = useDispatch()
@@ -379,7 +383,9 @@ const UserViewConnection = () => {
   const renderedList = organizationsList.map((org: any, index: any) => {
 
     const isSelected = org.organizationId === organization.organizationId
+
     return (
+
       <TableRow
 
         key={index}
@@ -611,6 +617,7 @@ const UserViewConnection = () => {
                   style={{ marginBottom: '10px' }}
                   required
                   value={`${allValues.organizationCategoryId}%${allValues.organizationCategoryName}`}
+
                   // value={'category'}
                   label='Organization category'
                   onChange={orgCategoryHandler}

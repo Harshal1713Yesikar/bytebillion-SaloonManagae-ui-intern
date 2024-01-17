@@ -25,6 +25,7 @@ import CardContent, { CardContentProps } from '@mui/material/CardContent'
 
 // ** Third Party Imports
 import toast from 'react-hot-toast'
+
 import { useDispatch } from 'react-redux'
 
 // ** Icon Imports
@@ -41,6 +42,9 @@ import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 import { karomanageWelcomeMail, organizationDetails, organizationEmailVerification, organizationRegistration } from 'src/store/APIs/Api'
 import { AccordionDetails, Alert, Snackbar } from '@mui/material'
+
+import { Provider } from 'react-redux';
+import store from './yourReduxStore';
 
 interface State {
   password: string
@@ -127,6 +131,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     }
 
   }
+
   const handleReset = () => {
 
     setCourseDetails({
@@ -143,7 +148,8 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
     setLanguage(event.target.value as string[])
   }
-  const dispatch = useDispatch();
+
+  // const dispatch = useDispatch();
   let mainId = ''
   const [categoryList, setCategoryList] = useState([]);
   const [allValues, setAllValues] = useState({
@@ -180,6 +186,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     setOpen(true);
   };
   const [base64String, setBase64String] = useState<any>("");
+
   // useEffect(() => {
 
   //   const reader = new FileReader();
@@ -306,48 +313,63 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   }
 
   const formSubmit = () => {
-    if (allValues.organizationName !== ''
-      && allValues.organizationId !== ''
-      && allValues.organizationPhoneNumber
-      && allValues.organizationEmail) {
-      // setNext(true)
-      setEmailValidator("Successfully created new Organization")
-      console.log(allValues, "allValues")
-      dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails })).then((res: any) => {
-        setOpen(true)
-        setLogo(allValues.organizationLogo);
-        karomanageWelcomeMail(allValues.organizationName, allValues.organizationEmail)
-        setAllValues({
-          organizationId: ``,
-          organizationName: "",
-          organizationDetails: "",
-          organizationCategoryId: "",
-          organizationCategoryName: "",
-          temporaryId: '',
-          organizationPhoneNumber: '',
-          organizationEmail: '',
-          organizationAddress: '',
-          organizationLogo: ''
-        })
-        setCourseDetails({
-          ...courseDetails, "courseDescription": '',
-          "courseFee": 0,
-          "courseName": '',
-          "courseFeeDescription": "",
-          "maxPaymentInstallment": 0,
-        })
-        if (refreshCall) {
-          refreshCall(customerDetails.customerId);
-        }
-      });
-      handleClick();
-    }
-    else {
-      setEmailValidator("In ")
-      setOpen(true)
+    // if (allValues.organizationName !== ''
+    //   && allValues.organizationId !== ''
+    //   && allValues.organizationPhoneNumber
+    //   && allValues.organizationEmail) {
+    //   // setNext(true)
+    //   setEmailValidator("Successfully created new Organization")
+    //   console.log(allValues, "allValues")
+    //   dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails })).then((res: any) => {
+    //     setOpen(true)
+    //     setLogo(allValues.organizationLogo);
+    //     karomanageWelcomeMail(allValues.organizationName, allValues.organizationEmail)
+    //     setAllValues({
+    //       organizationId: ``,
+    //       organizationName: "",
+    //       organizationDetails: "",
+    //       organizationCategoryId: "",
+    //       organizationCategoryName: "",
+    //       temporaryId: '',
+    //       organizationPhoneNumber: '',
+    //       organizationEmail: '',
+    //       organizationAddress: '',
+    //       organizationLogo: ''
+    //     })
+    //     setCourseDetails({
+    //       ...courseDetails, "courseDescription": '',
+    //       "courseFee": 0,
+    //       "courseName": '',
+    //       "courseFeeDescription": "",
+    //       "maxPaymentInstallment": 0,
+    //     })
+    //     if (refreshCall) {
+    //       refreshCall(customerDetails.customerId);
+    //     }
+    //   });
+    //   handleClick();
+    // }
+    // else {
+    //   setEmailValidator("In ")
+    //   setOpen(true)
 
-      // setNext(false)
-    }
+    //   // setNext(false)
+    // }
+    const handleRegistration = async () => {
+      try {
+        const res = await organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails });
+        console.log("myRes",res)
+        setOpen(true);
+        console.log(res);
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+    // Call the function
+    handleRegistration();
+
   }
 
   useEffect(() => {
@@ -394,21 +416,36 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   }, [allValues.temporaryId, mainId, allValues.organizationName.split("-").length])
 
 
-  useEffect(() => {
-    dispatch(organizationDetails(customerDetails.customerId)).then((res: any) => {
-      if (res.payload.data) {
-        setCategoryList(res.payload.data.organizations.organizationCategory)
+//   useEffect(() => {
+
+//     dispatch(organizationDetails(customerDetails.customerId)).then((res: any) => {
+//       if (res.payload.data) {
+//         setCategoryList(res.payload.data.organizations.organizationCategory)
+//       }
+
+// }, [customerDetails, customerDetails.customerId, dispatch])
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await organizationDetails(customerDetails.customerId);
+      if (res && res.data) {
+        setCategoryList(res.data.organizations.organizationCategory);
       }
-    });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  fetchData();
+}, [customerDetails, customerDetails.customerId]);
 
-
-  }, [customerDetails, customerDetails.customerId, dispatch])
 
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
+
           <Fragment>
 
             <AccordionDetails>
@@ -834,6 +871,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
         </Snackbar>
       </Grid>
     </>
+
   )
 }
 

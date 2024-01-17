@@ -111,6 +111,7 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
     const id = allValues.organizationName.split(" ");
     const idLength = id.length
 
+
     for (let i = 0; i < idLength; i++) {
       if (id[i][0] === undefined) {
         continue;
@@ -196,35 +197,79 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
     })
   }
 
-  const formSubmit = () => {
+  // const formSubmit = () => {
 
-    if (allValues.organizationName && allValues.organizationId
-      && allValues.organizationPhoneNumber && allValues.organizationCategoryId) {
+  //   if (allValues.organizationName && allValues.organizationId
+  //     && allValues.organizationPhoneNumber && allValues.organizationCategoryId) {
 
-      dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: updateCourseDetails })).then((res: any) => {
-        setSnackbarColor(true)
+  //     dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: updateCourseDetails })).then((res: any) => {
+  //       setSnackbarColor(true)
+  //       setLogo(allValues.organizationLogo);
+
+  //       setCreateOrg(true)
+  //       setOpen({ open: true, mssg: `Organization created successfully` })
+  //       if (refreshCall) {
+  //         refreshCall(customerDetails.customerId);
+  //       }
+  //     });
+  //     handleClick();
+  //     setAllValues({
+  //       ...allValues, "organizationName": '',
+  //       "organizationCategoryId": '',
+  //       "organizationAddress": '',
+  //       "organizationEmail": '',
+  //       "temporaryId": '',
+  //       "organizationDetails": '',
+  //       "organizationPhoneNumber": '',
+  //     })
+
+  //   }
+
+  // }
+
+
+  const formSubmit = async () => {
+    if (
+      allValues.organizationName &&
+      allValues.organizationId &&
+      allValues.organizationPhoneNumber &&
+      allValues.organizationCategoryId
+    ) {
+      try {
+        const res = await organizationRegistration({
+          newOrganizationDetails: allValues,
+          id: customerDetails.customerId,
+          courseDetails: updateCourseDetails
+        });
+
+        setSnackbarColor(true);
         setLogo(allValues.organizationLogo);
+        setCreateOrg(true);
+        setOpen({ open: true, mssg: `Organization created successfully` });
 
-        setCreateOrg(true)
-        setOpen({ open: true, mssg: `Organization created successfully` })
         if (refreshCall) {
           refreshCall(customerDetails.customerId);
         }
-      });
+      } catch (error) {
+        console.error(error);
+
+      }
+
       handleClick();
+
       setAllValues({
-        ...allValues, "organizationName": '',
-        "organizationCategoryId": '',
-        "organizationAddress": '',
-        "organizationEmail": '',
-        "temporaryId": '',
-        "organizationDetails": '',
-        "organizationPhoneNumber": '',
-      })
-
+        ...allValues,
+        organizationName: '',
+        organizationCategoryId: '',
+        organizationAddress: '',
+        organizationEmail: '',
+        temporaryId: '',
+        organizationDetails: '',
+        organizationPhoneNumber: ''
+      });
     }
+  };
 
-  }
 
   useEffect(() => {
     if (allValues.organizationName) {
@@ -256,18 +301,39 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
     }
   }, [allValues])
 
+  // useEffect(() => {
+
+  //   dispatch(organizationDetails(customerDetails.customerId)).then((res: any) => {
+  //     if (res.payload.data) {
+  //       setCategoryList(res.payload.data.organizations.organizationCategory)
+  //     }
+  //   });
+  // }, [customerDetails, customerDetails.customerId, dispatch])
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await organizationDetails(customerDetails.customerId);
 
-    dispatch(organizationDetails(customerDetails.customerId)).then((res: any) => {
-      if (res.payload.data) {
-        setCategoryList(res.payload.data.organizations.organizationCategory)
+        if (response && response.data) {
+          console.log(response.data.organizations.organizationCategory,"resss")
+          setCategoryList(response.data.organizations.organizationCategory);
+        }
+      } catch (error) {
+        // Handle errors
+        console.error(error);
       }
-    });
-  }, [customerDetails, customerDetails.customerId, dispatch])
+    };
 
+    fetchData();
+
+  }, [customerDetails.customerId]);
 
 
   return (
+
+
+
     // <form onSubmit={e => e.preventDefault()}>
     // <Card elevation={0}>
     <form style={{ marginLeft: '50px' }}>
@@ -289,6 +355,7 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
                   label="Organization category"
                   onChange={orgCategoryHandler}
                 >
+
                   {categoryList && categoryList.length > 0 ? (
                     categoryList.map((organization: any, index: any) => (
                       <MenuItem key={index} value={`${organization.organizationCategoryId}%${organization.organizationCategoryName}`}>

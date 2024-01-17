@@ -68,8 +68,10 @@ const CardHorizontalRatings = () => {
   const handleClick = () => {
     // Perform any necessary actions before redirection
     // console.log('Card clicked');
-    router.push('./bookSlot/userDetail');
+    router.push('/bookSlot/meetingData');
   }
+
+
 
 
   return (
@@ -179,7 +181,7 @@ const CardHorizontalRatings = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button type='submit' variant='contained' size='large'>
+              <Button type='submit' variant='contained' size='large' onClick={handleClick}>
                 Schedule Event
               </Button>
             </Grid>
@@ -191,7 +193,7 @@ const CardHorizontalRatings = () => {
 
       </Grid>
       <Grid style={{width:"100%",display:"flex",justifyContent:"end"}}>
-    <Button variant='contained' onClick={handleClick} style={{margin:"20px"}}>NEXT</Button>
+    <Button variant='contained'  style={{margin:"20px"}}>NEXT</Button>
     </Grid>
     </Card>
   )

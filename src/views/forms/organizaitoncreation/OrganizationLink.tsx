@@ -49,7 +49,9 @@ export default function JoinUsingLink({ recall, setRecall }: any) {
   React.useEffect(() => {
     const data = localStorage.getItem('userDetails');
     if (data) {
-      setUserId(JSON.parse(data).payload.customerId)
+      // setUserId(JSON.parse(data).payload?.customerId)
+            setUserId(JSON.parse(data)?.customerId)
+
     }
   }, [])
 

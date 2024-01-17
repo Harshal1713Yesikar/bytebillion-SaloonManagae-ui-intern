@@ -192,6 +192,13 @@ const Home = () => {
     router.push('./bookSlot/booking');
   }
 
+  const [activeTable, setActiveTable] = useState<string | null>(null);
+
+  const showTable = (tableId: string) => {
+    setActiveTable(tableId);
+  };
+
+
   return (
     <>
       <Grid>
@@ -201,7 +208,7 @@ const Home = () => {
             <CardContent>
               {/* <Typography sx={{ color: 'black', fontSize: 23, fontWeight: '600' }}>Learn How To</Typography> */}
               <Typography style={container}>Learn How To</Typography>
-              <Typography sx={{ color: 'black', fontSize: 40, fontWeight: '900' }}>Get Started On Salonist</Typography>
+              <Typography sx={{ color: 'black', fontSize: 40, fontWeight: '900' }}>Get Started On scissortrack</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -425,12 +432,14 @@ const Home = () => {
         <Grid sx={{}}>
           <Card>
             <div style={{ margin: '30px' }}>
-              <button style={button1}>Quick Sale</button>
-              <button style={button2}>Appointments</button>
+            <Button variant='contained' onClick={() => showTable('table1')} sx={{gap:"10px",margin:"10px"}}>Quick Sale</Button>
+            <Button variant='contained' onClick={() => showTable('table2')}>Appointments</Button>
             </div>
           </Card>
 
-          <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '0'  }}>
+          {/* first table start */}
+
+          <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '0',display: activeTable === 'table1' ? 'block' : 'none'  }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
@@ -471,6 +480,52 @@ const Home = () => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Paper>
+
+        {/* second table start */}
+
+
+        <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '0',display: activeTable === 'table2' ? 'block' : 'none'  }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label='sticky table'>
+                <TableHead>
+                  <TableRow>
+                    {columns.map(column => (
+                      <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                        {column.label}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                    return (
+                      <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                        {columns.map(column => {
+                          const value = row[column.id]
+
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format && typeof value === 'number' ? column.format(value) : value}
+                            </TableCell>
+                          )
+                        })}
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component='div'
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+
         </Grid>
       </Grid>
     </>
