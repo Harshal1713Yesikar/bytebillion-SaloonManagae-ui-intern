@@ -1,9 +1,11 @@
-import { Box, Button, Card, FormControl, Grid, InputLabel, Menu, MenuItem, TextField } from '@mui/material'
+import { Box, Button, Card, Dialog, FormControl, Grid, InputLabel, Menu, MenuItem, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ProductTableFront from 'src/views/table/productTable/productTableFront';
+import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
+import { useRouter } from 'next/router';
 
 const Index = () => {
   // ** State
@@ -59,6 +61,26 @@ const Index = () => {
 
   const handleCloseAssign = () => {
     setAnchorDl(null)
+  }
+
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const router = useRouter();
+  const handleInventory = () => {
+    router.push('../products/inventoryReturn');
+  }
+
+  const routers = useRouter();
+  const handleReturnOrder = () => {
+    routers.push('../products/returnOrder');
   }
 
   return (
@@ -161,14 +183,16 @@ const Index = () => {
       </Card>
       <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: '10px' }}>
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }} >
-          <Button sx={{ mr: 2 }} variant='contained'>Add Product</Button>
+          <Button sx={{ mr: 2 }} variant='contained' onClick={handleOpenDialog}>
+            Add Product
+          </Button>
           <Button sx={{ mr: 2, width: '180px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleReturn} endIcon={<ArrowDropDownIcon />} >
             Return Order
           </Button>
           <Grid>
             <Menu keepMounted id='simple-menu' anchorEl={anchorAl} onClose={handleCloseReturn} open={Boolean(anchorAl)}>
-              <MenuItem onClick={handleCloseEdit}>Inventory Return</MenuItem>
-              <MenuItem onClick={handleCloseReturn}>Return Order</MenuItem>
+              <MenuItem onClick={handleInventory}>Inventory Return</MenuItem>
+              <MenuItem onClick={handleReturnOrder}>Return Order</MenuItem>
             </Menu>
           </Grid>
         </Box>
@@ -184,7 +208,7 @@ const Index = () => {
           </Grid>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }} >
-          <Button sx={{ mr: 2, width: '100px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleAssign} endIcon={<ArrowDropDownIcon />}>
+          <Button sx={{ mr: 2, width: '80px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleAssign} endIcon={<ArrowDropDownIcon />}>
             Edit
           </Button>
           <Grid>
@@ -199,7 +223,7 @@ const Index = () => {
           </Grid>
         </Box>
         <Box sx={{ marginTop: "10px" }} >
-          <Button sx={{ width: '210px', m: 0 }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleEdit} endIcon={<ArrowDropDownIcon />}>
+          <Button sx={{ width: '205px', m: 0 }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleEdit} endIcon={<ArrowDropDownIcon />}>
             Assign Products
           </Button>
           <Grid>
@@ -210,6 +234,9 @@ const Index = () => {
           </Grid>
         </Box>
       </Grid>
+      <Dialog maxWidth="md" open={isDialogOpen} onClose={handleCloseDialog}>
+        < AddProductPop />
+      </Dialog >
       <Card>
         <ProductTableFront />
         <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
