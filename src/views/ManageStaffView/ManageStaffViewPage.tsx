@@ -65,7 +65,7 @@ const ManageStaffViewPage = () => {
           <Tabs
             value={value}
             variant="scrollable"
-            scrollButtons
+
             onChange={handleChange}
             allowScrollButtonsMobile
             aria-label="scrollable auto tabs example"
