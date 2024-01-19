@@ -209,7 +209,7 @@ const Index = () => {
                   labelId="demo-select-small-label"
                   id="demo-select-small"
                   value={age}
-                  label="points"
+                  label="Select Reward Points"
                   onChange={handleChange}
                 >
                   <MenuItem value="">

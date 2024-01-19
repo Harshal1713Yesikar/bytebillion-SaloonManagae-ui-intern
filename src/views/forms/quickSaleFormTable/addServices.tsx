@@ -71,7 +71,7 @@ const Index = ({ onRemove }: { index: number; onRemove: () => void }) => {
     <>
       <Grid style={{ display: "flex", backgroundColor: "rgb(236, 238, 242)", padding: "10px" }}>
         <Grid style={{ display: "flex", flexDirection: "column" }}>
-          <Typography sx={{ ml: 1 }} >Product</Typography>
+          <Typography sx={{ ml: 1 }} >Services</Typography>
           <FormControl sx={{ m: 1, minWidth: 160 }} size='small'>
             <InputLabel id='demo-select-small-label'>Select Services</InputLabel>
             <Select

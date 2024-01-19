@@ -1,194 +1,71 @@
-import { Box, Card, FormControl, Grid, InputAdornment, InputLabel, MenuItem, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { Button, Card, FormControl, Grid, MenuItem, TextField, Typography } from '@mui/material'
+import React from 'react'
 import CloseIcon from '@mui/icons-material/Close';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import AddIcon from '@mui/icons-material/Add';
 
-const AddProductPop = () => {
-  const [Brand, setBrand] = useState('');
-  const [productType, setProductType] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [retail, setRetail] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
+const Index = () => {
+  const [selectProduct, setSelectProduct] = React.useState('');
+  const [selectRetail, setSelectRetail] = React.useState('');
 
-  const handleBrand = (event: SelectChangeEvent) => {
-    setBrand(event.target.value);
+  const handleSelectProduct = (event: SelectChangeEvent) => {
+    setSelectProduct(event.target.value);
   };
 
-  const handleProductType = (event: SelectChangeEvent) => {
-    setProductType(event.target.value);
+  const handleSelectRetail = (event: SelectChangeEvent) => {
+    setSelectRetail(event.target.value);
   };
-
-  const handleVendor = (event: SelectChangeEvent) => {
-    setVendor(event.target.value);
-  };
-
-  const handleRetail = (event: SelectChangeEvent) => {
-    setRetail(event.target.value);
-  };
-
-  const handleFileChange = (event: any) => {
-    // Handle file selection here
-    setSelectedFile(event.target.files[0]);
-  };
-
-
 
   return (
     <>
-      <Card sx={{ width: '65%', p: 3 }}>
-        <Grid sx={{ display: 'flex' }}>
-          <Box sx={{ m: 2 }}><CloseIcon /></Box>
-          <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Add Product</Typography>
-        </Grid>
-        <Grid>
-          <TextField sx={{ width: '25ch', m: 1 }} id='outlined-basic' label='Product Name' size='small' />
-          <TextField sx={{ width: '25ch', m: 1 }} id='outlined-basic' label='Barcode' size='small' />
-        </Grid>
-        <Grid>
-          <TextField
-            size='small'
-            placeholder="Cost Price"
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: '25ch' }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
-            }}
-          />
-          <TextField
-            size='small'
-            placeholder='Full Price'
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: '25ch' }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
-            }}
-          />
-          <TextField
-            size='small'
-            placeholder="Sell Price"
-            id="outlined-start-adornment"
-            sx={{ m: 1, width: '25ch' }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
-            }}
-          />
-        </Grid>
-        <Box>
-          <TextField
-            id="outlined-multiline-static"
-            label="Description"
-            multiline
-            rows={3}
-            sx={{ width: '77ch', m: 1 }}
-          />
-        </Box>
+      <Card sx={{ width: '70%' }}>
+        <Grid sx={{ p: 5, pb: 2 }}>
+          <Grid sx={{ display: 'flex', alignItems: 'center', mb: 10 }}>
+            <CloseIcon sx={{ fontSize: '25px', cursor: 'pointer', mr: 3 }} />
+            <Typography sx={{ fontSize: '22px', fontWeight: '600' }}>Add Product Request</Typography>
+          </Grid>
+          <Grid sx={{ display: 'flex' }}>
+            <FormControl sx={{ m: 1, minWidth: 300 }} size='small'>
+              <Select
+                value={selectProduct}
+                onChange={handleSelectProduct}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value="">
+                  <em style={{ fontStyle: 'normal' }}>Select Product</em>
+                </MenuItem>
+                <MenuItem value={10}>Hair Gel</MenuItem>
+                <MenuItem value={20}>Lipstic</MenuItem>
+                <MenuItem value={30}>Test</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField sx={{ m: 1 }} size='small' id='outlined-basic' label='Quantity' />
+            <FormControl sx={{ m: 1, minWidth: 300 }} size='small'>
+              <Select
+                value={selectRetail}
+                onChange={handleSelectRetail}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value="">
+                  <em style={{ fontStyle: 'normal' }}>Retail</em>
+                </MenuItem>
+                <MenuItem value={10}>In House</MenuItem>
 
-        <Grid sx={{ display: 'flex', m: 1 }}>
-          <FormControl sx={{ mr: 2, width: '25ch' }} size="small">
-            <InputLabel id="demo-select-small-label">Select Brand</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              size='small'
-              value={Brand}
-              label="Select Brand"
-              onChange={handleBrand}
-            >
-              <MenuItem value="">
-                <em>Select Brand</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ mr: 2, width: '25ch' }} size="small">
-            <InputLabel id="demo-select-small-label">Select Product Type</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              size='small'
-              value={productType}
-              label="Select Product Type"
-              onChange={handleProductType}
-            >
-              <MenuItem value="">
-                <em>Select Product Type</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ mr: 2, width: '25ch' }} size="small">
-            <InputLabel id="demo-select-small-label">Select Vendor</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              size='small'
-              value={vendor}
-              label="Select Vendor"
-              onChange={handleVendor}
-            >
-              <MenuItem value="">
-                <em>Select Product Type</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
-        <Grid sx={{ m: 1, width: '25ch' }}>
-          <TextField
-            type="file"
-            value={selectedFile}
-            onChange={handleFileChange}
-            inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
-          />
+        <Grid sx={{ display: 'flex', justifyContent: 'flex-end', pr: 5, borderBottom: '1px solid lightGray', pb: 4 }}>
+          <Button sx={{ width: '140px', textTransform: 'none', fontSize: '15px' }} variant='contained'><AddIcon sx={{ mr: 1 }} /> Add More</Button>
         </Grid>
-        <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Stock Control</Typography>
-        <Typography sx={{ backgroundColor: 'rgb(238, 238, 238)', m: 1, p: 1 }}>List the available in stock quantities for the products. Also set a minimum quantity level <br /> and get alerts when the stock is less.</Typography>
-        <Grid>
-          <TextField
-            size='small'
-            placeholder="In Stock Quantity"
-            id='outlined-basic'
-            sx={{ m: 1, width: '25ch' }}
-          />
-          <TextField
-            size='small'
-            placeholder="Quantity Alert"
-            id='outlined-basic'
-            sx={{ m: 1, width: '25ch' }}
-          />
+        <Grid sx={{ display: 'flex', justifyContent: 'flex-end', p: 5 }}>
+          <Button variant='contained'>Save</Button>
         </Grid>
-        <Grid>
-          <FormControl sx={{ m: 1, width: '37.5ch' }} size="small">
-            <InputLabel id="demo-select-small-label">Retail</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              size='small'
-              value={retail}
-              onChange={handleRetail}
-            >
-              <MenuItem value="">
-                <em>Retail</em>
-              </MenuItem>
-              <MenuItem value={10}>In House</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            size='small'
-            placeholder="Product Usage"
-            id='outlined-basic'
-            sx={{ m: 1, width: '37.5ch' }}
-          />
-        </Grid>
-      </Card >
+      </Card>
     </>
   )
 }
 
-export default AddProductPop
+export default Index

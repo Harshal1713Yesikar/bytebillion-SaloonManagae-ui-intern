@@ -73,14 +73,20 @@ const Index = () => {
     setDialogOpen(false);
   };
 
-  const router = useRouter();
+  const inventory = useRouter();
   const handleInventory = () => {
-    router.push('../products/inventoryReturn');
+    inventory.push('../products/inventoryReturn');
   }
 
-  const routers = useRouter();
+  const returnOrder = useRouter();
   const handleReturnOrder = () => {
-    routers.push('../products/returnOrder');
+    returnOrder.push('../products/returnOrder');
+  }
+
+
+  const productOrder = useRouter();
+  const handleProductOrder = () => {
+    productOrder.push('../products/productOrder');
   }
 
   return (
@@ -202,7 +208,7 @@ const Index = () => {
           </Button>
           <Grid >
             <Menu keepMounted id='simple-menu' anchorEl={productBl} onClose={handleCloseProduct} open={Boolean(productBl)} sx={{}}>
-              <MenuItem onClick={handleCloseEdit}>Create New</MenuItem>
+              <MenuItem onClick={handleProductOrder}>Create New</MenuItem>
               <MenuItem onClick={handleCloseProduct}>View Orders</MenuItem>
             </Menu>
           </Grid>
@@ -234,7 +240,7 @@ const Index = () => {
           </Grid>
         </Box>
       </Grid>
-      <Dialog maxWidth="md" open={isDialogOpen} onClose={handleCloseDialog}>
+      <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpen} onClose={handleCloseDialog}>
         < AddProductPop />
       </Dialog >
       <Card>
