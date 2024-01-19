@@ -15,9 +15,6 @@ const AddProductRequestMore = ({ onRemove }: { index: number; onRemove: () => vo
     setSelectRetailAdd(event.target.value);
   };
 
-
-
-
   return (
     <>
       <Grid sx={{ display: 'flex' }}>
