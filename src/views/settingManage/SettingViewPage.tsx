@@ -1,3 +1,7 @@
+// eslint-disable-next-line lines-around-comment
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// Ignore lines-around-comment for the next line
+
 import {
   Box,
   Button,

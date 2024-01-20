@@ -2,9 +2,6 @@
 import React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import timeGridPlugin from '@fullcalendar/timegrid'
 // import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import '@fullcalendar/daygrid/main.css'
 import { Card, Grid } from '@mui/material'
@@ -43,10 +40,6 @@ const Calendar = () => {
           <FullCalendar
             displayEventTime={true}
             selectable={true}
-            plugins={[dayGridPlugin]}
-            eventClick={event => {
-              console.log(event.event._def.publicId)
-            }}
           />
         </div>
       </Card>

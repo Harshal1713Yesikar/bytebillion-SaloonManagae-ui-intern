@@ -28,8 +28,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { loadCSS } from 'fg-loadcss';
-import Icon from '@mui/material/Icon';
 
 interface StatusObj {
   [key: number]: {
@@ -171,19 +169,6 @@ const Index = () => {
     setAge(event.target.value);
   };
 
-  useEffect(() => {
-    const node = loadCSS(
-      'https://use.fontawesome.com/releases/v5.14.0/css/all.css',
-
-      // Inject before JSS
-      document.querySelector('#font-awesome-css') || document.head.firstChild,
-    );
-
-    return () => {
-      node.parentNode!.removeChild(node);
-    };
-  }, []);
-
 
   return (
     <Card>
@@ -192,7 +177,6 @@ const Index = () => {
           <CardHeader style={{ padding: "0px" }} title='Quick Filter' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
       </Grid>
       <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
         <Grid style={{ display: 'flex', flexDirection: "column" }}>
