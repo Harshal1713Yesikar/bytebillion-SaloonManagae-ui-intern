@@ -449,3 +449,8 @@ input[type='number']::-webkit-outer-spin-button {
 
 
 
+
+.custom-popper .css-1mernxm-MuiTableBody-root .MuiTableCell-body{
+ height: 50px;
+ overflow: auto;
+}

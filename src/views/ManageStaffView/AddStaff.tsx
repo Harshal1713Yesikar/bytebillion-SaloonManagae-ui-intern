@@ -222,7 +222,11 @@ const CreateStaff = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const onSubmit = () => toast.success('Form Submitted')
+  // const onSubmit = () => toast.success('Form Submitted')
+  const onSubmit = (data:any) => {
+    console.log('Form Data', data);
+    toast.success('Form Submitted');
+  }
 
   const [checked, setChecked] = useState(true)
 
@@ -624,7 +628,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                <Box sx={{ display: 'flex' }}>
+                {/* <Box sx={{ display: 'flex' }}>
                   <FormControl sx={{ m: 3 }} component='fieldset' variant='standard'>
                     <FormLabel component='legend'>Payoll Calculating Setting </FormLabel>
                     <FormGroup>
@@ -652,9 +656,9 @@ const CreateStaff = () => {
                       />
                     </FormGroup>
                   </FormControl>
-                </Box>
+                </Box> */}
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained'>
+                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}>
                     Submit
                   </Button>
                 </Grid>
