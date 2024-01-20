@@ -146,15 +146,15 @@ const Index = () => {
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+              <DatePicker<Date>
                 value={null}
                 onChange={(date: Date | null) => console.log(date)}
                 sx={{ padding: '10px', marginLeft: '270px', paddingRight: '0' }}
                 renderInput={(startProps: any, endProps: any) => (
-                  <>
+                  <div>
                     <TextField {...startProps} variant='standard' helperText='' placeholder='Batch Start Date' />
                     <TextField {...endProps} variant='standard' helperText='' placeholder='Batch End Date' />
-                  </>
+                  </div>
                 )}
                 inputFormat='dd/MM/yyyy'
                 autoComplete='off'

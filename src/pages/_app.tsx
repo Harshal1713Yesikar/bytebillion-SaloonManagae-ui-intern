@@ -61,7 +61,6 @@ import '../../styles/globals.css'
 
 import { msalConfig } from 'src/config/authConfig'
 import { PublicClientApplication } from "@azure/msal-browser";
-import AuthIllustrationWrapper from 'src/views/pages/auth/AuthIllustrationWrapper'
 
 
 

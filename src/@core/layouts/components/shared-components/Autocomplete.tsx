@@ -17,8 +17,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import SearchBar from "material-ui-search-bar";
-import { getStudentBasicInfo } from 'src/store/APIs/Api'
 import DialogTitle from '@mui/material/DialogTitle'
 import { InputAdornment, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear';
@@ -97,7 +95,7 @@ const AutocompleteComponent = ({ hidden, settings }: Props) => {
 
     const userDetails = localStorage.getItem('organization')
     if (userDetails) {
-      const response = await getStudentBasicInfo(JSON.parse(userDetails).customerId, JSON.parse(userDetails).organizationId)
+      const response = await (JSON.parse(userDetails).customerId, JSON.parse(userDetails).organizationId)
       if (response?.statusCode == 200) {
         setDefaultList(response.data)
         setStudentBasicInfo(response.data)

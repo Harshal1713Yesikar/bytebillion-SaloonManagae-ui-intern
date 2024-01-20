@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState, MouseEvent } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -29,7 +29,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { loadCSS } from 'fg-loadcss';
 import { useRouter } from 'next/router'
 import PrintIcon from '@mui/icons-material/Print';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -175,18 +174,7 @@ const Index = () => {
     setAge(event.target.value);
   };
 
-  useEffect(() => {
-    const node = loadCSS(
-      'https://use.fontawesome.com/releases/v5.14.0/css/all.css',
 
-      // Inject before JSS
-      document.querySelector('#font-awesome-css') || document.head.firstChild,
-    );
-
-    return () => {
-      node.parentNode!.removeChild(node);
-    };
-  }, []);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 

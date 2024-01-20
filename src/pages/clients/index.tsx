@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState, useEffect, MouseEvent } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -27,7 +27,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { loadCSS } from 'fg-loadcss';
 import Icon from '@mui/material/Icon';
 import { useRouter } from 'next/router'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -184,18 +183,7 @@ const Index = () => {
   }
 
 
-  useEffect(() => {
-    const node = loadCSS(
-      'https://use.fontawesome.com/releases/v5.14.0/css/all.css',
 
-      // Inject before JSS
-      document.querySelector('#font-awesome-css') || document.head.firstChild,
-    );
-
-    return () => {
-      node.parentNode!.removeChild(node);
-    };
-  }, []);
 
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -256,12 +244,7 @@ const Index = () => {
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
         <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
-          <Icon
-            baseClassName="fas"
-            className="fa-plus-circle"
-            sx={{ fontSize: 40, color: 'black', cursor: 'pointer' }}
-            onClick={openModal}
-          />
+          <Button onClick={openModal} variant='contained' >add</Button>
         </Grid>
 
         <Dialog open={isModalOpen} onClose={closeModal}>
