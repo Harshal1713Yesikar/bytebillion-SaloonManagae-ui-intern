@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -18,9 +18,10 @@ import QuickSearchToolbar from 'src/views/table/TableFilter'
 import { ThemeColor } from 'src/@core/layouts/types'
 import { DataGridRowType } from 'src/@fake-db/types'
 
+
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Container, Grid } from '@mui/material'
+import { Button, Container, Grid, Icon } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -29,7 +30,6 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { loadCSS } from 'fg-loadcss';
-import Icon from '@mui/material/Icon';
 
 interface StatusObj {
   [key: number]: {
@@ -189,10 +189,10 @@ const Index = () => {
     <Card>
       <Grid style={{ display: 'flex' }}>
         <Grid style={{ marginLeft: "20px", padding: "10px" }}>
-          <CardHeader style={{ padding: "0px" }} title='Quick Filter' />
+          <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
+        <Icon style={{ display: "flex", justifyContent: "center" }} baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 30, color: "black" }} />
       </Grid>
       <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
         <Grid style={{ display: 'flex', flexDirection: "column" }}>
