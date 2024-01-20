@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { Fragment } from 'react'
+import SettingsViewPage from 'src/views/settingManage/SettingViewPage'
 
- const Settings = () => {
+const index = () => {
   return (
-    <div>Settings</div>
+    <Fragment> 
+      <SettingsViewPage/>
+    </Fragment>
   )
 }
 
-export default Settings;
+export default index

@@ -1,266 +1,284 @@
+// ** React Imports
+import { ChangeEvent, useState, useEffect } from 'react'
+
 // ** MUI Imports
-import Drawer from '@mui/material/Drawer'
-import Button from '@mui/material/Button'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import { styled } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
-import Box, { BoxProps } from '@mui/material/Box'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
-import FormControl from '@mui/material/FormControl'
-import FormHelperText from '@mui/material/FormHelperText'
+import CardHeader from '@mui/material/CardHeader'
+import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 
-// ** Third Party Imports
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm, Controller } from 'react-hook-form'
+// ** Custom Components
+import CustomChip from 'src/@core/components/mui/chip'
+import CustomAvatar from 'src/@core/components/mui/avatar'
 
-// ** Icon Imports
-import Icon from 'src/@core/components/icon'
+import QuickSearchToolbar from 'src/views/table/TableFilter'
 
-// ** Types
-import { InvoiceClientType } from 'src/types/apps/invoiceTypes'
-import { Grid } from '@mui/material'
+// ** Types Imports
+import { ThemeColor } from 'src/@core/layouts/types'
+import { DataGridRowType } from 'src/@fake-db/types'
 
-interface Props {
-  open: boolean
-  toggle: () => void
-  clients: InvoiceClientType[] | undefined
-  setClients: (val: InvoiceClientType[]) => void
-  setSelectedClient: (val: InvoiceClientType) => void
+// ** Utils Import
+import { getInitials } from 'src/@core/utils/get-initials'
+import { Button, Container, Grid } from '@mui/material'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+interface StatusObj {
+  [key: number]: {
+    title: string
+    color: ThemeColor
+  }
 }
 
-interface FormData {
-  name: string
-  email: string
-  company: string
-  address: string
-  country: string
-  contact: string
+// ** renders client column
+const renderClient = (params: GridRenderCellParams) => {
+  const { row } = params
+  const stateNum = Math.floor(Math.random() * 6)
+  const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
+  const color = states[stateNum]
+
+  if (row.avatar.length) {
+    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+  } else {
+    return (
+      <CustomAvatar
+        skin='light'
+        color={color as ThemeColor}
+        sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
+      >
+        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+      </CustomAvatar>
+    )
+  }
 }
 
-const Header = styled(Box)<BoxProps>(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(6),
-  justifyContent: 'space-between',
-  paddingBottom: theme.spacing(2.25)
-}))
+const statusObj: StatusObj = {
+  1: { title: 'current', color: 'primary' },
+  2: { title: 'professional', color: 'success' },
+  3: { title: 'rejected', color: 'error' },
+  4: { title: 'resigned', color: 'warning' },
+  5: { title: 'applied', color: 'info' }
+}
 
-const schema = yup.object().shape({
-  name: yup.string().required(),
-  email: yup.string().email().required(),
-  company: yup.string().required(),
-  contact: yup.string().min(10).max(10).required(),
-  address: yup.string().max(120).required()
-})
+const escapeRegExp = (value: string) => {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
 
-const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }: Props) => {
-  const {
-    reset,
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: { name: '', email: '', company: '', address: '', country: 'USA', contact: '' }
-  })
+const columns: GridColumns = [
+  {
+    flex: 0.275,
+    minWidth: 290,
+    field: 'full_name',
+    headerName: 'Name',
+    renderCell: (params: GridRenderCellParams) => {
+      const { row } = params
 
-  const onSubmit = (data: FormData) => {
-    const { address, company, contact, country, email, name } = data
-    const finalData = {
-      name,
-      country,
-      contact,
-      company,
-      address,
-      companyEmail: email
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {renderClient(params)}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+              {row.full_name}
+            </Typography>
+            <Typography noWrap variant='caption'>
+              {row.email}
+            </Typography>
+          </Box>
+        </Box>
+      )
     }
-    if (clients !== undefined) {
-      setClients([...clients, finalData])
-    }
-    setSelectedClient(finalData)
+  },
+  {
+    flex: 0.2,
+    minWidth: 120,
+    headerName: 'Date',
+    field: 'start_date',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.start_date}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 110,
+    field: 'salary',
+    headerName: 'Salary',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.salary}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.125,
+    field: 'age',
+    minWidth: 80,
+    headerName: 'Age',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.age}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 140,
+    field: 'status',
+    headerName: 'Status',
+    renderCell: (params: GridRenderCellParams) => {
+      const status = statusObj[params.row.status]
 
-    toggle()
-    reset({ name: '', email: '', company: '', address: '', country: 'USA', contact: '' })
+      return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
+    }
+  }
+]
+
+const Index = () => {
+  // ** States
+  const [data] = useState<DataGridRowType[]>([])
+  const [pageSize, setPageSize] = useState<number>(7)
+  const [searchText, setSearchText] = useState<string>('')
+  const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
+
+  const handleSearch = (searchValue: string) => {
+    setSearchText(searchValue)
+    const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
+    const filteredRows = data.filter(row => {
+      return Object.keys(row).some(field => {
+        // @ts-ignore
+        return searchRegex.test(row[field].toString())
+      })
+    })
+    if (searchValue.length) {
+      setFilteredData(filteredRows)
+    } else {
+      setFilteredData([])
+    }
   }
 
-  const handleDrawerClose = () => {
-    toggle()
-    reset({ name: '', email: '', company: '', address: '', country: 'USA', contact: '' })
-  }
+  const [age, setAge] = useState('');
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value);
+  };
+
 
   return (
-    <Grid
-      open={open}
-      anchor='right'
-      variant='temporary'
-      onClose={handleDrawerClose}
-      ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: [300, 400] } }}
-    >
-      <Header>
-        <Typography variant='h6' sx={{ fontSize: '1.125rem !important' }}>
-          Add New Customer
-        </Typography>
-        <IconButton size='small' onClick={toggle} sx={{ color: 'text.primary' }}>
-          <Icon icon='bx:x' fontSize={20} />
-        </IconButton>
-      </Header>
-      <Box component='form' sx={{ p: 5 }} onSubmit={handleSubmit(onSubmit)}>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <Controller
-            name='name'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                label='Name'
-                value={value}
-                variant='outlined'
-                onChange={onChange}
-                error={Boolean(errors.name)}
-              />
-            )}
+    <Card>
+      <Grid style={{ display: 'flex' }}>
+        <Grid style={{ marginLeft: "20px", padding: "10px" }}>
+          <CardHeader style={{ padding: "0px" }} title='Quick Filter' />
+          <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
+        </Grid>
+      </Grid>
+      <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
+        <Grid style={{ display: 'flex', flexDirection: "column" }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <Typography>Date</Typography>
+            <DatePicker
+              label="From"
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  style: { width: '150px' }
+                }
+              }}
+            />
+          </LocalizationProvider>
+        </Grid>
+        <LocalizationProvider dateAdapter={AdapterDayjs} >
+          <DatePicker
+            label="To"
+            slotProps={{
+              textField: {
+                size: 'small',
+                style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
+              }
+            }}
           />
-          {errors.name && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-name-error'>
-              {errors.name.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <Controller
-            name='company'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                value={value}
-                label='Company'
-                variant='outlined'
-                onChange={onChange}
-                error={Boolean(errors.company)}
-              />
-            )}
-          />
-          {errors.company && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-company-error'>
-              {errors.company.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <Controller
-            name='email'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                type='email'
-                label='Email'
-                value={value}
-                variant='outlined'
-                onChange={onChange}
-                error={Boolean(errors.email)}
-              />
-            )}
-          />
-          {errors.email && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-email-error'>
-              {errors.email.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <Controller
-            name='address'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                rows={6}
-                multiline
-                value={value}
-                label='Address'
-                variant='outlined'
-                onChange={onChange}
-                error={Boolean(errors.address)}
-                placeholder='1037 Lady Bug  Drive New York'
-              />
-            )}
-          />
-          {errors.address && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-address-error'>
-              {errors.address.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <InputLabel id='invoice-country'>Country</InputLabel>
+        </LocalizationProvider>
+        <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
+          <Typography>Client Type</Typography>
+          <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
+            <InputLabel id="demo-select-small-label">All Clients</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={age}
+              label="All Clients"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
+          <Button variant='contained' >
+            Search
+          </Button>
+        </Grid>
+        <Box>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel id="demo-select-small-label">Action</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={age}
+              label="Age"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Container>
+      <DataGrid
+        autoHeight
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[7, 10, 25, 50]}
 
-          <Controller
-            name='country'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <Select
-                label='Country'
-                value={value}
-                onChange={onChange}
-                labelId='invoice-country'
-                error={Boolean(errors.country)}
-              >
-                <MenuItem value='USA'>USA</MenuItem>
-                <MenuItem value='UK'>UK</MenuItem>
-                <MenuItem value='Russia'>Russia</MenuItem>
-                <MenuItem value='Australia'>Australia</MenuItem>
-                <MenuItem value='Canada'>Canada</MenuItem>
-              </Select>
-            )}
-          />
-          {errors.country && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-country-error'>
-              {errors.country.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <Controller
-            name='contact'
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                type='number'
-                value={value}
-                variant='outlined'
-                onChange={onChange}
-                label='Contact Number'
-                placeholder='763-242-9206'
-                error={Boolean(errors.contact)}
-              />
-            )}
-          />
-          {errors.contact && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-contact-error'>
-              {errors.contact.message}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <div>
-          <Button size='large' type='submit' variant='contained' sx={{ mr: 4 }}>
-            Add
-          </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={handleDrawerClose}>
-            Cancel
-          </Button>
-        </div>
-      </Box>
-    </Grid>
+        components={{ Toolbar: QuickSearchToolbar }}
+        rows={filteredData.length ? filteredData : data}
+        onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+        componentsProps={{
+          baseButton: {
+            variant: 'outlined'
+          },
+          toolbar: {
+            value: searchText,
+            clearSearch: () => handleSearch(''),
+            onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+          }
+        }}
+      />
+      <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
+        <Button variant='outlined' >
+          Previous
+        </Button>
+        <Button variant='contained' >
+          Next
+        </Button>
+      </Grid>
+    </Card>
   )
 }
 
-export default AddNewCustomer
+export default Index

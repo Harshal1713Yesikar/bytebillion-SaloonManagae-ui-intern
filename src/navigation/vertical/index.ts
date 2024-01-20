@@ -72,7 +72,8 @@ const navigation = (): VerticalNavItemsType => {
       subject: 'acl-page',
       title: 'Settings',
       icon: 'material-symbols:settings',
-    }
+    },
+   
   ]
 }
 

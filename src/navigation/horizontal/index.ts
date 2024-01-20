@@ -77,6 +77,13 @@ const navigation = (): HorizontalNavItemsType => [
     subject: 'acl-page',
     title: 'Settings',
     icon: 'bx:shield',
+  },
+  {
+    path: '/dashboard',
+    action: 'read',
+    subject: 'acl-page',
+    title: 'Settings',
+    icon: 'bx:shield',
   }
 ] 
 export default navigation
