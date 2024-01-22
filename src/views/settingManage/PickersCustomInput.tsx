@@ -9,12 +9,12 @@ interface PickerProps {
   readOnly?: boolean
 }
 
-const PickersComponent = forwardRef(({ ...props }: any, ref) => {
+const PickersComponent = forwardRef(({ ...props }: PickerProps, ref) => {
   // ** Props
   const { label, readOnly } = props
 
   return (
-    <TextField fullWidth inputRef={ref} {...props} label={label || ''} {...(readOnly && { inputProps: { readOnly: true } })} />
+    <TextField inputRef={ref} {...props} label={label || ''} {...(readOnly && { inputProps: { readOnly: true } })} />
   )
 })
 

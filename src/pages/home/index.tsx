@@ -1,7 +1,7 @@
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import { Box, StyledEngineProvider, colors } from '@mui/material'
+import { Box, Button, StyledEngineProvider, colors } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
@@ -12,6 +12,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
@@ -29,26 +30,54 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'name', label: 'Name', minWidth: 125 },
+  { id: 'code', label: 'Contact', minWidth: 125 },
   {
     id: 'population',
-    label: 'Population',
-    minWidth: 170,
+    label: 'Bill No.',
+    minWidth: 125,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
     id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
+    label: 'Services',
+    minWidth: 125,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
     id: 'density',
-    label: 'Density',
-    minWidth: 170,
+    label: 'Price/Paid/Balances',
+    minWidth: 125,
+    align: 'right',
+    format: (value: number) => value.toFixed(2),
+  },
+  {
+    id: 'density',
+    label: 'Date',
+    minWidth: 125,
+    align: 'right',
+    format: (value: number) => value.toFixed(2),
+  },
+  {
+    id: 'density',
+    label: 'Feedback & Rating',
+    minWidth: 125,
+    align: 'right',
+    format: (value: number) => value.toFixed(2),
+  },
+  {
+    id: 'density',
+    label: 'Status',
+    minWidth: 125,
+    align: 'right',
+    format: (value: number) => value.toFixed(2),
+  },
+  {
+    id: 'density',
+    label: 'Action',
+    minWidth: 125,
     align: 'right',
     format: (value: number) => value.toFixed(2),
   },
@@ -74,22 +103,23 @@ function createData(
 }
 
 const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
+  createData('Ravi', 'IN', 1324171354, 3287263),
+  createData('Arpit', 'CN', 1403500365, 9596961),
+  createData('Harshita', 'IT', 60483973, 301340),
+  createData('Jiganya', 'US', 327167434, 9833520),
+  createData('Mitali', 'CA', 37602103, 9984670),
+  createData('Harshal', 'AU', 25475400, 7692024),
+  createData('Raj', 'DE', 83019200, 357578),
+  createData('Jaya', 'IE', 4857000, 70273),
+  createData('Yash', 'MX', 126577691, 1972550),
+  createData('Vimal', 'JP', 126317000, 377973),
+  createData('Viadik', 'FR', 67022000, 640679),
+  createData('Ganesh', 'GB', 67545757, 242495),
+  createData('Kannha', 'RU', 146793744, 17098246),
+  createData('Narendra', 'NG', 200962417, 923768),
+  createData('Suwati', 'BR', 210147125, 8515767),
 ];
+
 
 const Home = () => {
   const container = {
@@ -115,20 +145,13 @@ const Home = () => {
     borderRadius: 9,
     backgroundColor: 'black',
     color: 'white'
-
-
-
   }
   const button2 = {
     height: 35,
     width: 120,
     borderRadius: 9,
     margin: 10,
-
-
   }
-
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -148,17 +171,17 @@ const Home = () => {
           <Card>
             <CardContent>
               {/* <Typography sx={{ color: 'black', fontSize: 23, fontWeight: '600' }}>Learn How To</Typography> */}
-              <Typography style={container}>Learn How To</Typography>
-              <Typography sx={{ color: 'black', fontSize: 40, fontWeight: '900' }}>Get Started On Salonist</Typography>
+              <Typography>Learn How To</Typography>
+              <Typography sx={{ color: 'black', fontSize: 40, fontWeight: '900' }}>Get Started On Scissortrack</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
           <div>
-            <button style={button}>+ Add Deshlets</button>
+            <Button style={{margin:"10px"}} variant="contained">+ Add Deshlets</Button>
           </div>
         </Grid>
-        <Grid container item gap={10} xs={40} mb={8}>
+        <Grid container item gap={10} xs={40} mb={10}>
           <Card style={box}>
             <CardHeader title={<Icon icon='mdi:cart-sale' />}></CardHeader>
             <CardContent>
@@ -209,18 +232,17 @@ const Home = () => {
           </Card>
         </Grid>
 
-        <Grid sx={{}}>
+        <Grid >
           <Card>
             <div style={{ margin: "30px" }}>
-              <button style={button1}>Quick Sale</button>
-              <button style={button2}>Appointments</button>
+
+              <Button style={{margin:"10px"}} variant="contained">Quick Sale</Button>
+              <Button  variant="contained">Appointments</Button>
             </div>
-
-
           </Card>
 
           <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "0" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ maxHeight: 570 }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
