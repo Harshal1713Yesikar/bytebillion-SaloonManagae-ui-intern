@@ -178,7 +178,7 @@ const AutocompleteComponent = ({ hidden, settings }: Props) => {
     return () => {
       router.events.off('routeChangeStart', handleRouteChange);
     };
-  }, [router]);
+  }, [defaultList, router]);
 
 
 

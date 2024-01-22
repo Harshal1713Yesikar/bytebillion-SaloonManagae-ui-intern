@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 // ** React Imports
 import { useState, forwardRef, SyntheticEvent, ForwardedRef, useEffect } from 'react'
 
@@ -46,6 +47,7 @@ interface PickerProps {
 
 interface Props {
   toggleAddCustomerDrawer: () => void
+  // eslint-disable-next-line @typescript-eslint/ban-types
   studentValues: Function
   collegeValues: Function
   coachingValues: Function

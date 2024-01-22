@@ -38,7 +38,7 @@
     "react-hooks/exhaustive-deps": [
       "warn",
       {
-        "additionalHooks": "handleClick,togglePermission,update,theme"
+        "additionalHooks": "useEffect,useCallback,useMemo,handleClick,togglePermission,update,theme"
       }
     ]
   },
@@ -74,6 +74,5 @@
         "react-hooks/exhaustive-deps": "off"
       }
     }
-    // Add more overrides as needed
   ]
 }

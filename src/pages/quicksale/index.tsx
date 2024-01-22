@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Card, Container, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Typography } from '@mui/material'
 import { useState } from 'react'
 import Button from '@mui/material/Button'
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers'
+import { LocalizationProvider, DatePicker, DatePickerProps } from '@mui/x-date-pickers'
 import { Grid, TextField, InputAdornment } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Select from '@mui/material/Select'
@@ -31,6 +31,10 @@ const rows = [
   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
   createData('Eclair', 262, 16.0, 24, 6.0),
 ]
+
+interface CustomDatePickerProps extends DatePickerProps<Date> {
+  renderInput: (startProps: any, endProps: any) => React.ReactElement;
+}
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -123,6 +127,13 @@ const Index = () => {
     router.push('./home');
   }
 
+  const renderInput = (startProps: any, endProps: any) => (
+    <div>
+      <TextField {...startProps} variant='standard' helperText='' placeholder='Batch Start Date' />
+      <TextField {...endProps} variant='standard' helperText='' placeholder='Batch End Date' />
+    </div>
+  );
+
 
   return (
     <>
@@ -146,22 +157,17 @@ const Index = () => {
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker<Date>
+              <DatePicker
                 value={null}
                 onChange={(date: Date | null) => console.log(date)}
                 sx={{ padding: '10px', marginLeft: '270px', paddingRight: '0' }}
-                renderInput={(startProps: any, endProps: any) => (
-                  <div>
-                    <TextField {...startProps} variant='standard' helperText='' placeholder='Batch Start Date' />
-                    <TextField {...endProps} variant='standard' helperText='' placeholder='Batch End Date' />
-                  </div>
-                )}
+                renderInput={renderInput}
                 inputFormat='dd/MM/yyyy'
                 autoComplete='off'
                 required
                 startText='Batch Start Date'
                 endText='Batch End Date'
-
+                {...(Index as any)}
               // Other props as needed
               />
             </LocalizationProvider>

@@ -1,24 +1,12 @@
 import { Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { loadCSS } from 'fg-loadcss';
+
 
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // import { Icon } from '@iconify/react';
 
 const ClientCustomerCreate = () => {
-  useEffect(() => {
-    const node = loadCSS(
-      'https://use.fontawesome.com/releases/v5.14.0/css/all.css',
-
-      // Inject before JSS
-      document.querySelector('#font-awesome-css') || document.head.firstChild,
-    );
-
-    return () => {
-      node.parentNode!.removeChild(node);
-    };
-  }, []);
 
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -69,7 +57,7 @@ const ClientCustomerCreate = () => {
           <Grid style={{ display: "flex", width: "100%", padding: "30px" }}>
             <Typography style={{ borderBottom: "2px solid lightGray", width: "100%", fontSize: "20px", fontWeight: "600", paddingBottom: "20px" }}>Customer Groups</Typography>
             <Grid style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, cursor: 'pointer' }} onClick={openClient} />
+              <Button sx={{ fontSize: 40, cursor: 'pointer' }} onClick={openClient}>create</Button>
             </Grid>
             <Dialog open={isModalOpen} onClose={closeClient}>
               <DialogTitle sx={{ width: "500px" }}>Add Client Group</DialogTitle>
