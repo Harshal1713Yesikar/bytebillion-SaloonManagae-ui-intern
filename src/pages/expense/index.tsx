@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, MouseEvent } from 'react'
+import { ChangeEvent, useEffect, useState, MouseEvent } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -11,15 +11,17 @@ import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
+
 import QuickSearchToolbar from 'src/views/table/TableFilter'
 
 // ** Types Imports
 import { ThemeColor } from 'src/@core/layouts/types'
 import { DataGridRowType } from 'src/@fake-db/types'
 
+
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Menu, TextField } from '@mui/material'
+import { Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, Menu, TextField } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -27,8 +29,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import Icon from '@mui/material/Icon';
 import { useRouter } from 'next/router'
+import PrintIcon from '@mui/icons-material/Print';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 
@@ -166,11 +168,13 @@ const Index = () => {
     }
   }
 
-  const [client, setClient] = useState('');
+  const [age, setAge] = useState('');
 
-  const handleClient = (event: SelectChangeEvent) => {
-    setClient(event.target.value);
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value);
   };
+
+
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -181,34 +185,15 @@ const Index = () => {
   const handleClose = () => {
     setAnchorEl(null)
   }
-
-
-
-
-
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
-  const [group, setGroup] = useState('');
-
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleSave = () => {
-    // Handle saving data or any other logic here
-    closeModal();
-  };
-
   const router = useRouter();
-  const handleCustomer = () => {
-    router.push('../second-page/clientCustomerCreate');
+  const handleBack = () => {
+    router.push('./expense/createExpense');
   }
 
+  const routers = useRouter();
+  const handleExpensecate = () => {
+    routers.push('../expense/createCategory');
+  }
 
   const [openImportDialog, setOpenImportDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -235,7 +220,6 @@ const Index = () => {
     handleDialogClose();
   };
 
-
   return (
     <Card>
       <Grid style={{ display: 'flex', width: "100%" }}>
@@ -243,128 +227,95 @@ const Index = () => {
           <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
-        <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
-          <Button onClick={openModal} variant='contained' >add</Button>
+        <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
+          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black", cursor: 'pointer' }} onClick={handleBack} />
         </Grid>
-
-        <Dialog open={isModalOpen} onClose={closeModal}>
-          <DialogTitle>Add Client</DialogTitle>
-          <DialogContent>
-            <Grid style={{ display: 'flex' }}>
-              <TextField
-                sx={{ m: 5, width: "40%" }}
-                label="Name"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <TextField
-                sx={{ m: 5, width: "40%" }}
-                label="Contact"
-                fullWidth
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-              />
-            </Grid>
-            <Typography sx={{ fontSize: 20 }}>Select Group</Typography>
-            <TextField
-              sx={{ m: 5, width: "90%" }}
-              label="Group"
-              fullWidth
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleSave} variant="contained" color="primary">
-              Save
-            </Button>
-            <Button onClick={closeModal} variant="contained" color="secondary">
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Grid>
-      <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex" }}>
-        <Grid style={{ display: 'flex', flexDirection: "column" }}>
+      <Grid style={{ display: "flex", width: "100%" }}>
+        <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex", margin: "20px" }}>
+          <Grid style={{ display: 'flex', flexDirection: "column" }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} >
+              <Typography>Date</Typography>
+              <DatePicker
+                label="From"
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    style: { width: '150px' }
+                  }
+                }}
+              />
+            </LocalizationProvider>
+          </Grid>
           <LocalizationProvider dateAdapter={AdapterDayjs} >
-            <Typography>Date</Typography>
             <DatePicker
-              label="From"
+              label="To"
               slotProps={{
                 textField: {
                   size: 'small',
-                  style: { width: '150px' }
+                  style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
                 }
               }}
             />
           </LocalizationProvider>
-        </Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
-          <DatePicker
-            label="To"
-            slotProps={{
-              textField: {
-                size: 'small',
-                style: { width: '250px', marginLeft: "5px", marginTop: "25px" }
-              }
-            }}
-          />
-        </LocalizationProvider>
-        <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
-          <Typography>Client Type</Typography>
-          <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
-            <InputLabel id="demo-select-small-label">All Clients</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={client}
-              label="All Clients"
-              onChange={handleClient}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
-          <Button variant='contained' >
-            Search
-          </Button>
-        </Grid>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
-          <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick} endIcon={<ArrowDropDownIcon />}>
-            Action
-          </Button>
-          <Grid>
-            <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
-              <MenuItem onClick={handleCustomer}>Client Groups</MenuItem>
-              <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
-              <MenuItem onClick={handleImportClick}>Import Client</MenuItem>
-            </Menu>
+          <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
+            <Typography>Client Type</Typography>
+            <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
+              <InputLabel id="demo-select-small-label">All Clients</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={age}
+                label="All Clients"
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
-          <Dialog open={openImportDialog} onClose={handleDialogClose} fullWidth>
-            <DialogTitle>Import Client</DialogTitle>
-            <DialogContent>
-              {/* File input for importing */}
-              <TextField
-                type="file"
-                onChange={handleFileChange}
-                inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleImportSubmit} color="primary" variant='contained'>
-                Import
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
-      </Container>
+          <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
+            <Button variant='contained' >
+              Search
+            </Button>
+          </Grid>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
+            <Grid sx={{ mt: 2, cursor: 'pointer' }}>
+              <PrintIcon />
+            </Grid>
+            <Button variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick} endIcon={<ArrowDropDownIcon />} size='small'>
+              Action
+            </Button>
+            <Grid>
+              <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
+                <MenuItem onClick={handleExpensecate}>Category</MenuItem>
+                <MenuItem onClick={handleClose}>Simple File</MenuItem>
+                <MenuItem onClick={handleImportClick}>Import Expenses</MenuItem>
+              </Menu>
+            </Grid>
+            <Dialog open={openImportDialog} onClose={handleDialogClose} fullWidth>
+              <DialogTitle>Import Client</DialogTitle>
+              <DialogContent>
+                {/* File input for importing */}
+                <TextField
+                  type="file"
+                  onChange={handleFileChange}
+                  inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleImportSubmit} color="primary" variant='contained'>
+                  Import
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Container>
+      </Grid>
       <DataGrid
         autoHeight
         columns={columns}

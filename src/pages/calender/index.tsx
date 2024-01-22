@@ -72,18 +72,18 @@ const AppCalendar = () => {
   return (
     <Grid xs={12}>
       <Card sx={{ display: 'flex' }}>
-     
+
         <Box sx={{ px: 4, '& .react-datepicker': { boxShadow: 'none !important', border: 'none !important' } }}>
-        <Box sx={{ p: theme => theme.spacing(5.625, 6) }}>
-          <Button
-            fullWidth
-            variant='contained'
-            startIcon={<Icon icon='bx:plus'/>}
-            sx={{ '& svg': { fontSize: '1.125rem !important' } }}
-          >
-            Add Event
-          </Button>
-        </Box>
+          <Box sx={{ p: theme => theme.spacing(5.625, 6) }}>
+            <Button
+              fullWidth
+              variant='contained'
+              startIcon={<Icon icon='bx:plus' />}
+              sx={{ '& svg': { fontSize: '1.125rem !important' } }}
+            >
+              Add Event
+            </Button>
+          </Box>
           <DatePickerWrapper>
             <DatePicker
               inline
