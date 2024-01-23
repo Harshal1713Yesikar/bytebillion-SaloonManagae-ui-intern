@@ -7,6 +7,7 @@ import ProductTableFront from 'src/views/table/productTable/productTableFront';
 import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
 import { useRouter } from 'next/router';
 
+
 const Index = () => {
   // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
@@ -87,6 +88,10 @@ const Index = () => {
   const productOrder = useRouter();
   const handleProductOrder = () => {
     productOrder.push('../products/productOrder');
+  }
+  const vendor = useRouter();
+  const handlevendor = () => {
+    vendor.push('../service/service');
   }
 
   return (
@@ -219,7 +224,7 @@ const Index = () => {
           </Button>
           <Grid>
             <Menu keepMounted id='simple-menu' anchorEl={anchorDl} onClose={handleCloseAssign} open={Boolean(anchorDl)}>
-              <MenuItem onClick={handleCloseEdit}>Vendors List</MenuItem>
+              <MenuItem onClick={handlevendor}>Vendors List</MenuItem>
               <MenuItem onClick={handleCloseAssign}>Brand View</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Product Types</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Print Barcode/label</MenuItem>
