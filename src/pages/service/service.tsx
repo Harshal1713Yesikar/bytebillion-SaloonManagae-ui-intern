@@ -29,6 +29,10 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import OutlinedInput from '@mui/material/OutlinedInput';
+
+import ListItemText from '@mui/material/ListItemText';
+
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -219,6 +223,31 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     </Toolbar>
   )
 }
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const names = [
+  'Oliver Hansen',
+  'Van Henry',
+  'April Tucker',
+  'Ralph Hubbard',
+  'Omar Alexander',
+  'Carlos Abbott',
+  'Miriam Wagner',
+  'Bradley Wilkerson',
+  'Virginia Andrews',
+  'Kelly Snyder',
+];
+
 const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
@@ -344,6 +373,17 @@ const Service = () => {
     setAddServiceDialogOpen(false);
   };
 
+  const [personName, setPersonName] = React.useState<string[]>([]);
+
+  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
   return (
     <>
       <Grid sx={{ display: "flex", width: "100%" }}>
@@ -394,14 +434,14 @@ const Service = () => {
                     <MenuItem onClick={() => { handleCloseAdd(); setAddServiceDialogOpen(true); }}>Add Service</MenuItem>
                   </Menu>
                 </Grid>
-                <Dialog maxWidth="md" sx={{
-                  overflow: 'auto', width: '100%', height: '100%'
+                <Dialog sx={{
+                  height: '100%'
                 }} open={addServiceDialogOpen} onClose={handleCloseAddServiceDialog}>
                   < DialogTitle > Add Service</DialogTitle>
-                  <DialogContent>
+                  <DialogContent sx={{ width: "100%", height: '1000px' }}>
 
-                    <Grid sx={{ display: 'flex', width: '100%' }}>
-                      <FormControl sx={{ m: 1, width: '500px' }}>
+                    <Grid sx={{ display: 'flex' }}>
+                      <FormControl sx={{ m: 1, width: '250px' }}>
                         <Select
                           value={selectGroup}
                           onChange={handleSelectGroup}
@@ -416,11 +456,11 @@ const Service = () => {
                           <MenuItem value={30}>Nail Art</MenuItem>
                         </Select>
                       </FormControl>
-                      <Grid sx={{ width: "100%" }}>
+                      <Grid>
                         <Box
                           component="form"
                           sx={{
-                            '& > :not(style)': { m: 1, width: '300px' },
+                            '& > :not(style)': { m: 1, width: '250px' },
                           }}
                           noValidate
                           autoComplete="off"
@@ -429,23 +469,23 @@ const Service = () => {
                         </Box>
                       </Grid>
                     </Grid>
-                    <Grid>
-                      <Box sx={{ width: '100%' }}>
+                    <Grid >
+                      <Box >
                         <TextField
                           id="outlined-multiline-static"
                           label="Description"
                           multiline
                           rows={3}
-                          sx={{ width: '100%', m: 1 }}
+                          sx={{ m: 1, width: '510px' }}
                         />
                       </Box>
                     </Grid>
                     <Grid sx={{ display: 'flex' }}>
-                      <Grid sx={{ width: '100%', m: 0 }}>
+                      <Grid >
                         <Box
                           component="form"
                           sx={{
-                            '& > :not(style)': { m: 1 },
+                            '& > :not(style)': { m: 1, width: '250px' },
                           }}
                           noValidate
                           autoComplete="off"
@@ -463,16 +503,40 @@ const Service = () => {
                         </Box>
                       </Grid>
                     </Grid>
+                    <Grid sx={{ m: 1, mt: 10 }}>
+                      <Typography sx={{ fontWeight: '600' }}>Who can provide the service *</Typography>
+                      <Grid> <FormControl sx={{ m: 1, width: 300 }}>
+                        <InputLabel id="demo-multiple-checkbox-label"></InputLabel>
+                        <Select
+                          labelId="demo-multiple-checkbox-label"
+                          id="demo-multiple-checkbox"
+                          multiple
+                          value={personName}
+                          onChange={handleChange}
+                          input={<OutlinedInput />}
+                          placeholder='Staff List'
+                          renderValue={(selected) => selected.join(', ')}
+                          MenuProps={MenuProps}
+                        >
+                          {names.map((name) => (
+                            <MenuItem key={name} value={name}>
+                              <Checkbox checked={personName.indexOf(name) > -1} />
+                              <ListItemText primary={name} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl></Grid>
+                    </Grid>
 
-                  </DialogContent>
-                  <DialogActions>
+
                     <Button onClick={handleCloseAddServiceDialog} color="primary">
                       Cancel
                     </Button>
                     <Button onClick={handleCloseAddServiceDialog} color="primary">
                       Save
                     </Button>
-                  </DialogActions>
+
+                  </DialogContent>
                 </Dialog>
               </Box>
             </Grid>
