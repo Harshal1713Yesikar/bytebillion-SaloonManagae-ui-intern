@@ -349,8 +349,7 @@ const Register = () => {
           </form>
         </Box>
       </RightWrapper>
-    </Box>
-  )
+    </Box>)
 }
 
 Register.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>

@@ -4,11 +4,9 @@ import { useDispatch } from 'react-redux'
 
 export const OrganizationDetailApiCall = ({ userId }: any) => {
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-
-
-    return (
-        <div>OrganizationDetailApiCall</div>
-    )
+  return (
+    <div>OrganizationDetailApiCall</div>
+  )
 }
