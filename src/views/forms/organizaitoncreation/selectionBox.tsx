@@ -197,6 +197,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
     const data = localStorage.getItem('userDetails')
     if (data) {
       console.log('fdsjflkdjsfljds', JSON.parse(data)?.customerId)
+
       // bringOrganizationsDetails(JSON.parse(data).payload?.customerId)
       // getCustomerDetails({ customerId: JSON.parse(data).payload?.customerId })
       bringOrganizationsDetails(JSON.parse(data)?.customerId)

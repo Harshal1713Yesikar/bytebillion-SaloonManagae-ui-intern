@@ -109,6 +109,35 @@ export const organizationRegistration = async ({ newOrganizationDetails, id, cou
   }
 };
 
+export const salonRegistration = async ({ newOrganizationDetails, id}: any) => {
+  try {
+
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_API}`,
+        {
+          customerId: id,
+          organizationId: newOrganizationDetails.organizationId,
+          organizationName: newOrganizationDetails.organizationName,
+          organizationDetails: newOrganizationDetails.organizationDetails,
+          organizationCategoryId: newOrganizationDetails.organizationCategoryId,
+          organizationCategoryName: newOrganizationDetails.organizationCategoryName,
+          organizationPhoneNumber: newOrganizationDetails.organizationPhoneNumber,
+          organizationEmail: newOrganizationDetails.organizationEmail,
+          organizationAddress: newOrganizationDetails.organizationAddress,
+          organizationLogo: newOrganizationDetails.organizationLogo ? newOrganizationDetails.organizationLogo : "",
+          courses: []
+        },
+        { headers }
+      );
+
+      return res.data; // Assuming you want to return the data from the response
+
+  } catch (err) {
+    throw err; // Rethrow the error to be caught by the caller
+  }
+};
+
 
 
 

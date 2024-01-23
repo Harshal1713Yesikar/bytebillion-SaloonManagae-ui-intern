@@ -40,7 +40,7 @@ import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
 // ** Styled Component
 import StepperWrapper from 'src/@core/styles/mui/stepper'
-import { karomanageWelcomeMail, organizationDetails, organizationEmailVerification, organizationRegistration } from 'src/store/APIs/Api'
+import { karomanageWelcomeMail, organizationDetails, organizationEmailVerification, organizationRegistration, salonRegistration } from 'src/store/APIs/Api'
 import { AccordionDetails, Alert, Snackbar } from '@mui/material'
 
 import { Provider } from 'react-redux';
@@ -153,16 +153,20 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   let mainId = ''
   const [categoryList, setCategoryList] = useState([]);
   const [allValues, setAllValues] = useState({
-    organizationId: ``,
-    organizationName: "",
-    organizationDetails: "",
-    organizationCategoryId: "",
-    organizationCategoryName: "",
-    temporaryId: '',
-    organizationPhoneNumber: '',
-    organizationEmail: '',
-    organizationAddress: '',
-    organizationLogo: ''
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId:``,
+    salonName: "",
+    PhoneNumber: '',
+    email: '',
+    salonAddress: '',
+    Logo: '',
+    colonyName:'',
+    landmark:"",
+    pincode:"",
+    city:"",
+    state:"",
+    salonStatus:"active"
+
   });
   const [emailValidator, setEmailValidator] = useState("")
   const [verification, setVerification] = useState(false)
@@ -221,6 +225,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
 
   const handleImageChange = (e: any) => {
 
+    console.log("file picker",e.target.files[0])
     setImage(e.target.files[0])
 
     setError(null);
@@ -232,17 +237,18 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     } else {
       const reader = new FileReader();
       reader.readAsDataURL(selectedFile);
+      console.log("dfjdksflksdjf",reader)
 
       reader.onloadend = () => {
         const base64String = reader.result as string;
         setBase64String(base64String);
-        setAllValues({ ...allValues, organizationLogo: base64String });
+        setAllValues({ ...allValues, Logo: base64String });
       };
     }
   }
 
-  if (allValues.organizationName) {
-    const id = allValues.organizationName.split(" ");
+  if (allValues.salonName) {
+    const id = allValues.salonName.split(" ");
     const idLength = id.length
 
     for (let i = 0; i < idLength; i++) {
@@ -256,61 +262,62 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   useEffect(() => {
     setValidEmail(false)
     setUserOtp("")
-    if (allValues.organizationEmail.length == 0) {
+    if (allValues.email.length == 0) {
       setValidateEmail(false)
     }
 
-    else if ((allValues.organizationEmail).indexOf('@') == -1 || (allValues.organizationEmail).indexOf('.') == -1) {
+    else if ((allValues.email).indexOf('@') == -1 || (allValues.email).indexOf('.') == -1) {
       setValidateEmail(true)
     }
     else {
       setValidateEmail(false)
     }
-  }, [allValues.organizationEmail])
+  }, [allValues.email])
 
 
 
-  const emailVerification = () => {
-    const chars = '0123456789';
-    let uniqueID = '';
+  // const emailVerification = () => {
+  //   const chars = '0123456789';
+  //   let uniqueID = '';
 
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length);
-      uniqueID += chars[randomIndex];
-    }
+  //   for (let i = 0; i < 6; i++) {
+  //     const randomIndex = Math.floor(Math.random() * chars.length);
+  //     uniqueID += chars[randomIndex];
+  //   }
 
-    const cipherText = AES.encrypt(`${uniqueID}`, `test key`).toString();
-    localStorage.setItem('sneat-icon', cipherText)
-    setTimeout(() => {
-      localStorage.removeItem('sneat-icon')
-    }, 600000);
+  //   const cipherText = AES.encrypt(`${uniqueID}`, `test key`).toString();
+  //   localStorage.setItem('sneat-icon', cipherText)
+  //   setTimeout(() => {
+  //     localStorage.removeItem('sneat-icon')
+  //   }, 600000);
 
-    organizationEmailVerification({ organizationName: allValues.organizationName, validationCode: uniqueID, organizationEmail: allValues.organizationEmail })
-  }
-  const handleVerification = () => {
-    const decrypted: any = localStorage.getItem('sneat-icon')
-    if (decrypted) {
+  //   organizationEmailVerification({ organizationName: allValues.salonName, validationCode: uniqueID, organizationEmail: allValues.email })
+  // }
+
+  // const handleVerification = () => {
+  //   const decrypted: any = localStorage.getItem('sneat-icon')
+  //   if (decrypted) {
 
 
-      const bytes = AES.decrypt(decrypted.toString(), `test key`).toString(enc.Utf8)
-      if (bytes == userOtp) {
-        setEmailValidator("OTP is valid")
-        setOpen(true)
-        setValidEmail(true)
+  //     const bytes = AES.decrypt(decrypted.toString(), `test key`).toString(enc.Utf8)
+  //     if (bytes == userOtp) {
+  //       setEmailValidator("OTP is valid")
+  //       setOpen(true)
+  //       setValidEmail(true)
 
-      }
-      else if (bytes != userOtp) {
-        setEmailValidator("OTP is invalid")
-        setOpen(true)
-        setValidEmail(false)
-      }
-    }
-    else {
-      setEmailValidator("OTP is invalid or expired")
-      setOpen(true)
-      setValidEmail(false)
-    }
-  }
+  //     }
+  //     else if (bytes != userOtp) {
+  //       setEmailValidator("OTP is invalid")
+  //       setOpen(true)
+  //       setValidEmail(false)
+  //     }
+  //   }
+  //   else {
+  //     setEmailValidator("OTP is invalid or expired")
+  //     setOpen(true)
+  //     setValidEmail(false)
+  //   }
+  // }
 
   const formSubmit = () => {
     // if (allValues.organizationName !== ''
@@ -322,7 +329,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     //   console.log(allValues, "allValues")
     //   dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails })).then((res: any) => {
     //     setOpen(true)
-    //     setLogo(allValues.organizationLogo);
+    //     setLogo(allValues.Logo);
     //     karomanageWelcomeMail(allValues.organizationName, allValues.organizationEmail)
     //     setAllValues({
     //       organizationId: ``,
@@ -334,7 +341,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     //       organizationPhoneNumber: '',
     //       organizationEmail: '',
     //       organizationAddress: '',
-    //       organizationLogo: ''
+    //       Logo: ''
     //     })
     //     setCourseDetails({
     //       ...courseDetails, "courseDescription": '',
@@ -356,8 +363,9 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     //   // setNext(false)
     // }
     const handleRegistration = async () => {
+      console.log("allValues",allValues)
       try {
-        const res = await organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails });
+        const res = await salonRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId});
         console.log("myRes",res)
         setOpen(true);
         console.log(res);
@@ -372,14 +380,20 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
 
   }
 
+
+
   useEffect(() => {
-    if (allValues.organizationName
-      && allValues.organizationId
-      && allValues.organizationPhoneNumber
-      && allValues.organizationEmail
-      && allValues.organizationCategoryName
-      && allValues.organizationAddress
-      && allValues.organizationDetails) {
+    if (allValues.salonName
+      && allValues.salonId
+      && allValues.PhoneNumber
+      && allValues.email
+      && allValues.salonAddress
+      && allValues.colonyName
+      && allValues.landmark
+      && allValues.pincode
+      && allValues.city
+      && allValues.state
+      && allValues.salonStatus) {
       setNext(true)
     }
     else {
@@ -387,18 +401,18 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     }
   }, [allValues])
 
-  const orgCategoryHandler = (e: any) => {
-    const ctgId = e.target.value.split("%")[0]
-    const ctgName = e.target.value.split("%")[1]
-    setAllValues({
-      ...allValues, "organizationCategoryId": ctgId, "organizationCategoryName": ctgName
-    })
-  }
+  // const orgCategoryHandler = (e: any) => {
+  //   const ctgId = e.target.value.split("%")[0]
+  //   const ctgName = e.target.value.split("%")[1]
+  //   setAllValues({
+  //     ...allValues, "organizationCategoryId": ctgId, "organizationCategoryName": ctgName
+  //   })
+  // }
 
 
 
   useEffect(() => {
-    if (allValues.organizationName) {
+    if (allValues.salonName) {
       if (mainId) {
         let uniqueId = ''
         const chars = "0123456789"
@@ -407,13 +421,13 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           uniqueId += chars[randomIndex];
         }
 
-        setAllValues({ ...allValues, "organizationId": `${mainId.toUpperCase()}-${uniqueId}` })
+        setAllValues({ ...allValues, "salonId": `${mainId.toUpperCase()}-${uniqueId}` })
       }
     }
     else {
-      setAllValues({ ...allValues, "organizationId": `-` })
+      setAllValues({ ...allValues, "salonId": `-` })
     }
-  }, [allValues.temporaryId, mainId, allValues.organizationName.split("-").length])
+  }, [allValues.temporaryId, mainId, allValues.salonName.split("-").length])
 
 
 //   useEffect(() => {
@@ -450,7 +464,7 @@ useEffect(() => {
 
             <AccordionDetails>
               <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Organization category</InputLabel>
                     <Select
@@ -479,17 +493,17 @@ useEffect(() => {
                       )}
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     fullWidth
                     variant="outlined"
-                    name="organizationName"
+                    name="salonName"
                     onChange={changeHandler}
                     label="Organization name"
                     style={{ marginBottom: "10px" }}
-                    value={allValues.organizationName}
+                    value={allValues.salonName}
                     inputProps={{
                       maxLength: 50,
                     }}
@@ -507,13 +521,13 @@ useEffect(() => {
                       }
                     }}
                     type="number"
-                    name="organizationPhoneNumber"
+                    name="PhoneNumber"
                     label="Organization phone number"
                     onChange={changeHandler}
-                    value={allValues.organizationPhoneNumber}
+                    value={allValues.PhoneNumber}
                     placeholder='+911234568790'
                     required
-                    error={allValues.organizationPhoneNumber.length > 13 ? true : false}
+                    error={allValues.PhoneNumber.length > 13 ? true : false}
                     inputProps={{
                       inputMode: 'numeric',
                       pattern: '[0-9]*',
@@ -525,7 +539,7 @@ useEffect(() => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <FormControl variant="outlined" fullWidth>
                     <InputLabel htmlFor="standard-adornment-amount">Organization Id</InputLabel>
                     <OutlinedInput
@@ -542,23 +556,17 @@ useEffect(() => {
                     />
 
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <TextField name="inventoryImage" type='file' onChange={handleImageChange} />
-                    {error && <div style={{ color: 'red' }}>{error}</div>}
-                    {/* {base64String && <img src={base64String} alt="Selected" style={{ maxWidth: '100%', marginTop: '10px' }} />} */}
-                  </FormControl>
-                </Grid>
+                </Grid> */}
+
                 <Grid item xs={12} >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <TextField
                       type="email"
-                      name="organizationEmail"
+                      name="email"
                       label="Organization E-mail"
                       required
                       onChange={changeHandler}
-                      value={allValues.organizationEmail}
+                      value={allValues.email}
                       variant="outlined"
                       style={{ marginBottom: "10px" }}
                       error={validateEmail}
@@ -567,17 +575,17 @@ useEffect(() => {
                         maxLength: 50,
                       }}
                     />
-                    <Button
+                    {/* <Button
                       disabled={!allValues.organizationEmail ? true : validateEmail ? true : false}
                       variant='contained'
                       onClick={() => {
                         emailVerification(),
                           setVerification(true)
                         setEmailSend("Resend")
-                      }}>{emailSend}</Button>
+                      }}>{emailSend}</Button> */}
                   </div>
                 </Grid>
-                {
+                {/* {
                   verification && !validEmail && <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <TextField
                       sx={{ width: '88%' }}
@@ -590,28 +598,144 @@ useEffect(() => {
                       color={validEmail ? 'success' : 'primary'}
                       onClick={() => handleVerification()} >Verify</Button>
                   </Grid>
-                }
+                } */}
+
+<Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <TextField name="inventoryImage" type='file' onChange={handleImageChange} />
+                    {error && <div style={{ color: 'red' }}>{error}</div>}
+                    {/* {base64String && <img src={base64String} alt="Selected" style={{ maxWidth: '100%', marginTop: '10px' }} />} */}
+                  </FormControl>
+                </Grid>
+
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     id="outlined-multiline-static"
-                    name="organizationAddress"
-                    label="Organization address "
+                    name="address"
+                    label="Salon address "
                     onChange={changeHandler}
                     required
-                    minRows={3}
+                    minRows={1}
                     inputProps={{
                       maxLength: 150,
                     }}
-                    value={allValues.organizationAddress}
+                    value={allValues.address}
                     variant="outlined"
-                    placeholder='1456, Liberty Street'
+                    placeholder='Type here'
                     style={{ marginBottom: "10px" }}
                     multiline
                     fullWidth
                     helperText="max 150 words"
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    name="colonyName"
+                    label="Colony "
+                    onChange={changeHandler}
+                    required
+                    minRows={1}
+                    inputProps={{
+                      maxLength: 150,
+                    }}
+                    value={allValues.colonyName}
+                    variant="outlined"
+                    placeholder='Type here'
+                    style={{ marginBottom: "10px" }}
+                    multiline
+                    fullWidth
+                    helperText="max 150 words"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    name="landmark"
+                    label="Area, landmark "
+                    onChange={changeHandler}
+                    required
+                    minRows={1}
+                    inputProps={{
+                      maxLength: 150,
+                    }}
+                    value={allValues.landmark}
+                    variant="outlined"
+                    placeholder='Type here'
+                    style={{ marginBottom: "10px" }}
+                    multiline
+                    fullWidth
+                    helperText="max 150 words"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    name="pincode"
+                    label="Pincode "
+                    onChange={changeHandler}
+                    required
+                    minRows={1}
+                    inputProps={{
+                      maxLength: 150,
+                    }}
+                    value={allValues.pincode}
+                    variant="outlined"
+                    placeholder='Type here'
+                    style={{ marginBottom: "10px" }}
+                    multiline
+                    fullWidth
+
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    name="city"
+                    label="City "
+                    onChange={changeHandler}
+                    required
+                    minRows={1}
+                    inputProps={{
+                      maxLength: 150,
+                    }}
+                    value={allValues.city}
+                    variant="outlined"
+                    placeholder='Type here'
+                    style={{ marginBottom: "10px" }}
+                    multiline
+                    fullWidth
+
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    name="state"
+                    label="State "
+                    onChange={changeHandler}
+                    required
+                    minRows={1}
+                    inputProps={{
+                      maxLength: 150,
+                    }}
+                    value={allValues.state}
+                    variant="outlined"
+                    placeholder='Type here'
+                    style={{ marginBottom: "10px" }}
+                    multiline
+                    fullWidth
+
+                  />
+                </Grid>
+
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     id="outlined-multiline-static"
                     name="organizationDetails"
@@ -628,7 +752,7 @@ useEffect(() => {
                     }}
                     helperText="max 500 words"
                   />
-                </Grid>
+                </Grid> */}
 
               </Grid>
             </AccordionDetails>
@@ -763,6 +887,7 @@ useEffect(() => {
     if (activeStep === steps.length) {
       return (
         <>
+
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
 
@@ -789,7 +914,7 @@ useEffect(() => {
               </Button>
               <div >
                 {
-                  <Button sx={{ marginRight: 6 }} disabled={validEmail && next ? false : true} size='large' variant='contained' onClick={handleNext}>
+                  <Button sx={{ marginRight: 6 }}  size='large' variant='contained' onClick={handleNext}>
                     {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
                   </Button>
                 }

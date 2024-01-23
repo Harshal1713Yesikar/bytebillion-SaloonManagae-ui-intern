@@ -316,7 +316,7 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
         const response = await organizationDetails(customerDetails.customerId);
 
         if (response && response.data) {
-          console.log(response.data.organizations.organizationCategory,"resss")
+
           setCategoryList(response.data.organizations.organizationCategory);
         }
       } catch (error) {
