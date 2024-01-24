@@ -32,18 +32,18 @@ const ListSimple = () => {
 
   // const [age, setAge] = useState('');
   const [expanded, setExpanded] = useState<string | false>(false)
-  const [activeReport, setactiveReport] = useState<string | null>(null);
-  const [newactiveReport, setnewactiveReport] = useState<string | null>(null);
+  const [activeTable, setActiveTable] = useState<string | null>(null);
+  const [newactiveTable, setnewActiveTable] = useState<string | null>(null);
   const handleChange = (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false)
   }
 
-  const showReport = (reportId: string) => {
-    setactiveReport(reportId);
+  const showTable = (tableId: string) => {
+    setActiveTable(tableId);
   };
 
-  const newshowReport = (reportId: string) => {
-    setnewactiveReport(reportId);
+  const newshowTable = (tableId: string) => {
+    setnewActiveTable(tableId);
   };
 
 
@@ -65,7 +65,7 @@ const ListSimple = () => {
       <Grid item xs={12} md={3} style={{width:"100%",padding:5}}>
         <h4> My Space</h4>
       <List component='nav' aria-label='main mailbox' sx={{width:"500px"}}>
-        <ListItem disablePadding onClick={() => showReport('report1')}>
+        <ListItem disablePadding onClick={() => showTable('table1')}>
           <ListItemButton >
             <ListItemIcon>
             <Icon icon="mdi:pin" fontSize={20} color='red'/>
@@ -74,7 +74,7 @@ const ListSimple = () => {
             <ListItemText primary='Pinned Reports' />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding onClick={() => showReport('report2')}>
+        <ListItem disablePadding onClick={() => showTable('table2')}>
           <ListItemButton>
             <ListItemIcon>
             <Icon icon="carbon:report" fontSize={20} color='blue'/>
@@ -93,7 +93,7 @@ const ListSimple = () => {
 
               <Icon icon="la:tags" fontSize={20} />
             </ListItemIcon>
-            <ListItemText primary='Sales' onClick={() => newshowReport('newreport3')} />
+            <ListItemText primary='Sales' onClick={() => newshowTable('newtable3')} />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -101,16 +101,7 @@ const ListSimple = () => {
             <ListItemIcon>
               <Icon icon="la:tags" fontSize={20} />
             </ListItemIcon>
-            <ListItemText primary='Customer' onClick={() => newshowReport('newreport4')} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton component='a' href='#simple-list'>
-            <ListItemIcon>
-              <Icon icon="la:tags" fontSize={20} />
-            </ListItemIcon>
-            <ListItemText primary='Staff'  onClick={() => newshowReport('newreport5')}/>
+            <ListItemText primary='Customer' onClick={() => newshowTable('newtable4')} />
           </ListItemButton>
         </ListItem>
 
@@ -119,7 +110,7 @@ const ListSimple = () => {
             <ListItemIcon>
               <Icon icon="la:tags" fontSize={20} />
             </ListItemIcon>
-            <ListItemText primary='Appointment' onClick={() => newshowReport('newreport6')}/>
+            <ListItemText primary='Staff'  onClick={() => newshowTable('newtable5')}/>
           </ListItemButton>
         </ListItem>
 
@@ -128,7 +119,16 @@ const ListSimple = () => {
             <ListItemIcon>
               <Icon icon="la:tags" fontSize={20} />
             </ListItemIcon>
-            <ListItemText primary='Inventory' onClick={() => newshowReport('newreport7')} />
+            <ListItemText primary='Appointment' onClick={() => newshowTable('newtable6')}/>
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton component='a' href='#simple-list'>
+            <ListItemIcon>
+              <Icon icon="la:tags" fontSize={20} />
+            </ListItemIcon>
+            <ListItemText primary='Inventory' onClick={() => newshowTable('newtable7')} />
           </ListItemButton>
         </ListItem>
       </List>
@@ -139,10 +139,10 @@ const ListSimple = () => {
 
       <TextField fullWidth label='Search Report' id='outlined-full-width' sx={{ mb: 4 }} />
 
-    {/* Right Side bar Data started from here */}
+    {/* Right Side bar Data strted from here */}
 
     {/* Pinned Report data */}
-      <div style={{display: activeReport === 'report1' ? 'block' : 'none' }}>
+      <div style={{display: activeTable === 'table1' ? 'block' : 'none' }}>
       <h2><Icon icon="mdi:pin" fontSize={20} color='red'/>Pinned Reports</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -154,25 +154,21 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>Accordion 1</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+           1.  Wafer sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
     </div>
 
 {/* All reports data */}
-    <div style={{display: activeReport === 'report2' ? 'block' : 'none'}}>
+    <div style={{display: activeTable === 'table2' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />All Reports</h2>
 
 
     {/* Only Sales Data */}
-    <div style={{display: newactiveReport === 'newreport3' ? 'block' : 'none'}}>
+    <div style={{display: newactiveTable === 'newtable3' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />Sales</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -184,21 +180,17 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>Sales</Typography>
         </AccordionSummary>
         <AccordionDetails>
-      <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+            3. Sales Data sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
       </div>
 
 
       {/* Only customer Data */}
-      <div style={{display: newactiveReport === 'newreport4' ? 'block' : 'none'}}>
+      <div style={{display: newactiveTable === 'newtable4' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />Customer</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -210,19 +202,15 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>Customer</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+            3. Sales Data sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
       </div>
        {/* Only Staff Data */}
-       <div style={{display: newactiveReport === 'newreport5' ? 'block' : 'none'}}>
+       <div style={{display: newactiveTable === 'newtable5' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />Staff</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -234,21 +222,17 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>Staff</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+            3. Sales Data sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
       </div>
 
 
         {/* Only Appointment Data */}
-        <div style={{display: newactiveReport === 'newreport6' ? 'block' : 'none'}}>
+        <div style={{display: newactiveTable === 'newtable6' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />Appointment</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -260,21 +244,17 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>Appointment</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+            3. Sales Data sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
       </div>
 
 
          {/* Only inventory Data */}
-        <div style={{display: newactiveReport === 'newreport7' ? 'block' : 'none'}}>
+        <div style={{display: newactiveTable === 'newtable7' ? 'block' : 'none'}}>
       <h2> <Icon icon="la:tags" fontSize={20} />inventory</h2>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
@@ -286,14 +266,10 @@ const ListSimple = () => {
           <Typography sx={{ ml: 2 }}>inventory</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Grid container spacing={2} justifyContent="center">
-      <Grid item xs={12} md={6}>
-        <Box
-          sx={{ border: 1,borderColor: 'gray',padding: 2,textAlign: 'center',}}>
-          <p>Your content goes here!</p>
-        </Box>
-      </Grid>
-    </Grid>
+          <Typography variant='body2'>
+            3. Sales Data sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert biscuit.
+            Topping soufflé tart sweet croissant.
+          </Typography>
         </AccordionDetails>
       </Accordion>
       </div>

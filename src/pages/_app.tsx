@@ -1,6 +1,7 @@
 // ** React Imports
 
 // ** Next Imports
+import { useState } from 'react'
 import Head from 'next/head'
 import { Router } from 'next/router'
 import type { NextPage } from 'next'
@@ -62,6 +63,8 @@ import '../../styles/globals.css'
 
 import { msalConfig } from 'src/config/authConfig'
 import { PublicClientApplication } from "@azure/msal-browser";
+// import AuthIllustrationWrapper from 'src/views/pages/auth/AuthIllustrationWrapper'
+import SelectionBox from 'src/views/forms/organizaitoncreation/selectionBox'
 
 
 
@@ -100,6 +103,14 @@ if (themeConfig.routingLoader) {
 
 // ** Configure JSS & ClassName
 const App = (props: ExtendedAppProps) => {
+
+  // states
+
+const storedData: any = ''
+
+const [selectedOrganizaiton, setSelectedOrganization] = useState('')
+
+
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
@@ -137,7 +148,12 @@ const App = (props: ExtendedAppProps) => {
 
                   <WindowWrapper>
                     <AuthenticatedTemplate>
-                      {getLayout(<Component {...pageProps} />)}
+                    <div>
+                          {storedData || selectedOrganizaiton ?
+                            getLayout(<Component {...pageProps} />) :
+                            <SelectionBox setSelectedOrganization={setSelectedOrganization} />
+                          }
+                        </div>
                     </AuthenticatedTemplate>
                     <UnauthenticatedTemplate>
                       <LoginPage />
