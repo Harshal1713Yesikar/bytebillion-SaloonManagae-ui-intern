@@ -271,18 +271,16 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
         <Grid xs={12}>
           <Card>
             <CardContent sx={{ pt: 17.5, textAlign: 'center', pb: theme => `${theme.spacing(17.5)} !important` }}>
-              <Grid xs={12} sm={7} style={{ margin: '0 auto', paddingTop: '40px' }}>
+              {/* <Grid xs={12} sm={7} style={{ margin: '0 auto', paddingTop: '40px' }}>
                 <JoinUsingLink recall={recall} setRecall={setRecall} />
-              </Grid>
+              </Grid> */}
               {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Skeleton>
-                    <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
-                      Select Organization
-                    </Typography>
+                  <Card>
+           
                     <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
                       <FormControl fullWidth>
-                        <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel>
+                        {/* <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel> */}
                         <Select
                           labelId='demo-simple-select-label'
                           id='demo-simple-select'
@@ -308,18 +306,18 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
                     <Typography sx={{ mt: 3, color: 'text.secondary' }}>
                       To create new organization fill the information below and click Submit
                     </Typography>
-                    </Skeleton>
+                    </Card>
                 </div>
               ) : (
                 <>
-                  <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
+                  {/* <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
                     {renderedOrganizations.length != 0 ? 'Select Organization' : 'Create Organization!'}
-                  </Typography>
+                  </Typography> */}
                   {renderedOrganizations.length !== 0 ? (
                     <>
                       <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
                         <FormControl fullWidth>
-                          <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel>
+                          {/* <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel> */}
                           <Select
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -333,9 +331,9 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
                           </Select>
                         </FormControl>
                       </Grid>
-                      <Typography sx={{ mt: 2, mb: -13, color: 'text.secondary' }}>
+                      {/* <Typography sx={{ mt: 2, mb: -13, color: 'text.secondary' }}>
                         To create new organization fill the information below and click Submit
-                      </Typography>
+                      </Typography> */}
                     </>
                   ) : (
                     ''

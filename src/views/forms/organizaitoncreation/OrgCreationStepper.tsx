@@ -1,11 +1,11 @@
 // ** React Imports
-import { ChangeEvent, Fragment, useState, useEffect, useCallback } from 'react'
+import { ChangeEvent, Fragment, useState, useEffect, useCallback, forwardRef } from 'react'
+import AddServiceCategory from './AddServiceCategory'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import { AES, enc } from 'crypto-js';
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stepper from '@mui/material/Stepper'
@@ -34,32 +34,147 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Components Imports
 import StepperCustomDot from './StepperCustomDot'
 import CustomAvatar from 'src/@core/components/mui/avatar'
+import { DateType } from 'src/types/forms/reactDatepickerTypes'
+import DatePicker from 'react-datepicker'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Styled Component
 import StepperWrapper from 'src/@core/styles/mui/stepper'
-import { karomanageWelcomeMail, organizationDetails, organizationEmailVerification, organizationRegistration, salonRegistration } from 'src/store/APIs/Api'
-import { AccordionDetails, Alert, Snackbar } from '@mui/material'
+import {
+  karomanageWelcomeMail,
+  organizationDetails,
+  organizationEmailVerification,
+  organizationRegistration,
+  salonRegistration
+} from 'src/store/APIs/Api'
+import { AccordionDetails, Alert, CardHeader, FormHelperText, Snackbar } from '@mui/material'
 
-import { Provider } from 'react-redux';
-// import store from './yourReduxStore';
+import { Provider } from 'react-redux'
+import { useRouter } from 'next/router'
+import { Router } from 'react-router-dom'
 
+import * as yup from 'yup'
 interface State {
   password: string
   password2: string
   showPassword: boolean
   showPassword2: boolean
 }
+interface FormInputs {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  dob: DateType
+  doJ: DateType
+  mobileNo: string
+  hourlyRate: string
+  fixedSalary: string
+  workingDay: string
+  staffpermission: string
+  designation: string
+  gender: string
+  staffPermission: string
+}
+
+const AddStaffSchema = yup.object().shape({
+  firstName: yup
+    .string()
+    .matches(/^[A-Z a-z]+$/)
+    .max(25)
+    .required(),
+  lastName: yup
+    .string()
+    .matches(/^[A-Z a-z]+$/)
+    .max(25)
+    .required(),
+  // email: yup.string().email().required(),
+  email: yup
+    .string()
+    .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
+    .email()
+    .required(),
+  // password: yup.string().min(8).required(),
+  password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+  dob: yup.date().required(),
+  doJ: yup.date().required(),
+  mobileNo: yup
+    .string()
+    .min(10)
+    .matches(/^[0-9]+$/)
+    .max(10)
+    .required(),
+  hourlyRate: yup
+    .string()
+    .max(20, 'Fixed salary must be at most 20 characters')
+    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .required('Fixed salary is required'),
+  fixedSalary: yup
+    .string()
+    .max(20, 'Fixed salary must be at most 20 characters')
+    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .required('Fixed salary is required'),
+  workingDay: yup
+    .string()
+    .max(2, 'Fixed Day must be at most 2 characters')
+    .matches(/^\d+$/, 'This field is required')
+    .required('Fixed salary is required'),
+  staffpermission: yup.string(),
+  designation: yup.string().required().max(100),
+  gender: yup.string().required('Gender Permission is required'),
+  staffPermission: yup.string().required('Staff Permission is required')
+})
+
+const defaultValues = {
+  // dob: null,
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  dob: '',
+  doJ: '',
+  mobileNo: '',
+  hourlyRate: '',
+  fixedSalary: '',
+  workingDay: '',
+  staffpermission: '',
+  designation: '',
+  gender: '',
+  staffPermission: ''
+}
+
+interface CustomInputProps {
+  value: DateType
+  label: string
+  error: boolean
+  onChange: (event: ChangeEvent) => void
+}
+
+const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
+  return <TextField inputRef={ref} {...props} sx={{ width: '100%' }} />
+})
 
 const steps = [
   {
     icon: 'bx:home',
-    title: 'Organization Details',
-    subtitle: 'Enter your Organization Details'
+    title: 'Salon Details',
+    subtitle: 'Enter your Salon Details'
+  },
+  {
+    icon: 'bx:home',
+    title: 'Beauty Salon Employee',
+    subtitle: 'Enter your Emloyee Details'
+  },
+  {
+    icon: 'bx:home',
+    title: 'Add Service Category',
+    subtitle: 'Enter your Emloyee Details'
   }
-
 ]
 
 const StepperHeaderContainer = styled(CardContent)<CardContentProps>(({ theme }) => ({
@@ -108,11 +223,30 @@ const Step = styled(MuiStep)<StepProps>(({ theme }) => ({
 }))
 
 const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
+  const [defaultStudentValues, setDefaultStudentValues] = useState({
+    dob: null,
+    email: '',
+    radio: '',
+    select: '',
+    lastName: '',
+    password: '',
+    mobileNo: '',
+    textarea: '',
+    firstName: '',
+    Gender: '',
+    hourlyRate: '',
+    fixedSalary: '',
+    workingDay: '',
+    Designation: '',
+    gender: '',
+    staffPermission: ''
+  })
+
   // ** States
 
   const [activeStep, setActiveStep] = useState<number>(0)
   const [language, setLanguage] = useState<string[]>([])
-  const [logo, setLogo] = useState<any>("")
+  const [logo, setLogo] = useState<any>('')
   const [state, setState] = useState<State>({
     password: '',
     password2: '',
@@ -127,22 +261,20 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1)
     if (activeStep === steps.length - 1) {
-      formSubmit();
+      formSubmit()
     }
-
   }
 
   const handleReset = () => {
-
     setCourseDetails({
-      ...courseDetails, "courseDescription": '',
-      "courseFee": 0,
-      "courseName": '',
-      "courseFeeDescription": "",
-      "maxPaymentInstallment": 0,
+      ...courseDetails,
+      courseDescription: '',
+      courseFee: 0,
+      courseName: '',
+      courseFeeDescription: '',
+      maxPaymentInstallment: 0
     })
   }
-
 
   // Handle Language
   const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
@@ -151,367 +283,217 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
 
   // const dispatch = useDispatch();
   let mainId = ''
-  const [categoryList, setCategoryList] = useState([]);
+  const [categoryList, setCategoryList] = useState([])
   const [allValues, setAllValues] = useState({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId:``,
-    salonName: "",
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: ``,
+    salonName: '',
     PhoneNumber: '',
     email: '',
     salonAddress: '',
-    colonyName:'',
-    landmark:"",
-    pincode:"",
-    city:"",
-    state:"",
+    colonyName: '',
+    landmark: '',
+    pincode: '',
+    city: '',
+    state: '',
     Logo: '',
-    salonStatus:""
-
-  });
-  const [emailValidator, setEmailValidator] = useState("")
+    salonStatus: ''
+  })
+  const [emailValidator, setEmailValidator] = useState('')
   const [verification, setVerification] = useState(false)
   const [validEmail, setValidEmail] = useState<boolean>(false)
   const [image, setImage] = useState<any>()
   const [error, setError] = useState<any>(null)
   const [courseDetails, setCourseDetails] = useState({
-    courseName: "",
-    courseDescription: "",
-    courseFee: 0
-    , courseFeeDescription: "",
+    courseName: '',
+    courseDescription: '',
+    courseFee: 0,
+    courseFeeDescription: '',
     maxPaymentInstallment: 0,
     courseDuration: 0
-  });
+  })
   const [validateEmail, setValidateEmail] = useState(false)
-  const [open, setOpen] = useState(false);
-  const [userOtp, setUserOtp] = useState("")
-  const [emailSend, setEmailSend] = useState<string>("OTP")
+  const [open, setOpen] = useState(false)
+  const [userOtp, setUserOtp] = useState('')
+  const [emailSend, setEmailSend] = useState<string>('OTP')
   const [next, setNext] = useState(false)
   const handleClick = () => {
-    setOpen(true);
-  };
-  const [base64String, setBase64String] = useState<any>("");
-
-  // useEffect(() => {
-
-  //   const reader = new FileReader();
-  //   if (image) {
-  //     reader.readAsDataURL(image);
-  //   }
-  //   reader.onloadend = () => {
-  //     const base64String = reader.result;
-  //     setBase64String(base64String)
-
-  //   };
-
-  // }, [image])
-
+    setOpen(true)
+  }
+  const [base64String, setBase64String] = useState<any>('')
 
   const handleClose: any = (event: any, reason: string) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
 
-    setOpen(false);
-  };
-  const courseChangeHandler = (e: { target: { name: any; value: any; }; }) => {
+    setOpen(false)
+  }
+  const courseChangeHandler = (e: { target: { name: any; value: any } }) => {
     setCourseDetails({ ...courseDetails, [e.target.name]: e.target.value })
   }
 
-  const changeHandler = (e: { target: { name: any; value: any; }; }) => {
+  const changeHandler = (e: { target: { name: any; value: any } }) => {
     setAllValues({ ...allValues, [e.target.name]: e.target.value })
-
-
   }
 
   const handleImageChange = (e: any) => {
-
-    console.log("file picker",e.target.files[0])
+    console.log('file picker', e.target.files[0])
     setImage(e.target.files[0])
 
-    setError(null);
-    const selectedFile = e.target.files[0];
-
+    setError(null)
+    const selectedFile = e.target.files[0]
 
     if (selectedFile && selectedFile.size > 2 * 1024 * 1024) {
-      setError('File size exceeds 2MB limit');
+      setError('File size exceeds 2MB limit')
     } else {
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      console.log("dfjdksflksdjf",reader)
+      const reader = new FileReader()
+      reader.readAsDataURL(selectedFile)
+      console.log('dfjdksflksdjf', reader)
 
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setBase64String(base64String);
-        setAllValues({ ...allValues, Logo: base64String });
-      };
+        const base64String = reader.result as string
+        setBase64String(base64String)
+        setAllValues({ ...allValues, Logo: base64String })
+      }
     }
   }
 
   if (allValues.salonName) {
-    const id = allValues.salonName.split(" ");
+    const id = allValues.salonName.split(' ')
     const idLength = id.length
 
     for (let i = 0; i < idLength; i++) {
       if (id[i][0] === undefined) {
-        continue;
+        continue
       }
-      mainId += id[i][0];
+      mainId += id[i][0]
     }
   }
 
   useEffect(() => {
     setValidEmail(false)
-    setUserOtp("")
+    setUserOtp('')
     if (allValues.email.length == 0) {
       setValidateEmail(false)
-    }
-
-    else if ((allValues.email).indexOf('@') == -1 || (allValues.email).indexOf('.') == -1) {
+    } else if (allValues.email.indexOf('@') == -1 || allValues.email.indexOf('.') == -1) {
       setValidateEmail(true)
-    }
-    else {
+    } else {
       setValidateEmail(false)
     }
   }, [allValues.email])
 
-
-
-  // const emailVerification = () => {
-  //   const chars = '0123456789';
-  //   let uniqueID = '';
-
-  //   for (let i = 0; i < 6; i++) {
-  //     const randomIndex = Math.floor(Math.random() * chars.length);
-  //     uniqueID += chars[randomIndex];
-  //   }
-
-  //   const cipherText = AES.encrypt(`${uniqueID}`, `test key`).toString();
-  //   localStorage.setItem('sneat-icon', cipherText)
-  //   setTimeout(() => {
-  //     localStorage.removeItem('sneat-icon')
-  //   }, 600000);
-
-  //   organizationEmailVerification({ organizationName: allValues.salonName, validationCode: uniqueID, organizationEmail: allValues.email })
-  // }
-
-  // const handleVerification = () => {
-  //   const decrypted: any = localStorage.getItem('sneat-icon')
-  //   if (decrypted) {
-
-
-  //     const bytes = AES.decrypt(decrypted.toString(), `test key`).toString(enc.Utf8)
-  //     if (bytes == userOtp) {
-  //       setEmailValidator("OTP is valid")
-  //       setOpen(true)
-  //       setValidEmail(true)
-
-  //     }
-  //     else if (bytes != userOtp) {
-  //       setEmailValidator("OTP is invalid")
-  //       setOpen(true)
-  //       setValidEmail(false)
-  //     }
-  //   }
-  //   else {
-  //     setEmailValidator("OTP is invalid or expired")
-  //     setOpen(true)
-  //     setValidEmail(false)
-  //   }
-  // }
-
   const formSubmit = () => {
-    // if (allValues.organizationName !== ''
-    //   && allValues.organizationId !== ''
-    //   && allValues.organizationPhoneNumber
-    //   && allValues.organizationEmail) {
-    //   // setNext(true)
-    //   setEmailValidator("Successfully created new Organization")
-    //   console.log(allValues, "allValues")
-    //   dispatch(organizationRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId, courseDetails: courseDetails })).then((res: any) => {
-    //     setOpen(true)
-    //     setLogo(allValues.Logo);
-    //     karomanageWelcomeMail(allValues.organizationName, allValues.organizationEmail)
-    //     setAllValues({
-    //       organizationId: ``,
-    //       organizationName: "",
-    //       organizationDetails: "",
-    //       organizationCategoryId: "",
-    //       organizationCategoryName: "",
-    //       temporaryId: '',
-    //       organizationPhoneNumber: '',
-    //       organizationEmail: '',
-    //       organizationAddress: '',
-    //       Logo: ''
-    //     })
-    //     setCourseDetails({
-    //       ...courseDetails, "courseDescription": '',
-    //       "courseFee": 0,
-    //       "courseName": '',
-    //       "courseFeeDescription": "",
-    //       "maxPaymentInstallment": 0,
-    //     })
-    //     if (refreshCall) {
-    //       refreshCall(customerDetails.customerId);
-    //     }
-    //   });
-    //   handleClick();
-    // }
-    // else {
-    //   setEmailValidator("In ")
-    //   setOpen(true)
-
-    //   // setNext(false)
-    // }
     const handleRegistration = async () => {
-      console.log("allValues",allValues)
+      console.log('allValues', allValues)
       try {
         // const res = await salonRegistration({ newOrganizationDetails: allValues, id: customerDetails.customerId});
-                const res = await salonRegistration({ newOrganizationDetails: allValues});
+        const res = await salonRegistration({ newOrganizationDetails: allValues })
 
-
-        console.log("myRes",res)
-        setOpen(true);
-        console.log(res);
-      } catch (error) { 
-
-        console.error(error);
+        console.log('myRes', res)
+        setOpen(true)
+        console.log(res)
+      } catch (error) {
+        console.error(error)
       }
-    };
+    }
 
     // Call the function
-    handleRegistration();
-
+    handleRegistration()
   }
 
-
-
   useEffect(() => {
-    if (allValues.salonName
-      && allValues.salonId
-      && allValues.PhoneNumber
-      && allValues.email
-      && allValues.salonAddress
-      && allValues.colonyName
-      && allValues.landmark
-      && allValues.pincode
-      && allValues.city
-      && allValues.state
-      && allValues.salonStatus) {
+    if (
+      allValues.salonName &&
+      allValues.salonId &&
+      allValues.PhoneNumber &&
+      allValues.email &&
+      allValues.salonAddress &&
+      allValues.colonyName &&
+      allValues.landmark &&
+      allValues.pincode &&
+      allValues.city &&
+      allValues.state &&
+      allValues.salonStatus
+    ) {
       setNext(true)
-    }
-    else {
+    } else {
       setNext(false)
     }
   }, [allValues])
-
-  // const orgCategoryHandler = (e: any) => {
-  //   const ctgId = e.target.value.split("%")[0]
-  //   const ctgName = e.target.value.split("%")[1]
-  //   setAllValues({
-  //     ...allValues, "organizationCategoryId": ctgId, "organizationCategoryName": ctgName
-  //   })
-  // }
-
-
 
   useEffect(() => {
     if (allValues.salonName) {
       if (mainId) {
         let uniqueId = ''
-        const chars = "0123456789"
+        const chars = '0123456789'
         for (let i = 0; i < 4; i++) {
-          const randomIndex = Math.floor(Math.random() * chars.length);
-          uniqueId += chars[randomIndex];
+          const randomIndex = Math.floor(Math.random() * chars.length)
+          uniqueId += chars[randomIndex]
         }
 
-        setAllValues({ ...allValues, "salonId": `${mainId.toUpperCase()}-${uniqueId}` })
+        setAllValues({ ...allValues, salonId: `${mainId.toUpperCase()}-${uniqueId}` })
+      }
+    } else {
+      setAllValues({ ...allValues, salonId: `-` })
+    }
+  }, [mainId, allValues.salonName.split('-').length])
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await organizationDetails(customerDetails.customerId)
+        if (res && res.data) {
+          setCategoryList(res.data.organizations.organizationCategory)
+        }
+      } catch (error) {
+        console.error(error)
       }
     }
-    else {
-      setAllValues({ ...allValues, "salonId": `-` })
-    }
-  }, [mainId, allValues.salonName.split("-").length])
 
+    fetchData()
+  }, [customerDetails, customerDetails.customerId])
 
-//   useEffect(() => {
+  const onSubmit = (data: any) => {
+    console.log('Form Data', data)
+    toast.success('Form Submitted')
+  }
 
-//     dispatch(organizationDetails(customerDetails.customerId)).then((res: any) => {
-//       if (res.payload.data) {
-//         setCategoryList(res.payload.data.organizations.organizationCategory)
-//       }
-
-// }, [customerDetails, customerDetails.customerId, dispatch])
-
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await organizationDetails(customerDetails.customerId);
-      if (res && res.data) {
-        setCategoryList(res.data.organizations.organizationCategory);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  fetchData();
-}, [customerDetails, customerDetails.customerId]);
-
+  const {
+    reset: studentReset,
+    control,
+    getValues: studentValues,
+    handleSubmit: handleStaffSubmit,
+    setValue,
+    formState: { errors: StaffErrors }
+  } = useForm<FormInputs>({
+    defaultValues: defaultStudentValues,
+    resolver: yupResolver(AddStaffSchema)
+  })
 
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
-
           <Fragment>
-
             <AccordionDetails>
               <Grid container spacing={5}>
-                {/* <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Organization category</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      name='organizationCategoryId'
-                      style={{ marginBottom: "10px" }}
-                      required
-                      value={`${allValues.organizationCategoryId}%${allValues.organizationCategoryName}`}
-                      label="Organization category"
-                      onChange={orgCategoryHandler}
-                      inputProps={{
-                        maxLength: 50,
-                      }}
-                    >
-                      {categoryList && categoryList.length > 0 ? (
-                        categoryList.map((organization: any, index: any) => (
-                          <MenuItem key={index} value={`${organization.organizationCategoryId}%${organization.organizationCategoryName}`}>
-                            {organization.organizationCategoryName}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem disabled>
-                          No data found
-                        </MenuItem>
-                      )}
-                    </Select>
-                  </FormControl>
-                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     fullWidth
-                    variant="outlined"
-                    name="salonName"
+                    variant='outlined'
+                    name='salonName'
                     onChange={changeHandler}
-                    label="Organization name"
-                    style={{ marginBottom: "10px" }}
+                    label='Name'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     value={allValues.salonName}
                     inputProps={{
-                      maxLength: 50,
+                      maxLength: 50
                     }}
                   />
-
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -523,383 +505,454 @@ useEffect(() => {
                         MozAppearance: 'textfield'
                       }
                     }}
-                    type="number"
-                    name="PhoneNumber"
-                    label="Organization phone number"
+                    type='number'
+                    name='PhoneNumber'
+                    label='Phone Number'
                     onChange={changeHandler}
                     value={allValues.PhoneNumber}
-                    placeholder='+911234568790'
+                    placeholder='Type Here'
                     required
                     error={allValues.PhoneNumber.length > 13 ? true : false}
                     inputProps={{
                       inputMode: 'numeric',
                       pattern: '[0-9]*',
                       min: 0,
-                      max: 10000,
+                      max: 10000
                     }}
-                    variant="outlined"
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    style={{ marginBottom: '10px' }}
                     fullWidth
                   />
                 </Grid>
-                {/* <Grid item xs={12} sm={6}>
-                  <FormControl variant="outlined" fullWidth>
-                    <InputLabel htmlFor="standard-adornment-amount">Organization Id</InputLabel>
-                    <OutlinedInput
-                      name="temporaryId"
-                      placeholder='Organization Id'
-                      label="Organization Id"
-                      required
-                      onChange={changeHandler}
-                      disabled
-                      value={allValues.organizationId.split("-")[1]}
-                      style={{ marginBottom: "10px" }}
-                      fullWidth
-                      startAdornment={<InputAdornment position="start">{mainId ? mainId.toUpperCase() + ' - ' : ''}</InputAdornment>}
-                    />
 
-                  </FormControl>
-                </Grid> */}
-
-                <Grid item xs={12} >
+                <Grid item xs={12}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <TextField
-                      type="email"
-                      name="email"
-                      label="Organization E-mail"
+                      type='email'
+                      name='email'
+                      label='E-mail'
                       required
+                      placeholder='Type Here'
                       onChange={changeHandler}
                       value={allValues.email}
-                      variant="outlined"
-                      style={{ marginBottom: "10px" }}
+                      variant='outlined'
+                      style={{ marginBottom: '10px' }}
                       error={validateEmail}
                       sx={{ width: '88%' }}
                       inputProps={{
-                        maxLength: 50,
+                        maxLength: 50
                       }}
                     />
-                    {/* <Button
-                      disabled={!allValues.organizationEmail ? true : validateEmail ? true : false}
-                      variant='contained'
-                      onClick={() => {
-                        emailVerification(),
-                          setVerification(true)
-                        setEmailSend("Resend")
-                      }}>{emailSend}</Button> */}
                   </div>
                 </Grid>
-                {/* {
-                  verification && !validEmail && <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <TextField
-                      sx={{ width: '88%' }}
-                      value={userOtp}
-                      onChange={(e) => setUserOtp(e.target.value)}
-                    />
-                    <Button
-                      variant='outlined'
-                      sx={{ marginLeft: 10 }}
-                      color={validEmail ? 'success' : 'primary'}
-                      onClick={() => handleVerification()} >Verify</Button>
-                  </Grid>
-                } */}
+             
 
-<Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <TextField name="inventoryImage" type='file' onChange={handleImageChange} />
+                    <TextField name='inventoryImage' type='file' onChange={handleImageChange} />
                     {error && <div style={{ color: 'red' }}>{error}</div>}
                     {/* {base64String && <img src={base64String} alt="Selected" style={{ maxWidth: '100%', marginTop: '10px' }} />} */}
                   </FormControl>
                 </Grid>
 
-
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="salonAddress"
-                    label="Salon address "
+                    id='outlined-multiline-static'
+                    name='salonAddress'
+                    label='House No.,Building Name '
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.salonAddress}
-                    variant="outlined"
-                    placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-                    helperText="max 150 words"
+                    helperText='max 150 words'
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="colonyName"
-                    label="Colony "
+                    id='outlined-multiline-static'
+                    name='colonyName'
+                    label='Road Name,Area,Colony'
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.colonyName}
-                    variant="outlined"
+                    variant='outlined'
                     placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-                    helperText="max 150 words"
+                    helperText='max 150 words'
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="landmark"
-                    label="Area, landmark "
+                    id='outlined-multiline-static'
+                    name='landmark'
+                    label='Landmark '
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.landmark}
-                    variant="outlined"
-                    placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-                    helperText="max 150 words"
+                    helperText='max 150 words'
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="pincode"
-                    label="Pincode "
+                    id='outlined-multiline-static'
+                    name='pincode'
+                    label='Pincode '
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.pincode}
-                    variant="outlined"
-                    placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="city"
-                    label="City "
+                    id='outlined-multiline-static'
+                    name='city'
+                    label='City '
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.city}
-                    variant="outlined"
-                    placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="outlined-multiline-static"
-                    name="state"
-                    label="State "
+                    id='outlined-multiline-static'
+                    name='state'
+                    label='State '
                     onChange={changeHandler}
                     required
                     minRows={1}
                     inputProps={{
-                      maxLength: 150,
+                      maxLength: 150
                     }}
                     value={allValues.state}
-                    variant="outlined"
-                    placeholder='Type here'
-                    style={{ marginBottom: "10px" }}
+                    variant='outlined'
+                    placeholder='Type Here'
+                    style={{ marginBottom: '10px' }}
                     multiline
                     fullWidth
-
                   />
                 </Grid>
-
-                {/* <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="outlined-multiline-static"
-                    name="organizationDetails"
-                    required
-                    label="Organization description "
-                    onChange={changeHandler}
-                    minRows={3}
-                    value={allValues.organizationDetails}
-                    variant="outlined"
-                    multiline
-                    fullWidth
-                    inputProps={{
-                      maxLength: 500,
-                    }}
-                    helperText="max 500 words"
-                  />
-                </Grid> */}
-
               </Grid>
             </AccordionDetails>
-
           </Fragment>
         )
       case 1:
         return (
-          <Fragment key={step}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Course name'
-                required
-                placeholder='HTML,CSS,back-end...'
-                value={courseDetails.courseName}
-                name='courseName'
-                onChange={courseChangeHandler}
-                autoComplete='OFF'
-                inputProps={{
-                  maxLength: 50,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id='stepper-custom-vertical-personal-select-label'>Course Duration</InputLabel>
-                <Select
-                  label='Course duration   '
-                  required
-                  value={courseDetails.courseDuration}
-                  name='courseDuration'
-                  autoComplete='OFF'
-                  id='stepper-custom-vertical-personal-select'
-                  onChange={courseChangeHandler}
-                  labelId='stepper-custom-vertical-personal-select-label'
-                >
-                  <MenuItem value={1}>1 months</MenuItem>
-                  <MenuItem value={3}>3 months</MenuItem>
-                  <MenuItem value={6}>6 months</MenuItem>
-                  <MenuItem value={9}>9 months</MenuItem>
-                  <MenuItem value={12}>1 year</MenuItem>
-                  <MenuItem value={24}>2 year</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                name='courseDescription'
-                label='Course description'
-                placeholder='Course description'
-                autoComplete='OFF'
-                required
-                value={courseDetails.courseDescription}
-                onChange={courseChangeHandler}
-                minRows={2}
-                inputProps={{
-                  maxLength: 500,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Course fee'
-                required
-                placeholder='20000...'
-                autoComplete='OFF'
-                value={courseDetails.courseFee}
-                name='courseFee'
-                onChange={courseChangeHandler}
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  min: 0,
+          <Grid>
+            <Grid>
+              <Card>
+                <CardHeader title='Add Employee'/>
+                <CardContent>
+                  <form onSubmit={handleStaffSubmit(onSubmit)}>
+                    <Grid container spacing={5}>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='firstName'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Name'
+                                onChange={onChange}
+                                placeholder='Name'
+                                error={Boolean(StaffErrors.firstName)}
+                                aria-describedby='validation-basic-first-name'
+                              />
+                            )}
+                          />
+                          {StaffErrors.firstName && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
 
-                }}
-              />
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='email'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                type='Email'
+                                value={value}
+                                onChange={onChange}
+                                label='Email '
+                                placeholder='john.doecxvvbdffdd@example.co  '
+                                error={Boolean(StaffErrors.email)}
+                              />
+                            )}
+                          />
+                          {StaffErrors.email && (
+                            <FormHelperText sx={{ color: 'error.main' }}>
+                              Required, a vaild email address
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <Controller
+                          name='doJ'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <DatePickerWrapper>
+                              <DatePicker
+                                selected={value}
+                                showYearDropdown
+                                showMonthDropdown
+                                onChange={e => onChange(e)}
+                                placeholderText='MM/DD/YYYY'
+                                customInput={
+                                  <CustomInput
+                                    value={value}
+                                    onChange={onChange}
+                                    label='Date of Joining'
+                                    error={Boolean(StaffErrors.doJ)}
+                                    aria-describedby='validation-basic-dob'
+                                  />
+                                }
+                              />
+                            </DatePickerWrapper>
+                          )}
+                        />
+                        {StaffErrors.doJ && (
+                          <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            control={control}
+                            name='mobileNo'
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                type='MobileNo'
+                                value={value}
+                                onChange={onChange}
+                                label='MobileNumber'
+                                placeholder='123-456-7890'
+                                error={Boolean(StaffErrors.mobileNo)}
+                              />
+                            )}
+                          />
+                          {StaffErrors.mobileNo && (
+                            <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='hourlyRate'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Hourly Rate'
+                                onChange={onChange}
+                                placeholder='Hourly Rate'
+                                error={Boolean(StaffErrors.hourlyRate)}
+                                helperText={StaffErrors.hourlyRate && StaffErrors.hourlyRate.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='fixedSalary'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Fixed Salary'
+                                onChange={onChange}
+                                placeholder='Fixed Salary'
+                                error={Boolean(StaffErrors.fixedSalary)}
+                                helperText={StaffErrors.fixedSalary && StaffErrors.fixedSalary.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='workingDay'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Working Hours/Day'
+                                onChange={onChange}
+                                placeholder='Type Here'
+                                error={Boolean(StaffErrors.workingDay)}
+                                helperText={StaffErrors.workingDay && StaffErrors.workingDay.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='fixedSalary'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Shift Hours'
+                                onChange={onChange}
+                                placeholder='Type Here'
+                                error={Boolean(StaffErrors.fixedSalary)}
+                                helperText={StaffErrors.fixedSalary && StaffErrors.fixedSalary.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='lastName'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Address'
+                                onChange={onChange}
+                                placeholder='Address'
+                                error={Boolean(StaffErrors.lastName)}
+                                aria-describedby='validation-basic-last-name'
+                              />
+                            )}
+                          />
+                          {StaffErrors.lastName && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={10}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='designation'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                              <TextField
+                                rows={4}
+                                multiline
+                                {...field}
+                                label='Designation'
+                                error={Boolean(StaffErrors.designation)}
+                                aria-describedby='validation-basic-textarea'
+                              />
+                            )}
+                          />
+                          {StaffErrors.designation && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </CardContent>
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id='stepper-custom-vertical-personal-select-label'>Max Installments</InputLabel>
-                <Select
-                  label='Max installment   '
-                  autoComplete='OFF'
-                  value={courseDetails.maxPaymentInstallment}
-                  name='maxPaymentInstallment'
-                  id='stepper-custom-vertical-personal-select'
-                  onChange={courseChangeHandler}
-                  labelId='stepper-custom-vertical-personal-select-label'
-                >
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={2}>2</MenuItem>
-                  <MenuItem value={3}>3</MenuItem>
-                  <MenuItem value={4}>4</MenuItem>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={6}>6</MenuItem>
-                  <MenuItem value={7}>7</MenuItem>
-                  <MenuItem value={8}>8</MenuItem>
-                  <MenuItem value={9}>9</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                name='courseFeeDescription'
-                label='Course fee description'
-                placeholder='Course fee description'
-                required
-                autoComplete='OFF'
-                value={courseDetails.courseFeeDescription}
-                onChange={courseChangeHandler}
-                minRows={2}
-                inputProps={{
-                  maxLength: 500,
-                }}
-              />
-            </Grid>
-            {/* <Button color='primary' onClick={formSubmit}>create </Button> */}
-          </Fragment>
+          </Grid>
         )
-
+      case 2:
+       return(
+          <>
+          <AddServiceCategory/>
+          </>
+       )
       default:
         return 'Unknown Step'
     }
   }
-
   const renderContent = () => {
     if (activeStep === steps.length) {
-      return (
-        <>
-
-          <Typography>All steps are completed!</Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-
-          </Box>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            {/* {logo && <img src={logo} alt="Organization Logo" style={{ maxWidth: '100px', marginTop: '10px' }} />} */}
-          </Box>
-        </>
-      )
+      return <>Form is Submitted</>
     } else {
       return (
         <form onSubmit={e => e.preventDefault()}>
@@ -915,14 +968,20 @@ useEffect(() => {
               >
                 Back
               </Button>
-              <div >
+              <div>
                 {
-                  <Button sx={{ marginRight: 6 }}  size='large' variant='contained' onClick={handleNext}>
-                    {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                  <Button sx={{ marginRight: 6 }} size='large' variant='contained' onClick={handleNext}>
+                    Next
                   </Button>
                 }
-
               </div>
+              {/* <div>
+                {
+                  <Button sx={{ marginRight: 6 }} size='large' variant='contained' onClick={handleNext}>
+                    {activeStep === steps.length - 1 ? 'Submit & Continue' : 'Next'}
+                  </Button>
+                }
+              </div> */}
             </Grid>
           </Grid>
         </form>
@@ -956,7 +1015,8 @@ useEffect(() => {
                                 mr: 2.5,
                                 borderRadius: 1,
                                 ...(activeStep === index && {
-                                  boxShadow: theme => `0 0.1875rem 0.375rem 0 ${hexToRGBA(theme.palette.primary.main, 0.4)}`
+                                  boxShadow: theme =>
+                                    `0 0.1875rem 0.375rem 0 ${hexToRGBA(theme.palette.primary.main, 0.4)}`
                                 })
                               }}
                             >
@@ -985,21 +1045,22 @@ useEffect(() => {
                   orientation='vertical'
                   connector={<></>}
                   sx={{ height: '100%', minWidth: '15rem' }}
-                >
-
-                </Stepper>
+                ></Stepper>
               </StepperWrapper>
             </StepperHeaderContainer>
           </Card>
         </Grid>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={emailValidator?.includes("invalid") ? "error" : "success"} sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity={emailValidator?.includes('invalid') ? 'error' : 'success'}
+            sx={{ width: '100%' }}
+          >
             {emailValidator}
           </Alert>
         </Snackbar>
       </Grid>
     </>
-
   )
 }
 

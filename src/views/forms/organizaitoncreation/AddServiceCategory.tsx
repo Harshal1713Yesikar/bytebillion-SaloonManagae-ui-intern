@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CreateStaff from './AddStaff'
-import StaffList from './StaffList'
+
 
 import Grid from '@mui/material/Grid'
 import Tabs from '@mui/material/Tabs';
@@ -10,9 +9,8 @@ import Box from '@mui/material/Box';
 import { useRouter } from 'next/router';
 import Dashboard from 'src/pages/dashboard';
 import { useSettings } from 'src/@core/hooks/useSettings';
-import StaffSchedule from './StaffSchedule';
-import UploadAttendace from './UploadAttandace';
-import InactiveStaff from './InactiveStaff';
+import AddCategory from './AddCategory';
+import AddService from './AddService';
 
 
 interface TabPanelProps {
@@ -47,7 +45,7 @@ interface TabPanelProps {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-const ManageStaffViewPage = () => {
+const AddServiceCategory = () => {
 
     const [value, setValue] = useState(0);
     const {settings} = useSettings()
@@ -57,10 +55,8 @@ const ManageStaffViewPage = () => {
   return (
     <>
     <Grid container spacing={1}>
-      <Grid item xs={12} md={3} lg={3}>
-        <Dashboard/>
-      </Grid>
-        <Grid item xs={12} md={9} lg={9} sx={{paddingRight:1}}>
+      
+        <Grid item xs={12} md={9} lg={9} sx={{paddingRight:1}}  >
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={value}
@@ -70,18 +66,14 @@ const ManageStaffViewPage = () => {
             allowScrollButtonsMobile
             aria-label="scrollable auto tabs example"
           >
-            <Tab label="staff List" {...a11yProps(0)} />
-            <Tab label="Add Employee" {...a11yProps(1)} /> 
-            <Tab label="Staff Schedule" {...a11yProps(2)} />
-            <Tab label="Upload Attendance" {...a11yProps(3)} />
-            <Tab label="Inactive Staff" {...a11yProps(4)} />
+            <Tab label="Add Category" {...a11yProps(0)} />
+            <Tab label="Add Service" {...a11yProps(1)} /> 
+            
             </Tabs>
           </Box>
-          <TabPanel value={value} index={0}><StaffList setUpdateCollegeState={setUpdateCollegeState} updateCollegeState={updateCollegeState}/></TabPanel>
-          <TabPanel value={value} index={1}><CreateStaff/></TabPanel>
-          <TabPanel value={value} index={2}><StaffSchedule/></TabPanel>
-          <TabPanel value={value} index={3}><UploadAttendace/></TabPanel>
-          <TabPanel value={value} index={4}><InactiveStaff/></TabPanel>
+          <TabPanel value={value} index={0}><AddCategory/></TabPanel>
+          <TabPanel value={value} index={1}><AddService/></TabPanel>
+         
          
           </Grid>
         </Grid>
@@ -89,4 +81,4 @@ const ManageStaffViewPage = () => {
   )
 }
 
-export default ManageStaffViewPage
+export default AddServiceCategory
