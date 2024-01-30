@@ -199,10 +199,27 @@ export async function getCustomerDetails(params: any) {
     return res;
   }
   catch (err: any) {
-    return err;
+    return err
   }
 }
 
+
+// Chart Data Api
+
+export const staffRegistrationApi = async (staffDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`,
+      staffDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
 
 export async function updateOrganization(organization: any) {
   try {
@@ -268,4 +285,19 @@ export async function getAllOrganizationList(customerId:any) {
 
     return err;
   }
+} 
+export async function listAllEmployeeApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`, { headers })
+    console.log("staff Data", res.data)
+    return res
+  }
+  catch (err) {
+    return err;
+  }
 }
+
+
+
+
+

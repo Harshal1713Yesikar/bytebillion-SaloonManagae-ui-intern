@@ -1,67 +1,84 @@
-import { Button, Card, FormControl, Grid, MenuItem, TextField, Typography } from '@mui/material'
+import { Box, Card, Grid, TextField, Typography } from '@mui/material'
 import React from 'react'
-import CloseIcon from '@mui/icons-material/Close';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import AddIcon from '@mui/icons-material/Add';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 const Index = () => {
-  const [selectProduct, setSelectProduct] = React.useState('');
-  const [selectRetail, setSelectRetail] = React.useState('');
+  const [selectGroup, setSelectGroup] = React.useState('');
 
-  const handleSelectProduct = (event: SelectChangeEvent) => {
-    setSelectProduct(event.target.value);
-  };
-
-  const handleSelectRetail = (event: SelectChangeEvent) => {
-    setSelectRetail(event.target.value);
+  const handleSelectGroup = (event: SelectChangeEvent) => {
+    setSelectGroup(event.target.value);
   };
 
   return (
     <>
-      <Card sx={{ width: '70%' }}>
-        <Grid sx={{ p: 5, pb: 2 }}>
-          <Grid sx={{ display: 'flex', alignItems: 'center', mb: 10 }}>
-            <CloseIcon sx={{ fontSize: '25px', cursor: 'pointer', mr: 3 }} />
-            <Typography sx={{ fontSize: '22px', fontWeight: '600' }}>Add Product Request</Typography>
-          </Grid>
-          <Grid sx={{ display: 'flex' }}>
-            <FormControl sx={{ m: 1, minWidth: 300 }} size='small'>
-              <Select
-                value={selectProduct}
-                onChange={handleSelectProduct}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                <MenuItem value="">
-                  <em style={{ fontStyle: 'normal' }}>Select Product</em>
-                </MenuItem>
-                <MenuItem value={10}>Hair Gel</MenuItem>
-                <MenuItem value={20}>Lipstic</MenuItem>
-                <MenuItem value={30}>Test</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField sx={{ m: 1 }} size='small' id='outlined-basic' label='Quantity' />
-            <FormControl sx={{ m: 1, minWidth: 300 }} size='small'>
-              <Select
-                value={selectRetail}
-                onChange={handleSelectRetail}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                <MenuItem value="">
-                  <em style={{ fontStyle: 'normal' }}>Retail</em>
-                </MenuItem>
-                <MenuItem value={10}>In House</MenuItem>
-
-              </Select>
-            </FormControl>
-          </Grid>
+      <Card sx={{ width: '100%' }}>
+        <Grid>
+          <Typography>Add Service</Typography>
         </Grid>
-        <Grid sx={{ display: 'flex', justifyContent: 'flex-end', pr: 5, borderBottom: '1px solid lightGray', pb: 4 }}>
-          <Button sx={{ width: '140px', textTransform: 'none', fontSize: '15px' }} variant='contained'><AddIcon sx={{ mr: 1 }} /> Add More</Button>
+        <Grid sx={{ display: 'flex', width: '100%' }}>
+          <FormControl sx={{ m: 1, width: '50%' }}>
+            <Select
+              value={selectGroup}
+              onChange={handleSelectGroup}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Without label' }}
+            >
+              <MenuItem value="">
+                <em>Select Group</em>
+              </MenuItem>
+              <MenuItem value={10}>Facial Service</MenuItem>
+              <MenuItem value={20}>Hair Service</MenuItem>
+              <MenuItem value={30}>Nail Art</MenuItem>
+            </Select>
+          </FormControl>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '200px' },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField id="outlined-basic" placeholder='Name' variant="outlined" />
+          </Box>
         </Grid>
-        <Grid sx={{ display: 'flex', justifyContent: 'flex-end', p: 5 }}>
-          <Button variant='contained'>Save</Button>
+        <Grid>
+          <Box sx={{ width: '50%' }}>
+            <TextField
+              id="outlined-multiline-static"
+              label="Description"
+              multiline
+              rows={3}
+              sx={{ width: '100%', m: 1 }}
+            />
+          </Box>
+        </Grid>
+        <Grid sx={{ display: 'flex' }}>
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '200px' },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField id="outlined-basic" placeholder='Name' variant="outlined" />
+          </Box>
+          <Box>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['TimePicker']}>
+                <TimePicker label="Basic time picker" />
+              </DemoContainer>
+            </LocalizationProvider>
+          </Box>
         </Grid>
       </Card>
     </>
