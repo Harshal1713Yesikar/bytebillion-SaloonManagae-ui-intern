@@ -545,7 +545,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                     />
                   </div>
                 </Grid>
-             
+
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -815,7 +815,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                               />
                             )}
                           />
-                        
+
                         </FormControl>
                       </Grid>
 

@@ -33,6 +33,11 @@ import Icon from 'src/@core/components/icon'
 import OrgCreationStepper from './OrgCreationStepper'
 import JoinUsingLink from './OrganizationLink'
 import { getAllOrganizationList } from 'src/store/APIs/Api'
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
+
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+
 
 const Card = styled(MuiCard)<CardProps>(() => ({
   border: 0,
@@ -93,7 +98,13 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
   const [userDetails, setUserDetails] = useState('')
   const [allOrganizationsList, setAllOrganizationsList] = useState([])
   const [organizationCategoryList, setOrganizationCategoryList] = useState()
-  const [organizationData,setOrganizationData] = useState([])
+  const [organizationData, setOrganizationData] = useState([])
+  const [createOrg, setCreateOrg] = useState(false)
+
+  function newSalon() {
+    setCreateOrg(true)
+    // router.push('/OrgCreationStepper')
+  }
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -106,19 +117,20 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
     router.push('/')
     instance.logoutRedirect()
     localStorage.clear()
-  } 
+  }
 
 
-  useEffect(()=>{
+  useEffect(() => {
     getAllOrganizationList("099f9bf2-8ac2-4f84-8286-83bb46595fde").then((res: any) => {
-      console.log("sdjhsdufuf",res.data.data)
+      console.log("sdjhsdufuf", res.data.data)
       setAllOrganizationsList(res?.data?.data)
+      console.log(res?.data?.data, "asdfghj")
       setLoading(false)
 
       // console.log(res,"res")
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
     })
-  },[])
+  }, [])
 
   const orgSelected = (organization: any) => {
     getAllOrganizationList("099f9bf2-8ac2-4f84-8286-83bb46595fde").then((res: any) => {
@@ -153,7 +165,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
   const bringOrganizationsDetails = async (userid: any) => {
     try {
       const response = await organizationDetails(userid)
-      console.log(response,'123')
+      console.log(response, '123')
       if (response && response.data) {
         setAllOrganizationsList(response.data.organizations.organizationNames)
         setLoading(false)
@@ -168,7 +180,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
     const fetchData = async () => {
       try {
         const response = await instance?.acquireTokenSilent(request)
-          // console.log(response,"140 test 2")
+        // console.log(response,"140 test 2")
         if (response) {
           // console.log('andr test 2222')
           const res = await customerRegistration(response.idToken)
@@ -177,10 +189,10 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
           localStorage.setItem('userDetails', JSON.stringify(res))
           setCustomerId(res.payload.customerId)
           setUserDetails(res.payload)
-           
+
           // Call bringOrganizationsDetails without dispatching
           await bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
-          
+
 
           // Call getCustomerDetails directly if it doesn't involve dispatch
           await getCustomerDetails({ customerId: res.payload.customerId })
@@ -223,27 +235,37 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
 
       setLoading(false)
     }
-  }, [recall])  
+  }, [recall])
 
-  const renderedOrganizations = allOrganizationsList.map((organization: any, index: number) => {
-    return (
-      <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.salonName}>
-        <Typography> {organization.salonName}</Typography>
-      </MenuItem>
-    )
-  })
+  // const renderedOrganizations = allOrganizationsList.map((organization: any, index: number) => {
+  //   return (
+  //     <Card onClick={() => orgSelected(organization)} key={index} value={organization.salonName}>
+  //       <Avatar sx={{ backgroundColor: 'grey' }}>{stringAvatar(organization.salonName)}</Avatar>
+  //       <h3 style={{ marginBottom: 0 }}>{organization.salonName}</h3>
+  //       <h4 style={{ marginTop: 0 }}>{organization.city}</h4>
+  //     </Card>
+  //   )
+  // })
 
-  const TextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
-    width: '100%',
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: theme.palette.background.paper
-    },
-    [theme.breakpoints.up('sm')]: {
-      width: '55%'
-    }
-  }))
 
-  console.log(renderedOrganizations, 'fefefewfe')
+
+  // const TextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
+  //   width: '100%',
+  //   '& .MuiOutlinedInput-root': {
+  //     backgroundColor: theme.palette.background.paper
+  //   },
+  //   [theme.breakpoints.up('sm')]: {
+  //     width: '55%'
+  //   }
+  // }))
+
+
+
+  function stringAvatar(name: string) {
+    return name.split(' ')
+      .map((word: string) => word.charAt(0))
+      .join('');
+  }
 
   return (
     <>
@@ -268,157 +290,38 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
         </Card>
       </div>
       <Grid container spacing={0} sx={{ margin: '0 auto', padding: '0' }}>
-        <Grid xs={12}>
-          <Card>
-            <CardContent sx={{ pt: 17.5, textAlign: 'center', pb: theme => `${theme.spacing(17.5)} !important` }}>
-              {/* <Grid xs={12} sm={7} style={{ margin: '0 auto', paddingTop: '40px' }}>
-                <JoinUsingLink recall={recall} setRecall={setRecall} />
-              </Grid> */}
-              {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Card>
-           
-                    <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
-                      <FormControl fullWidth>
-                        {/* <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel> */}
-                        <Select
-                          labelId='demo-simple-select-label'
-                          id='demo-simple-select'
-                          value={[]}
-                          label='your organizations'
-                          MenuProps={MenuProps}
-                        >
-                          {organizationData.length > 0 ? 
-                            organizationData.map((e:any)=>{
-                              return(
+        <Grid container xs={12} sm={6} md={8} lg={10} style={{ margin: '0 auto', display: "flex", flexWrap: "wrap", justifyContent: "center", marginTop: "60px" }}>
 
-                                <Box display='flex' flexDirection='column'>
-                              {e?.salonName}
-                            </Box>
-                                )
-                            })
-                          : (
-                            <MenuItem disabled>No data found</MenuItem>
-                          )}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Typography sx={{ mt: 3, color: 'text.secondary' }}>
-                      To create new organization fill the information below and click Submit
-                    </Typography>
-                    </Card>
-                </div>
-              ) : (
-                <>
-                  {/* <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
-                    {renderedOrganizations.length != 0 ? 'Select Organization' : 'Create Organization!'}
-                  </Typography> */}
-                  {renderedOrganizations.length !== 0 ? (
-                    <>
-                      <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
-                        <FormControl fullWidth>
-                          {/* <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel> */}
-                          <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={[]}
-                            label='your organizations'
-                            MenuProps={MenuProps}
-                          >
-                            <Box display='flex' flexDirection='column'>
-                              {renderedOrganizations}
-                            </Box>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      {/* <Typography sx={{ mt: 2, mb: -13, color: 'text.secondary' }}>
-                        To create new organization fill the information below and click Submit
-                      </Typography> */}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </>
-              )}
-            </CardContent>
-            {/* <CardContent sx={{ pt: 17.5, textAlign: 'center', pb: theme => `${theme.spacing(17.5)} !important` }}>
-              <Grid xs={12} sm={7} style={{ margin: '0 auto', paddingTop: '40px' }}>
-                <JoinUsingLink recall={recall} setRecall={setRecall} />
-              </Grid>
-              {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Skeleton>
-                    <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
-                      Select Organization
-                    </Typography>
-                    <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
-                      <FormControl fullWidth>
-                        <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel>
-                        <Select
-                          labelId='demo-simple-select-label'
-                          id='demo-simple-select'
-                          value={[]}
-                          label='your organizations'
-                          MenuProps={MenuProps}
-                        >
-                          {renderedOrganizations?.length > 0 ? (
-                            <Box display='flex' flexDirection='column'>
-                              {renderedOrganizations}
-                            </Box>
-                          ) : (
-                            <MenuItem disabled>No data found</MenuItem>
-                          )}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Typography sx={{ mt: 3, color: 'text.secondary' }}>
-                      To create new organization fill the information below and click Submit
-                    </Typography>
-                  </Skeleton>
-                </div>
-              ) : (
-                <>
-                  <Typography variant='h5' sx={{ mb: 2, mt: 13 }}>
-                    {renderedOrganizations.length != 0 ? 'Select Organization' : 'Create Organization!'}
-                  </Typography>
-                  {renderedOrganizations.length !== 0 ? (
-                    <>
-                      <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
-                        <FormControl fullWidth>
-                          <InputLabel id='demo-simple-select-label'>Your Organizations</InputLabel>
-                          <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={[]}
-                            label='your organizations'
-                            MenuProps={MenuProps}
-                          >
-                            <Box display='flex' flexDirection='column'>
-                              {renderedOrganizations}
-                            </Box>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Typography sx={{ mt: 2, mb: -13, color: 'text.secondary' }}>
-                        To create new organization fill the information below and click Submit
-                      </Typography>
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </>
-              )}
-            </CardContent> */}
+
+          {allOrganizationsList.map((organization: any, index: number) => {
+            return (<Card onClick={() => orgSelected(organization)} key={index} value={organization.salonName} style={{ height: "200px", width: "200px", border: "solid black 2px", backgroundColor: "pink", margin: "5px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} key={index}>
+              <Avatar sx={{ backgroundColor: 'white' }}>{stringAvatar(organization.salonName)}</Avatar>
+              <h3 style={{ marginBottom: 0 }}>{organization.salonName}</h3>
+              <h4 style={{ marginTop: 0 }}>{organization.city}</h4>
+              {/* {renderedOrganizations} */}
+
+            </Card>)
+          })}
+
+
+          <Card style={{ height: "200px", width: "200px", border: "solid black 2px", backgroundColor: "pink", margin: "5px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <h1 onClick={newSalon} ><AddToPhotosIcon sx={{ fontSize: "100px", color: "black", alignItems: "center" }} /></h1>
           </Card>
         </Grid>
       </Grid>
-      <Grid xs={12} sm={6} style={{ margin: '0 auto' }}>
+      {createOrg ? <Grid xs={12} sm={6} style={{ margin: '0 auto', display: "block" }}>
         <OrgCreationStepper
           categoryList={organizationCategoryList}
           customerDetails={userDetails}
           refreshCall={bringOrganizationsDetails}
         />
-      </Grid>
+      </Grid> : <Grid xs={12} sm={6} style={{ margin: '0 auto', display: "none" }}>
+        <OrgCreationStepper
+          categoryList={organizationCategoryList}
+          customerDetails={userDetails}
+          refreshCall={bringOrganizationsDetails}
+        />
+      </Grid>}
     </>
   )
 }

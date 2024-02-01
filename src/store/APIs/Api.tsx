@@ -4,9 +4,9 @@ import headers from "./Headers";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const Api = () => {
-    return (
-        <div>Api</div>
-    )
+  return (
+    <div>Api</div>
+  )
 }
 
 export default Api
@@ -109,31 +109,31 @@ export const organizationRegistration = async ({ newOrganizationDetails, id, cou
   }
 };
 
-export const salonRegistration = async ({ newOrganizationDetails}: any) => {
+export const salonRegistration = async ({ newOrganizationDetails }: any) => {
   try {
-// console.log(newOrganizationDetails);
+    // console.log(newOrganizationDetails);
 
 
-      const res = await axios.post(
-        "https://karo-scan-dev-api.azure-api.net/st-salonRegistration-fnp/createSalon",
-        {
-          customerId: newOrganizationDetails.customerId,
-          salonName: newOrganizationDetails.salonName,
-          PhoneNumber:newOrganizationDetails.PhoneNumber ,
-          email:newOrganizationDetails.email,
-          address:newOrganizationDetails.address,
-          colonyName:newOrganizationDetails.colonyName,
-          landmark:newOrganizationDetails.landmark,
-          pincode:newOrganizationDetails.pincode,
-          city:newOrganizationDetails.city,
-          state:newOrganizationDetails.state,
-          Logo:newOrganizationDetails.Logo,
-        },
-        { headers }
-      );
-      console.log("response",res.data)
+    const res = await axios.post(
+      "https://karo-scan-dev-api.azure-api.net/st-salonRegistration-fnp/createSalon",
+      {
+        customerId: newOrganizationDetails.customerId,
+        salonName: newOrganizationDetails.salonName,
+        PhoneNumber: newOrganizationDetails.PhoneNumber,
+        email: newOrganizationDetails.email,
+        address: newOrganizationDetails.address,
+        colonyName: newOrganizationDetails.colonyName,
+        landmark: newOrganizationDetails.landmark,
+        pincode: newOrganizationDetails.pincode,
+        city: newOrganizationDetails.city,
+        state: newOrganizationDetails.state,
+        Logo: newOrganizationDetails.Logo,
+      },
+      { headers }
+    );
+    console.log("response", res.data)
 
-      return res.data; // Assuming you want to return the data from the response
+    return res.data; // Assuming you want to return the data from the response
 
   } catch (err) {
     throw err; // Rethrow the error to be caught by the caller
@@ -145,15 +145,15 @@ export const organizationDetails = async (id: string) => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
       { headers }
-      );
-      console.log("AAAAA")
-      return res.data;
+    );
+    console.log("AAAAA")
+    return res.data;
 
-    } catch (err) {
-      console.error(err);
-      throw err; // Rethrow the error to be caught by the caller
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    throw err; // Rethrow the error to be caught by the caller
+  }
+};
 
 
 
@@ -174,8 +174,8 @@ export async function organizationEmailVerification(params: any) {
   }
 }
 
-export const customerRegistration = async (id:any) => {
-  console.log(id,"ABCsd")
+export const customerRegistration = async (id: any) => {
+  console.log(id, "ABCsd")
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}`,
@@ -207,18 +207,18 @@ export async function getCustomerDetails(params: any) {
 export async function updateOrganization(organization: any) {
   try {
     const res = await axios.post(`https://karomanage-dev-apim.azure-api.net/organizationDetails/updateOrganization`,
-    {
-      "customerId": organization.customerId,
-      "organizationId": organization.organizationId,
-      "organizationName": organization.organizationName,
-      "organizationDetails": organization.organizationDetails,
-      "organizationPhoneNumber": organization.organizationPhoneNumber,
-      "organizationEmail": organization.organizationEmail,
-      "organizationAddress": organization.organizationAddress,
-      "organizationLogo": organization.organizationLogo
-    }, { headers }
+      {
+        "customerId": organization.customerId,
+        "organizationId": organization.organizationId,
+        "organizationName": organization.organizationName,
+        "organizationDetails": organization.organizationDetails,
+        "organizationPhoneNumber": organization.organizationPhoneNumber,
+        "organizationEmail": organization.organizationEmail,
+        "organizationAddress": organization.organizationAddress,
+        "organizationLogo": organization.organizationLogo
+      }, { headers }
     )
-    
+
     return res;
   }
   catch (err) {
@@ -257,15 +257,30 @@ export async function getSingleOrganization(customerId: any, organizationId: any
   }
 }
 
-export async function getAllOrganizationList(customerId:any) {
-  try{
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_ALL_SALON_LIST}?customerId=${customerId}`,{headers})
+export async function getAllOrganizationList(customerId: any) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_ALL_SALON_LIST}?customerId=${customerId}`, { headers })
 
     return res;
   }
 
-  catch(err:any){
+  catch (err: any) {
 
+    return err;
+  }
+}
+
+// CATEGORY API
+
+export async function createNewCategory(categoryData: any) {
+  try {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_CATEGORY_API}`, categoryData, { headers, },);
+    // console.l""og((await response).data)
+    console.log("category data service", response)
+    return response
+  }
+  catch (err: any) {
+    // console.log(err, "errrr")
     return err;
   }
 }
