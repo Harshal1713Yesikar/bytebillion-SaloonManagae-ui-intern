@@ -79,6 +79,7 @@ interface FormInputs {
   staffpermission: string
   designation: string
   gender: string
+  shiftHours: string
   staffPermission: string
 }
 
@@ -127,6 +128,11 @@ const AddStaffSchema = yup.object().shape({
   staffpermission: yup.string(),
   designation: yup.string().required().max(100),
   gender: yup.string().required('Gender Permission is required'),
+  shiftHours: yup
+    .string()
+    .max(20, 'Fixed salary must be at most 20 characters')
+    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .required('Fixed salary is required'),
   staffPermission: yup.string().required('Staff Permission is required')
 })
 
@@ -145,6 +151,7 @@ const defaultValues = {
   staffpermission: '',
   designation: '',
   gender: '',
+  shiftHours: '',
   staffPermission: ''
 }
 
@@ -239,6 +246,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     workingDay: '',
     Designation: '',
     gender: '',
+    shiftHours: '',
     staffPermission: ''
   })
 
@@ -686,7 +694,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           <Grid>
             <Grid>
               <Card>
-                <CardHeader title='Add Employee'/>
+                <CardHeader title='Add Employee' />
                 <CardContent>
                   <form onSubmit={handleStaffSubmit(onSubmit)}>
                     <Grid container spacing={5}>
@@ -866,7 +874,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                       <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
                           <Controller
-                            name='fixedSalary'
+                            name='shiftHours'
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
@@ -875,8 +883,8 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                                 label='Shift Hours'
                                 onChange={onChange}
                                 placeholder='Type Here'
-                                error={Boolean(StaffErrors.fixedSalary)}
-                                helperText={StaffErrors.fixedSalary && StaffErrors.fixedSalary.message}
+                                error={Boolean(StaffErrors.shiftHours)}
+                                helperText={StaffErrors.shiftHours && StaffErrors.shiftHours.message}
                                 aria-describedby='validation-basic-first-name'
                                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                               />
@@ -941,11 +949,11 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           </Grid>
         )
       case 2:
-       return(
+        return (
           <>
-          <AddServiceCategory/>
+            <AddServiceCategory />
           </>
-       )
+        )
       default:
         return 'Unknown Step'
     }

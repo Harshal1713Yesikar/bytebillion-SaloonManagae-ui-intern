@@ -42,79 +42,92 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { staffRegistrationApi } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
 }
 
 interface FormInputs {
-  firstName: string
-  lastName: string
-  email: string
-  doJ: DateType
-  mobileNo: string
-  hourlyRate: string
-  fixedSalary: string
-  workingDay: string
-  staffpermission: string
-  designation: string
-  address:string
-  shiftHours:string
- 
+  userCustomerId: '',
+  customerId: '',
+  salonId: '',
+  employeeName: '',
+  // "employeeId": "",
+  employeeEmail: '',
+  // employeeGender: '',
+  employeePhone: '',
+  employeeAddress: '',
+  // employeeDOB: null,
+  employeeDesignation: '',
+  employeeJoiningDate: null,
+  employeeworkingHours: '',
+  employeeStatus: '',
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: ''
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
+
 }
 
 
 const AddStaffSchema = yup.object().shape({
-  firstName: yup
+  employeeName: yup
     .string()
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-  lastName: yup
-    .string()
-    .matches(/^[A-Z a-z]+$/)
-    .max(25)
-    .required(),
+  // lastName: yup
+  //   .string()
+  //   .matches(/^[A-Z a-z]+$/)
+  //   .max(25)
+  //   .required(),
   // email: yup.string().email().required(),
-  email: yup
+  employeeEmail: yup
     .string()
-    .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
+    .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
   // password: yup.string().min(8).required(),
-  doJ: yup.date().required(),
-  mobileNo: yup
+  // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+
+  employeeJoiningDate: yup.date().required(),
+
+  employeePhone: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-  hourlyRate: yup
+
+  emoloyeeHourlySalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .matches(/^\d+$/, 'Required,must contain only numbers')
     .required('Fixed salary is required'),
-  fixedSalary: yup
+  employeeFixedSalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
-    .required('Fixed salary is required'),
-  workingDay: yup
+    .matches(/^\d+$/, 'Required,must contain only numbers'),
+
+  employeeworkingHours: yup
     .string()
-    .max(2, 'Fixed Day must be at most 2 characters')
-    .matches(/^\d+$/, 'This field is required') 
+    .max(2, 'Required, must be at most 2 characters')
+    .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
-  staffpermission: yup.string(),
-  designation: yup.string().required().max(100),
-  gender: yup.string().required('Gender Permission is required'),
-  staffPermission: yup.string().required('Staff Permission is required'),
-  address: yup.string().required().max(100),
-  shiftHours: yup
+
+  employeeShiftHourly: yup
     .string()
-    .min(10)
-    .matches(/^[0-9]+$/)
-    .max(10)
-    .required(),
+    .max(2, 'Required must be at most 2 characters')
+    .matches(/^\d+$/, 'This field is required')
+    .required('Fixed salary is required'),
+
+  // staffpermission: yup.string(),
+  employeeDesignation: yup.string().required().max(100),
+  employeeAddress: yup.string().required().max(100),
+
 })
 
 
@@ -126,19 +139,24 @@ interface CustomInputProps {
 }
 
 const defaultValues = {
-  // dob: null,
-  firstName: '',
-  lastName: '',
-  email: '',
-  doJ: '',
-  mobileNo: '',
-  hourlyRate: '',
-  fixedSalary: '',
-  workingDay: '',
-  designation: '',
-  address:'',  
-  shiftHours:''
-  
+  customerId: "",
+  salonId: "",
+  employeeName: '',
+  employeeEmail: '',
+  // employeeGender: '',
+  employeePhone: '',
+  employeeAddress: '',
+  // employeeDOB: null,
+  employeeDesignation: '',
+  employeeJoiningDate: null,
+  employeeworkingHours: '',
+  employeeStatus: '',
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: '',
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
 }
 
 const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
@@ -178,17 +196,25 @@ function MyTabs() {
 }
 
 const CreateStaff = () => {
-  const [defaultStudentValues, setDefaultStudentValues] = useState({
-    dob: null,
-    email: '',
-    mobileNo: '',
-    firstName: '',
-    hourlyRate: '',
-    fixedSalary: '',
-    workingDay: '',
-    Designation: '',
-    staffPermission: '',
-    shiftHours:''
+  const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+    customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    employeeName: '',
+    employeeEmail: '',
+    // employeeGender: '',
+    employeePhone: '',
+    employeeAddress: '',
+    // employeeDOB: null,
+    employeeDesignation: '',
+    employeeJoiningDate: null,
+    employeeworkingHours: '',
+    employeeStatus: '',
+    // employeeBankName: '',
+    // employeeAccountNo: '',
+    // employeeIfsceCode: '',
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
   })
 
   const [checkbox, setCheckbox] = React.useState({
@@ -219,9 +245,10 @@ const CreateStaff = () => {
   }
 
   // const onSubmit = () => toast.success('Form Submitted')
-  const onSubmit = (data:any) => {
+  const onSubmit = (data: any) => {
     console.log('Form Data', data);
     toast.success('Form Submitted');
+    staffRegistrationApi(data)
   }
 
   const [checked, setChecked] = useState(true)
@@ -237,11 +264,14 @@ const CreateStaff = () => {
     defaultValues: defaultStudentValues,
     resolver: yupResolver(AddStaffSchema)
   })
+  // const handleStaffSubmit = () => {
+  //   console.log("sdfsdjkf")
+  // }
   return (
     <Grid>
       <Grid>
         <Card>
-          <CardHeader title='Add Employee' />
+          <CardHeader title='Add Employee' sx={{ fontWeight: '700', fontSize: "20" }} />
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
@@ -251,7 +281,7 @@ const CreateStaff = () => {
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='firstName'
+                      name='employeeName'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -259,13 +289,13 @@ const CreateStaff = () => {
                           value={value}
                           label='First Name'
                           onChange={onChange}
-                          placeholder='Type Here'
-                          error={Boolean(StaffErrors.firstName)}
+                          placeholder='First Name'
+                          error={Boolean(StaffErrors.employeeName)}
                           aria-describedby='validation-basic-first-name'
                         />
                       )}
                     />
-                    {StaffErrors.firstName && (
+                    {StaffErrors.employeeName && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
                         This field is required
                       </FormHelperText>
@@ -273,12 +303,12 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                
+
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='email'
+                      name='employeeEmail'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -287,12 +317,12 @@ const CreateStaff = () => {
                           value={value}
                           onChange={onChange}
                           label='Email '
-                          placeholder='Type Here'
-                          error={Boolean(StaffErrors.email)}
+                          placeholder='john.doecxvvbdffdd@example.co  '
+                          error={Boolean(StaffErrors.employeeEmail)}
                         />
                       )}
                     />
-                    {StaffErrors.email && (
+                    {StaffErrors.employeeEmail && (
                       <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
                     )}
                   </FormControl>
@@ -301,7 +331,7 @@ const CreateStaff = () => {
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='address'
+                      name='employeeAddress'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -310,12 +340,12 @@ const CreateStaff = () => {
                           label='Address'
                           onChange={onChange}
                           placeholder='Text Here'
-                          error={Boolean(StaffErrors.address)}
+                          error={Boolean(StaffErrors.employeeAddress)}
                           aria-describedby='validation-basic-first-name'
                         />
                       )}
                     />
-                    {StaffErrors.address&& (
+                    {StaffErrors.employeeAddress && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
                         This field is required
                       </FormHelperText>
@@ -323,11 +353,9 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                 
-
                 <Grid item xs={12} sm={6}>
                   <Controller
-                    name='doJ'
+                    name='employeeJoiningDate'
                     control={control}
                     rules={{ required: true }}
                     render={({ field: { value, onChange } }) => (
@@ -343,7 +371,7 @@ const CreateStaff = () => {
                               value={value}
                               onChange={onChange}
                               label='Date of Joining'
-                              error={Boolean(StaffErrors.doJ)}
+                              error={Boolean(StaffErrors.employeeJoiningDate)}
                               aria-describedby='validation-basic-dob'
                             />
                           }
@@ -351,18 +379,17 @@ const CreateStaff = () => {
                       </DatePickerWrapper>
                     )}
                   />
-                  {StaffErrors.doJ && (
+                  {StaffErrors.employeeJoiningDate && (
                     <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
                       This field is required
                     </FormHelperText>
                   )}
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
                       control={control}
-                      name='mobileNo'
+                      name='employeePhone'
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <TextField
@@ -370,12 +397,12 @@ const CreateStaff = () => {
                           value={value}
                           onChange={onChange}
                           label='MobileNumber'
-                          placeholder='123-456-7890'
-                          error={Boolean(StaffErrors.mobileNo)}
+                          placeholder='Type Here'
+                          error={Boolean(StaffErrors.employeePhone)}
                         />
                       )}
                     />
-                    {StaffErrors.mobileNo && (
+                    {StaffErrors.employeePhone && (
                       <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
                     )}
                   </FormControl>
@@ -384,7 +411,7 @@ const CreateStaff = () => {
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='hourlyRate'
+                      name='emoloyeeHourlySalary'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -393,25 +420,25 @@ const CreateStaff = () => {
                           label='Hourly Rate'
                           onChange={onChange}
                           placeholder='Type Here'
-                          error={Boolean(StaffErrors.hourlyRate)}
-                          helperText={StaffErrors.hourlyRate && StaffErrors.hourlyRate.message}
+                          error={Boolean(StaffErrors.emoloyeeHourlySalary)}
+                          helperText={StaffErrors.emoloyeeHourlySalary && StaffErrors.emoloyeeHourlySalary.message}
                           aria-describedby='validation-basic-first-name'
                           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         />
                       )}
                     />
-                    {/* {StaffErrors.hourlyRate && (
+                    {StaffErrors.emoloyeeHourlySalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
+
                       </FormHelperText>
-                    )} */}
+                    )}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='fixedSalary'
+                      name='employeeFixedSalary'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -420,25 +447,25 @@ const CreateStaff = () => {
                           label='Fixed Salary'
                           onChange={onChange}
                           placeholder='Type Here'
-                          error={Boolean(StaffErrors.fixedSalary)}
-                          helperText={StaffErrors.fixedSalary && StaffErrors.fixedSalary.message}
+                          error={Boolean(StaffErrors.employeeFixedSalary)}
+                          helperText={StaffErrors.employeeFixedSalary && StaffErrors.employeeFixedSalary.message}
                           aria-describedby='validation-basic-first-name'
                           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         />
                       )}
                     />
-                    {/* {StaffErrors.fixedSalary && (
+                    {StaffErrors.employeeFixedSalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
+
                       </FormHelperText>
-                    )} */}
+                    )}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='workingDay'
+                      name='employeeworkingHours'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -446,30 +473,9 @@ const CreateStaff = () => {
                           value={value}
                           label='Working/Hours Day'
                           onChange={onChange}
-                          placeholder='Type Here'
-                          error={Boolean(StaffErrors.workingDay)}
-                          helperText={StaffErrors.workingDay && StaffErrors.workingDay.message}
-                          aria-describedby='validation-basic-first-name'
-                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>   
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='shiftHours'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          value={value}
-                          label='Shift Hours'
-                          onChange={onChange}
-                          placeholder='Type Here'
-                          error={Boolean(StaffErrors.workingDay)}
-                          helperText={StaffErrors.workingDay && StaffErrors.workingDay.message}
+                          placeholder='Working Day'
+                          error={Boolean(StaffErrors.employeeworkingHours)}
+                          helperText={StaffErrors.employeeworkingHours && StaffErrors.employeeworkingHours.message}
                           aria-describedby='validation-basic-first-name'
                           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         />
@@ -478,10 +484,34 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={10}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='designation'
+                      name='employeeShiftHourly'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <TextField
+                          value={value}
+                          label='ShiftHourly'
+                          onChange={onChange}
+                          placeholder='type Here'
+                          error={Boolean(StaffErrors.employeeShiftHourly)}
+                          helperText={StaffErrors.employeeShiftHourly && StaffErrors.employeeShiftHourly.message}
+                          aria-describedby='validation-basic-first-name'
+                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+
+
+
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='employeeDesignation'
                       control={control}
                       rules={{ required: true }}
                       render={({ field }) => (
@@ -490,13 +520,13 @@ const CreateStaff = () => {
                           multiline
                           {...field}
                           label='Designation'
-                          error={Boolean(StaffErrors.designation)}
+                          error={Boolean(StaffErrors.employeeDesignation)}
                           aria-describedby='validation-basic-textarea'
                           placeholder='Type Here'
                         />
                       )}
                     />
-                    {StaffErrors.designation && (
+                    {StaffErrors.employeeDesignation && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
                         This field is required
                       </FormHelperText>

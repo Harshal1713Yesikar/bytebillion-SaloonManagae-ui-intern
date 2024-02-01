@@ -19,6 +19,7 @@ import { Button } from '@mui/material'
 // ** Icon Imports
 // import Icon from 'src/@core/components/icon'
 import { Icon } from '@iconify/react'
+import { useRouter } from 'next/router'
 
 const Dashboard = () => {
   const [age, setAge] = useState('')
@@ -27,20 +28,31 @@ const Dashboard = () => {
     setAge(event.target.value)
   }
 
+  const service = useRouter();
+  const handleService = () => {
+    service.push('../service/service');
+  }
+
+  const Bussiness = useRouter();
+  const handleBussiness = () => {
+    Bussiness.push('../settings');
+  }
+
+
   return (
     <>
-      <Card style={{ width: '100%', borderRadius: '10px' }}>
-        <CardContent>
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Your Bussiness</h3>
+      <Card style={{ width: '100%', borderRadius: "10px" }}>
+        <CardContent >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Your Bussiness</h3>
           <List component='nav' aria-label='main mailbox' sx={{}}>
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemText primary='Bussiness Details' />
+                <ListItemText onClick={handleBussiness} primary='Bussiness Details' />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemText primary='Services' />
+                <ListItemText onClick={handleService} primary='Services' />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -80,12 +92,8 @@ const Dashboard = () => {
             </ListItem>
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Staff Setting </h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Staff Setting </h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Manage Staff' />
@@ -99,17 +107,15 @@ const Dashboard = () => {
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='Role' />
               </ListItemButton>
             </ListItem>
+
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Stock </h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Stock </h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Products' />
@@ -123,17 +129,15 @@ const Dashboard = () => {
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='Inventory Setting ' />
               </ListItemButton>
             </ListItem>
+
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Notification</h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Notification</h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Sent Messages' />
@@ -147,28 +151,28 @@ const Dashboard = () => {
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='WhatsApp Templates ' />
               </ListItemButton>
             </ListItem>
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary=' Customer Emails' />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='Notifications' />
               </ListItemButton>
             </ListItem>
+
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Pramote</h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Pramote</h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Sent Messages' />
@@ -182,28 +186,28 @@ const Dashboard = () => {
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='WhatsApp Templates ' />
               </ListItemButton>
             </ListItem>
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary=' Customer Emails' />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary='Notifications' />
               </ListItemButton>
             </ListItem>
+
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Point Of Sale</h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }}>Point Of Sale</h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Payments Methods' />
@@ -222,17 +226,16 @@ const Dashboard = () => {
 
             <ListItem disablePadding>
               <ListItemButton component='a' href='#simple-list'>
+
                 <ListItemText primary=' Bill Settings' />
               </ListItemButton>
             </ListItem>
+
+
           </List>
           <Divider sx={{ marginTop: -5 }} />
-          <h3 style={{ borderBottom: '1px solid gray', margin: '20px' }}>Security</h3>
-          <List
-            component='nav'
-            aria-label='secondary mailbox'
-            sx={{ width: '500px', marginBottom: '15px', marginTop: '-20px' }}
-          >
+          <h3 style={{ borderBottom: "1px solid gray", margin: "20px" }} >Security</h3>
+          <List component='nav' aria-label='secondary mailbox' sx={{ width: '500px', marginBottom: "15px", marginTop: "-20px" }}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText primary='Google Authentication' />
@@ -244,8 +247,10 @@ const Dashboard = () => {
               </ListItemButton>
             </ListItem>
           </List>
+
         </CardContent>
       </Card>
+
     </>
   )
 }

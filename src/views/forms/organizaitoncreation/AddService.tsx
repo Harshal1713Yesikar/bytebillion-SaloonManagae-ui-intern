@@ -1,5 +1,5 @@
 // ** React Imports
-import React, { forwardRef, useState, ChangeEvent } from 'react'
+import React, { forwardRef, useState, ChangeEvent, useEffect } from 'react'
 
 // ** MUI Imports
 // demo
@@ -23,6 +23,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import { createNewCategory, getAllCategoryList } from 'src/store/APIs/Api';
 
 // ** Third Party Imports
 import toast from 'react-hot-toast'
@@ -61,7 +62,7 @@ interface FormInputs {
   workingDay: string
   staffpermission: string
   designation: string
-  gender: string
+  category: string
   staffPermission: string
 }
 
@@ -109,7 +110,8 @@ const AddStaffSchema = yup.object().shape({
     .required('Fixed salary is required'),
   staffpermission: yup.string(),
   designation: yup.string().required().max(100),
-  gender: yup.string().required('Gender Permission is required'),
+  category: yup.string().required('category Permission is required'),
+  // gender: yup.string().required('Gender Permission is required'),
   staffPermission: yup.string().required('Staff Permission is required')
 })
 
@@ -134,7 +136,7 @@ const defaultValues = {
   workingDay: '',
   staffpermission: '',
   designation: '',
-  gender: '',
+  category: '',
   staffPermission: ''
 }
 
@@ -173,8 +175,33 @@ function MyTabs() {
   const routeMatch = useRouteMatch(['/staffList', '/addStaff', '/staffSchedule', '/updateAttendanes', '/inactiveStaff'])
   const currentTab = routeMatch?.pattern?.path
 }
+const orgSelected = (organization: any) => {
+  getAllCategoryList("099f9bf2-8ac2-4f84-8286-83bb46595fde", "jkmli").then((res: any) => {
+    // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+    // setLoading(false)
+  })
+}
 
 const AddService = () => {
+
+  const [allCategoryList, setAllCategoryList] = useState([])
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getAllCategoryList("099f9bf2-8ac2-4f84-8286-83bb46595fde", "dqXUs")
+      console.log("skdfjklsjfksjdflkjds", res.data.data)
+      setAllCategoryList(res?.data?.data)
+      // setLoading(false)
+
+      // console.log(res,"res")
+      // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+
+    }
+    getData()
+
+  }, [])
+
+
+
   const [defaultStudentValues, setDefaultStudentValues] = useState({
     dob: null,
     email: '',
@@ -190,7 +217,7 @@ const AddService = () => {
     fixedSalary: '',
     workingDay: '',
     Designation: '',
-    gender: '',
+    category: '',
     staffPermission: ''
   })
 
@@ -226,7 +253,15 @@ const AddService = () => {
     toast.success('Form Submitted')
   }
 
-  const [checked, setChecked] = useState(true)
+  const renderedOrganizations = allCategoryList.map((organization: any, index: number) => {
+    return (
+      <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.serviceCategoryName}>
+        <Typography> {organization.serviceCategoryName}</Typography>
+      </MenuItem>
+    )
+  })
+
+  // const [checked, setChecked] = useState(true)
 
   const {
     reset: studentReset,
@@ -247,10 +282,10 @@ const AddService = () => {
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
-          <CardContent> 
+          <CardContent>
             <form onSubmit={handleStaffSubmit(onSubmit)}>
               <Grid>
-                <Grid sx={{marginBottom:5}}>
+                <Grid sx={{ marginBottom: 5 }}>
                   <FormControl fullWidth>
                     <InputLabel
                       id='validation-basic-select'
@@ -260,7 +295,7 @@ const AddService = () => {
                       Select Category
                     </InputLabel>
                     <Controller
-                      name='gender'
+                      name='category'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -268,15 +303,17 @@ const AddService = () => {
                           value={value}
                           label=' Select Category'
                           onChange={onChange}
-                          error={Boolean(StaffErrors.gender)}
+                          error={Boolean(StaffErrors.category)}
                           labelId='validation-basic-select'
                           aria-describedby='validation-basic-select'
-                        ></Select>
+                        >
+                          {renderedOrganizations}
+                        </Select>
                       )}
                     />
-                    {StaffErrors.gender && (
+                    {StaffErrors.category && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {StaffErrors.gender.message}
+                        {StaffErrors.category.message}
                       </FormHelperText>
                     )}
                   </FormControl>
@@ -307,7 +344,7 @@ const AddService = () => {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>  
+                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <Controller
                         control={control}
@@ -418,7 +455,7 @@ const AddService = () => {
                     </FormControl>
                   </Grid>
 
-                  
+
                 </Grid>
               </Grid>
             </form>
@@ -426,6 +463,9 @@ const AddService = () => {
         </Card>
       </Grid>
     </Grid>
+
   )
+
 }
-export default AddService
+
+export default AddService;
