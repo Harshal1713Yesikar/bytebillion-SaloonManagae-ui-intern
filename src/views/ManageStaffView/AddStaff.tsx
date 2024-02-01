@@ -79,20 +79,11 @@ const AddStaffSchema = yup.object().shape({
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-  // lastName: yup
-  //   .string()
-  //   .matches(/^[A-Z a-z]+$/)
-  //   .max(25)
-  //   .required(),
-  // email: yup.string().email().required(),
   employeeEmail: yup
     .string()
     .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
-  // password: yup.string().min(8).required(),
-  // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
-  
   employeeJoiningDate: yup.date().required(),
 
   employeePhone: yup
@@ -246,10 +237,12 @@ const CreateStaff = () => {
 
   // const onSubmit = () => toast.success('Form Submitted')
   const onSubmit = (data: any) => {
-    console.log('Form Data', data);
+    console.log('Form Data staff', data);
     toast.success('Form Submitted');
     staffRegistrationApi(data)
   }
+
+
 
   const [checked, setChecked] = useState(true)
 
@@ -264,9 +257,8 @@ const CreateStaff = () => {
     defaultValues: defaultStudentValues,
     resolver: yupResolver(AddStaffSchema)
   })
-  // const handleStaffSubmit = () => {
-  //   console.log("sdfsdjkf")
-  // }
+
+ 
   return (
     <Grid>
       <Grid>

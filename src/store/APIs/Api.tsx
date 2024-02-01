@@ -206,20 +206,7 @@ export async function getCustomerDetails(params: any) {
 
 // Chart Data Api
 
-export const staffRegistrationApi = async (staffDetailsforApi: any) => {
-  try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`,
-      staffDetailsforApi,
-      { headers }
-    );
 
-    console.log("success data", res)
-    return res.data;
-  } catch (err) {
-    return err;
-  }
-}
 
 export async function updateOrganization(organization: any) {
   try {
@@ -245,9 +232,6 @@ export async function updateOrganization(organization: any) {
 
 
 // organization mails
-
-
-
 export async function karomanageWelcomeMail(organizationName: any, organizationEmail: any) {
   try {
     const res = axios.post(`${process.env.NEXT_PUBLIC_KAROMANAGE_WELCOME_MAIL}`, {
@@ -261,6 +245,9 @@ export async function karomanageWelcomeMail(organizationName: any, organizationE
     return err;
   }
 }
+
+
+
 
 export async function getSingleOrganization(customerId: any, organizationId: any) {
   try {
@@ -286,6 +273,24 @@ export async function getAllOrganizationList(customerId:any) {
     return err;
   }
 } 
+
+
+// #Employee API
+
+export const staffRegistrationApi = async (staffDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`,
+      staffDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
 export async function listAllEmployeeApi(customerId: any, salonId: any) {
   try {
     const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`, { headers })
@@ -296,6 +301,40 @@ export async function listAllEmployeeApi(customerId: any, salonId: any) {
     return err;
   }
 }
+
+
+// #ServicesAPI
+export async function AddServicesApi(serviceFormData:any){
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_SERVICE_API}`,
+      serviceFormData,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+export async function ListAllServiceApi(customerId:any,salonId:any) {
+  try{
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_SERVICE_LIST_API}customerId=${customerId}&salonId=${salonId}`,{headers})
+    return res
+  }
+
+  catch(err)
+  {
+    return err;
+  }
+  
+
+  
+}
+
+
 
 
 

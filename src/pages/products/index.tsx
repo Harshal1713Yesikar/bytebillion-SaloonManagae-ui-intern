@@ -1,17 +1,21 @@
-import { Box, Button, Card, Dialog, FormControl, Grid, InputLabel, Menu, MenuItem, TextField } from '@mui/material'
+import { Box, Button, Card, CardContent, Checkbox, Dialog, DialogActions, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, Menu, MenuItem, TextField } from '@mui/material'
 import React, { useState } from 'react'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { MouseEvent } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ProductTableFront from 'src/views/table/productTable/productTableFront';
 import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
 import { useRouter } from 'next/router';
+// import CardContent from '@mui/material';
+import EnhancedTable from './table';
 
 
 const Index = () => {
   // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
-
+  const[open,setopan]=useState(false)
+  const[activeTable,setActiveTable]=useState<string|null>(null);
+  const[age,setAge]=useState('')
   const handleCheckboxChange = (checkboxId: string) => {
     setSelectedCheckbox(checkboxId === selectedCheckbox ? null : checkboxId);
   };
@@ -64,7 +68,7 @@ const Index = () => {
     setAnchorDl(null)
   }
   const handleClose = () => {
-    setOpen(false)
+    setopan(false)
   }
   const showTable = (tableId: string) => {
     setActiveTable(tableId);
@@ -92,9 +96,13 @@ const Index = () => {
   const handlevendor = () => {
     vendor.push('../service/service');
   }
+  const handleClickOpen=()=>{
+    vendor.push('../products/addNewProduct')
+  }
 
   return (
     <Grid container spacing={2}>
+
       <Grid item xs={12}  sx={{background:"blue"}}>
         <Box
           sx={{
@@ -184,6 +192,10 @@ const Index = () => {
       </Grid>
 
       <Grid item xs={12}>
+        <Grid>
+
+        <CardContent>
+        <Box>
         <Grid container spacing={2}>
           {/* Add product button */}
           <Grid item xs={12} md={2}>
@@ -191,8 +203,11 @@ const Index = () => {
               Add product
             </Button>
           </Grid>
+        </Grid>
         </Box>
+        </CardContent>
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }} >
+       <CardContent>
           <Button sx={{ mr: 2, width: '80px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleAssign} endIcon={<ArrowDropDownIcon />}>
             Edit
           </Button>
@@ -206,18 +221,15 @@ const Index = () => {
               <MenuItem onClick={handleCloseEdit}>Import Products</MenuItem>
             </Menu>
           </Grid>
-        </form>
-      </CardContent>
-                </Card>
-
-              </DialogContent>
+        </CardContent>
+        </Box>
+            <Card>
               <DialogActions sx={{ height: '70px' }}>
                 <Button variant='contained' autoFocus onClick={handleClose} sx={{ backgroundColor: 'black' }}>
                   Add
                 </Button>
               </DialogActions>
-            </BootstrapDialog>
-          </Card>
+            </Card>
 
 
           {/* Other form controls */}
@@ -284,12 +296,11 @@ const Index = () => {
         </Grid>
       </Grid>
 
-      {/* Table */}
-
-      <Grid item xs={12}>
         <EnhancedTable />
-      </Grid>
+      
+      
     </Grid>
+   
   );
 };
 

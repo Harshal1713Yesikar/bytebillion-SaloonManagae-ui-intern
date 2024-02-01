@@ -57,7 +57,7 @@ const renderClient = (params: GridRenderCellParams) => {
         color={color as ThemeColor}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+        {getInitials(row.employeeName ? row.employeeName : '')}
       </CustomAvatar>
     )
   }

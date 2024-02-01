@@ -1,7 +1,6 @@
 // ** React Imports
 import { ChangeEvent, Fragment, useState, useEffect, useCallback, forwardRef } from 'react'
 import AddServiceCategory from './AddServiceCategory'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -439,7 +438,6 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     }
   }, [mainId, allValues.salonName.split('-').length])
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -545,7 +543,6 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                     />
                   </div>
                 </Grid>
-             
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -686,7 +683,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           <Grid>
             <Grid>
               <Card>
-                <CardHeader title='Add Employee'/>
+                <CardHeader title='Add Employee' />
                 <CardContent>
                   <form onSubmit={handleStaffSubmit(onSubmit)}>
                     <Grid container spacing={5}>
@@ -815,7 +812,6 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                               />
                             )}
                           />
-                        
                         </FormControl>
                       </Grid>
 
@@ -941,11 +937,11 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           </Grid>
         )
       case 2:
-       return(
+        return (
           <>
-          <AddServiceCategory/>
+            <AddServiceCategory />
           </>
-       )
+        )
       default:
         return 'Unknown Step'
     }
