@@ -175,14 +175,12 @@ export async function organizationEmailVerification(params: any) {
 }
 
 export const customerRegistration = async (id:any) => {
-  console.log(id,"ABCsd")
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}`,
       { id_token: id },
       { headers }
     );
-    console.log(res, "ABCsd")
     return res.data;
   } catch (err) {
     throw err; // Rethrow the error to be caught by the caller
@@ -329,9 +327,7 @@ export async function ListAllServiceApi(customerId:any,salonId:any) {
   {
     return err;
   }
-  
-
-  
+   
 }
 
 

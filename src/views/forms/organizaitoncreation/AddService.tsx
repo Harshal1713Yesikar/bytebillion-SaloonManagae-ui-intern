@@ -43,26 +43,30 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { AddServicesApi } from 'src/store/APIs/Api'
+import { listAllEmployeeApi } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
 }
 
 interface FormInputs {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  dob: DateType
-  doJ: DateType
-  mobileNo: string
-  hourlyRate: string
-  fixedSalary: string
-  workingDay: string
-  staffpermission: string
-  designation: string
-  gender: string
-  staffPermission: string
+  customerId: string
+  salonId: string
+  serviceCategoryId:string
+  serviceName:string
+  serviceDescription:string
+  serviceTime: string
+  selectEmployee: string
+  amountHistory: {
+    serviceAmount:string
+  }
+}
+interface Data {
+  serviceId: number
+  serviceName: string
+  serviceStatus: number
+  currentServiceAmount: number
 }
 
 const AddStaffSchema = yup.object().shape({
@@ -112,6 +116,15 @@ const AddStaffSchema = yup.object().shape({
   gender: yup.string().required('Gender Permission is required'),
   staffPermission: yup.string().required('Staff Permission is required')
 })
+
+const createData = (
+  serviceName: string,
+  serviceId: number,
+  serviceStatus: number,
+  currentServiceAmount: number
+): Data => {
+  return { serviceName, serviceId, serviceStatus, currentServiceAmount }
+}
 
 interface CustomInputProps {
   value: DateType
@@ -175,23 +188,17 @@ function MyTabs() {
 }
 
 const AddService = () => {
-  const [defaultStudentValues, setDefaultStudentValues] = useState({
-    dob: null,
-    email: '',
-    radio: '',
-    select: '',
-    lastName: '',
-    password: '',
-    mobileNo: '',
-    textarea: '',
-    firstName: '',
-    Gender: '',
-    hourlyRate: '',
-    fixedSalary: '',
-    workingDay: '',
-    Designation: '',
-    gender: '',
-    staffPermission: ''
+  const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'jkmli',
+    serviceCategoryId: 'HFm4p',
+    serviceName: '',
+    serviceDescription: '',
+    serviceTime: '',
+    selectStaff: '',
+    amountHistory: {
+      serviceAmount: ''
+    }
   })
 
   const [checkbox, setCheckbox] = React.useState({
@@ -222,8 +229,11 @@ const AddService = () => {
 
   // const onSubmit = () => toast.success('Form Submitted')
   const onSubmit = (data: any) => {
-    console.log('Form Data', data)
-    toast.success('Form Submitted')
+    console.log('njksdbs', data)
+    AddServicesApi(data)
+    setDefaultStudentValues(data)
+
+    console.log('zxjsaidhsau', data)
   }
 
   const [checked, setChecked] = useState(true)
@@ -247,10 +257,10 @@ const AddService = () => {
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
-          <CardContent> 
+          <CardContent>
             <form onSubmit={handleStaffSubmit(onSubmit)}>
               <Grid>
-                <Grid sx={{marginBottom:5}}>
+                {/* <Grid sx={{marginBottom:5}}>
                   <FormControl fullWidth>
                     <InputLabel
                       id='validation-basic-select'
@@ -280,12 +290,12 @@ const AddService = () => {
                       </FormHelperText>
                     )}
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid container spacing={5}>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <Controller
-                        name='firstName'
+                        name='serviceName'
                         control={control}
                         rules={{ required: true }}
                         render={({ field: { value, onChange } }) => (
@@ -294,12 +304,12 @@ const AddService = () => {
                             label='Name'
                             onChange={onChange}
                             placeholder='Name'
-                            error={Boolean(StaffErrors.firstName)}
+                            error={Boolean(StaffErrors.serviceName)}
                             aria-describedby='validation-basic-first-name'
                           />
                         )}
                       />
-                      {StaffErrors.firstName && (
+                      {StaffErrors.serviceName && (
                         <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
                           This field is required
                         </FormHelperText>
@@ -307,7 +317,7 @@ const AddService = () => {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>  
+                  {/* <Grid item xs={12} sm={6}>  
                     <FormControl fullWidth>
                       <Controller
                         control={control}
@@ -328,9 +338,9 @@ const AddService = () => {
                         <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
                       )}
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
 
-                  <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <Controller
                         name='lastName'
@@ -353,27 +363,27 @@ const AddService = () => {
                         </FormHelperText>
                       )}
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel
                         id='validation-basic-select'
-                        error={Boolean(StaffErrors.staffPermission)}
+                        error={Boolean(StaffErrors.selectEmployee)}
                         htmlFor='validation-basic-select'
                       >
                         Select Staff*
                       </InputLabel>
                       <Controller
-                        name='staffPermission'
+                        name='selectEmployee'
                         control={control}
                         rules={{ required: true }}
                         render={({ field: { value, onChange } }) => (
                           <Select
                             value={value}
-                            label='Select Staff '
+                            label='selectEmployee '
                             onChange={onChange}
-                            error={Boolean(StaffErrors.staffPermission)}
+                            error={Boolean(StaffErrors.selectEmployee)}
                             labelId='validation-basic-select'
                             aria-describedby='validation-basic-select'
                           >
@@ -384,9 +394,9 @@ const AddService = () => {
                           </Select>
                         )}
                       />
-                      {StaffErrors.staffPermission && (
+                      {StaffErrors.selectEmployee && (
                         <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                          {StaffErrors.staffPermission.message}
+                          {StaffErrors.selectEmployee.message}
                         </FormHelperText>
                       )}
                     </FormControl>
@@ -395,7 +405,7 @@ const AddService = () => {
                   <Grid item xs={12} sm={16}>
                     <FormControl fullWidth>
                       <Controller
-                        name='designation'
+                        name='serviceDescription'
                         control={control}
                         rules={{ required: true }}
                         render={({ field }) => (
@@ -403,24 +413,25 @@ const AddService = () => {
                             rows={4}
                             multiline
                             {...field}
-                            label='Designation'
+                            label='serviceDescription'
                             placeholder='Type Here'
-                            error={Boolean(StaffErrors.designation)}
+                            error={Boolean(StaffErrors.serviceDescription)}
                             aria-describedby='validation-basic-textarea'
                           />
                         )}
                       />
-                      {StaffErrors.designation && (
+                      {StaffErrors.serviceDescription && (
                         <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
                           This field is required
                         </FormHelperText>
                       )}
                     </FormControl>
                   </Grid>
-
-                  
                 </Grid>
               </Grid>
+              <Button size='large' type='submit' variant='contained' color='primary' onSubmit={onSubmit}>
+                Submit
+              </Button>
             </form>
           </CardContent>
         </Card>

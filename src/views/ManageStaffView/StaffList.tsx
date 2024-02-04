@@ -140,7 +140,7 @@ const StaffList = (props: Props) => {
   // ... (other code)
 
   // useEffect to fetch data when the component mounts
-  useEffect(() => {
+  useEffect(() => { 
     // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {

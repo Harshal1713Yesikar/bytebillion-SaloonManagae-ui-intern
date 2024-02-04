@@ -13,11 +13,11 @@ const navigation = (): VerticalNavItemsType => {
       path: '/quicksale',
       icon: 'icon-park-outline:id-card',
     },
-    {
-      title: 'Calender',
-      path: '/calender',
-      icon: 'simple-line-icons:calender',
-    },
+    // {
+    //   title: 'Calender',
+    //   path: '/calender',
+    //   icon: 'simple-line-icons:calender',
+    // },
     {
       title: 'Manage Satff',
       path: '/managesatff',
@@ -38,21 +38,21 @@ const navigation = (): VerticalNavItemsType => {
       path: '/appointments',
       icon: 'teenyicons:appointments-outline',
     },
-    {
-      title: 'Report',
-      path: '/report',
-      icon: 'codicon:report',
-    },
-    {
-      title: 'Integration',
-      path: '/integration',
-      icon: 'mdi:account-payment-outline',
-    },
-    {
-      title: 'Sale Tools',
-      path: '/saletools',
-      icon: 'material-symbols:checked-bag-outline',
-    },
+    // {
+    //   title: 'Report',
+    //   path: '/report',
+    //   icon: 'codicon:report',
+    // },
+    // {
+    //   title: 'Integration',
+    //   path: '/integration',
+    //   icon: 'mdi:account-payment-outline',
+    // },
+    // {
+    //   title: 'Sale Tools',
+    //   path: '/saletools',
+    //   icon: 'material-symbols:checked-bag-outline',
+    // },
     {
       title: 'Expense',
       path: '/expense',
