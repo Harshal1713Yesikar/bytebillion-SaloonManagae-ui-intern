@@ -224,7 +224,7 @@ const Index = ({ onRemove }: { index: number; onRemove: () => void }) => {
           </Box>
         </Grid>
         <Grid item xs={8} sx={{ mt: 9 }} onClick={onRemove}>
-          <DeleteIcon />
+          <DeleteIcon sx={{ cursor: 'pointer' }} />
         </Grid>
       </Grid >
     </>

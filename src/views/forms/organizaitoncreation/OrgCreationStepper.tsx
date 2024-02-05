@@ -49,7 +49,8 @@ import {
   organizationDetails,
   organizationEmailVerification,
   organizationRegistration,
-  salonRegistration
+  salonRegistration,
+  staffRegistrationApi
 } from 'src/store/APIs/Api'
 import { AccordionDetails, Alert, CardHeader, FormHelperText, Snackbar } from '@mui/material'
 
@@ -461,10 +462,33 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     fetchData()
   }, [customerDetails, customerDetails.customerId])
 
-  const onSubmit = (data: any) => {
-    console.log('Form Data', data)
+  const OnSubmit = () => {
+    console.log('BC', studentValues())
     toast.success('Form Submitted')
+
+    staffRegistrationApi({
+      customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+      salonId: 'E7uqn',
+      employeeName: '',
+      employeeEmail: '',
+      // employeeGender: '',
+      employeePhone: '',
+      employeeAddress: '',
+      // employeeDOB: null,
+      employeeDesignation: '',
+      employeeJoiningDate: null,
+      employeeworkingHours: '',
+      employeeStatus: '',
+      // employeeBankName: '',
+      // employeeAccountNo: '',
+      // employeeIfsceCode: '',
+      employeeFixedSalary: '',
+      emoloyeeHourlySalary: '',
+      employeeShiftHourly: ''
+    })
   }
+
+
 
   const {
     reset: studentReset,
@@ -694,7 +718,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
               <Card>
                 <CardHeader title='Add Employee' />
                 <CardContent>
-                  <form onSubmit={handleStaffSubmit(onSubmit)}>
+                  <form onSubmit={handleStaffSubmit(OnSubmit)}>
                     <Grid container spacing={5}>
                       <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
@@ -940,6 +964,9 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                         </FormControl>
                       </Grid>
                     </Grid>
+                    <div>
+                      <Button onClick={OnSubmit}>submit</Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
@@ -964,7 +991,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
         <form onSubmit={e => e.preventDefault()}>
           <Grid container spacing={5}>
             {getStepContent(activeStep)}
-            <Grid item xs={12} sx={{ display: 'flex', mt: -7, justifyContent: 'space-between' }}>
+            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button
                 size='large'
                 variant='outlined'
@@ -975,11 +1002,11 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                 Back
               </Button>
               <div>
-                {
-                  <Button sx={{ marginRight: 6 }} size='large' variant='contained' onClick={handleNext}>
-                    Next
-                  </Button>
-                }
+
+                <Button sx={{ marginRight: 6 }} size='large' variant='contained' onClick={handleNext}>
+                  Next
+                </Button>
+
               </div>
               {/* <div>
                 {
