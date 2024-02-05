@@ -656,9 +656,7 @@ const Service = () => {
                                 fullWidth
                                 type='Name'
                                 label='Name'
-                               
                               />
-                           
                             </DialogContent>
                             {/* <Grid item xs={12} sm={6}>
                             <FormControl fullWidth>
