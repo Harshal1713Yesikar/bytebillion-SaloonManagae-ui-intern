@@ -796,6 +796,8 @@ const SettingsViewPage = () => {
                             )}
                           </FormControl>
                         </Grid>
+
+
                         <Grid item xs={12} sm={6}>
                           <FormControl fullWidth>
                             <InputLabel
@@ -1015,8 +1017,6 @@ const SettingsViewPage = () => {
                   </CardContent>
                 </CardContent>
               </Card>
-
-
             </Card>
           </Card>
         </Grid>

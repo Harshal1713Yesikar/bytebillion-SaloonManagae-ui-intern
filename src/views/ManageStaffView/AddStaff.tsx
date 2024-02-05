@@ -42,7 +42,7 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-import { staffRegistrationApi } from 'src/store/APIs/api'
+import { staffRegistrationApi } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
@@ -55,17 +55,21 @@ interface FormInputs {
   employeeName: '',
   // "employeeId": "",
   employeeEmail: '',
-  employeeGender: '',
+  // employeeGender: '',
   employeePhone: '',
   employeeAddress: '',
-  employeeDOB: null,
+  // employeeDOB: null,
   employeeDesignation: '',
   employeeJoiningDate: null,
   employeeworkingHours: '',
   employeeStatus: '',
-  employeeBankName: '',
-  employeeAccountNo: '',
-  employeeIfsceCode: ''
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: ''
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
+
 }
 
 
@@ -75,46 +79,49 @@ const AddStaffSchema = yup.object().shape({
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-  // lastName: yup
-  //   .string()
-  //   .matches(/^[A-Z a-z]+$/)
-  //   .max(25)
-  //   .required(),
-  // email: yup.string().email().required(),
   employeeEmail: yup
     .string()
-    .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
+    .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
   // password: yup.string().min(8).required(),
   // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
-  // dob: yup.date().required(),
-  // doJ: yup.date().required(),
+
+  employeeJoiningDate: yup.date().required(),
+
   employeePhone: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-  // hourlyRate: yup
-  //   .string()
-  //   .max(20, 'Fixed salary must be at most 20 characters')
-  //   .matches(/^\d+$/, 'Fixed salary must contain only numbers')
-  //   .required('Fixed salary is required'),
-  // fixedSalary: yup
-  //   .string()
-  //   .max(20, 'Fixed salary must be at most 20 characters')
-  //   .matches(/^\d+$/, 'Fixed salary must contain only numbers')
-  //   .required('Fixed salary is required'),
+
+  emoloyeeHourlySalary: yup
+    .string()
+    .max(20, 'Fixed salary must be at most 20 characters')
+    .matches(/^\d+$/, 'Required,must contain only numbers')
+    .required('Fixed salary is required'),
+  employeeFixedSalary: yup
+    .string()
+    .max(20, 'Fixed salary must be at most 20 characters')
+    .matches(/^\d+$/, 'Required,must contain only numbers'),
+
   employeeworkingHours: yup
     .string()
-    .max(2, 'Fixed Day must be at most 2 characters')
+    .max(2, 'Required, must be at most 2 characters')
     .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
+
+  employeeShiftHourly: yup
+    .string()
+    .max(2, 'Required must be at most 2 characters')
+    .matches(/^\d+$/, 'This field is required')
+    .required('Fixed salary is required'),
+
   // staffpermission: yup.string(),
-  // designation: yup.string().required().max(100),
-  // gender: yup.string().required('Gender Permission is required'),
-  // staffPermission: yup.string().required('Staff Permission is required')
+  employeeDesignation: yup.string().required().max(100),
+  employeeAddress: yup.string().required().max(100),
+
 })
 
 
@@ -130,17 +137,20 @@ const defaultValues = {
   salonId: "",
   employeeName: '',
   employeeEmail: '',
-  employeeGender: '',
+  // employeeGender: '',
   employeePhone: '',
   employeeAddress: '',
-  employeeDOB: null,
+  // employeeDOB: null,
   employeeDesignation: '',
   employeeJoiningDate: null,
   employeeworkingHours: '',
   employeeStatus: '',
-  employeeBankName: '',
-  employeeAccountNo: '',
-  employeeIfsceCode: ''
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: '',
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
 }
 
 const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
@@ -185,17 +195,20 @@ const CreateStaff = () => {
     salonId: 'E7uqn',
     employeeName: '',
     employeeEmail: '',
-    employeeGender: '',
+    // employeeGender: '',
     employeePhone: '',
     employeeAddress: '',
-    employeeDOB: null,
+    // employeeDOB: null,
     employeeDesignation: '',
     employeeJoiningDate: null,
     employeeworkingHours: '',
     employeeStatus: '',
-    employeeBankName: '',
-    employeeAccountNo: '',
-    employeeIfsceCode: ''
+    // employeeBankName: '',
+    // employeeAccountNo: '',
+    // employeeIfsceCode: '',
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
   })
 
   const [checkbox, setCheckbox] = React.useState({
@@ -227,10 +240,13 @@ const CreateStaff = () => {
 
   // const onSubmit = () => toast.success('Form Submitted')
   const onSubmit = (data: any) => {
-    console.log('Form Data', data);
+    console.log('Form Data staff', data);
     toast.success('Form Submitted');
+    console.log(data)
     staffRegistrationApi(data)
   }
+
+
 
   const [checked, setChecked] = useState(true)
 
@@ -245,14 +261,13 @@ const CreateStaff = () => {
     defaultValues: defaultStudentValues,
     resolver: yupResolver(AddStaffSchema)
   })
-  // const handleStaffSubmit = () => {
-  //   console.log("sdfsdjkf")
-  // }
+
+ 
   return (
     <Grid>
       <Grid>
         <Card>
-          <CardHeader title='Add Staff' />
+          <CardHeader title='Add Employee' sx={{ fontWeight: '700', fontSize: "20" }} />
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
@@ -284,30 +299,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                {/* <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='lastName'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          value={value}
-                          label='Last Name'
-                          onChange={onChange}
-                          placeholder='Last Name'
-                          error={Boolean(StaffErrors.employeeName)}
-                          aria-describedby='validation-basic-last-name'
-                        />
-                      )}
-                    />
-                    {StaffErrors.employeeName && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid> */}
+
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -332,77 +324,29 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                {/* <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel htmlFor='validation-basic-password' error={Boolean(StaffErrors.password)}>
-                      Password
-                    </InputLabel>
                     <Controller
-                      name='password'
+                      name='employeeAddress'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
-                        <OutlinedInput
+                        <TextField
                           value={value}
-                          label='Password'
+                          label='Address'
                           onChange={onChange}
-                          id='validation-basic-password'
-                          error={Boolean(StaffErrors.password)}
-                          type={state.showPassword ? 'text' : 'password'}
-                          endAdornment={
-                            <InputAdornment position='end'>
-                              <IconButton
-                                edge='end'
-                                onClick={handleClickShowPassword}
-                                onMouseDown={e => e.preventDefault()}
-                                aria-label='toggle password visibility'
-                              >
-                                <Icon icon={state.showPassword ? 'bx:show' : 'bx:hide'} />
-                              </IconButton>
-                            </InputAdornment>
-                          }
+                          placeholder='Text Here'
+                          error={Boolean(StaffErrors.employeeAddress)}
+                          aria-describedby='validation-basic-first-name'
                         />
                       )}
                     />
-                    {StaffErrors.password && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-password'>
-                        {StaffErrors.password.message}
+                    {StaffErrors.employeeAddress && (
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                        This field is required
                       </FormHelperText>
                     )}
                   </FormControl>
-                </Grid> */}
-
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='employeeDOB'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange } }) => (
-                      <DatePickerWrapper>
-                        <DatePicker
-                          selected={value}
-                          showYearDropdown
-                          showMonthDropdown
-                          onChange={e => onChange(e)}
-                          placeholderText='MM/DD/YYYY'
-                          customInput={
-                            <CustomInput
-                              value={value}
-                              onChange={onChange}
-                              label='Date of Birth'
-                              error={Boolean(StaffErrors.employeeDOB)}
-                              aria-describedby='validation-basic-dob'
-                            />
-                          }
-                        />
-                      </DatePickerWrapper>
-                    )}
-                  />
-                  {StaffErrors.employeeDOB && (
-                    <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
-                      This field is required
-                    </FormHelperText>
-                  )}
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -437,41 +381,6 @@ const CreateStaff = () => {
                     </FormHelperText>
                   )}
                 </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel
-                      id='validation-basic-select'
-                      htmlFor='validation-basic-select'
-                    >
-                      Gender*
-                    </InputLabel>
-                    <Controller
-                      name='employeeGender'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <Select
-                          value={value}
-                          label='gender'
-                          onChange={onChange}
-                          labelId='validation-basic-select'
-                          aria-describedby='validation-basic-select'
-                        >
-                          <MenuItem value='Male'>Male</MenuItem>
-                          <MenuItem value='Female'>Female</MenuItem>
-                          <MenuItem value='Staff'>Other</MenuItem>
-                        </Select>
-                      )}
-                    />
-                    {StaffErrors.employeeGender && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {StaffErrors.employeeGender.message}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
@@ -480,11 +389,11 @@ const CreateStaff = () => {
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <TextField
-                          type='MobileNo'
+                          type='Contact'
                           value={value}
                           onChange={onChange}
                           label='MobileNumber'
-                          placeholder='123-456-7890'
+                          placeholder='Type Here'
                           error={Boolean(StaffErrors.employeePhone)}
                         />
                       )}
@@ -495,10 +404,10 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                {/* <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='hourlyRate'
+                      name='emoloyeeHourlySalary'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -506,26 +415,26 @@ const CreateStaff = () => {
                           value={value}
                           label='Hourly Rate'
                           onChange={onChange}
-                          placeholder='Hourly Rate'
-                          error={Boolean(StaffErrors.hourlyRate)}
-                          helperText={StaffErrors.hourlyRate && StaffErrors.hourlyRate.message}
+                          placeholder='Type Here'
+                          error={Boolean(StaffErrors.emoloyeeHourlySalary)}
+                          helperText={StaffErrors.emoloyeeHourlySalary && StaffErrors.emoloyeeHourlySalary.message}
                           aria-describedby='validation-basic-first-name'
                           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         />
                       )}
                     />
-                    {/* {StaffErrors.hourlyRate && (
+                    {StaffErrors.emoloyeeHourlySalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
-                      </FormHelperText>
-                    )} */}
-                {/* </FormControl>
-                </Grid> */}
 
-                {/* <Grid item xs={12} sm={6}>
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
-                      name='fixedSalary'
+                      name='employeeFixedSalary'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
@@ -533,21 +442,21 @@ const CreateStaff = () => {
                           value={value}
                           label='Fixed Salary'
                           onChange={onChange}
-                          placeholder='Fixed Salary'
-                          error={Boolean(StaffErrors.fixedSalary)}
-                          helperText={StaffErrors.fixedSalary && StaffErrors.fixedSalary.message}
+                          placeholder='Type Here'
+                          error={Boolean(StaffErrors.employeeFixedSalary)}
+                          helperText={StaffErrors.employeeFixedSalary && StaffErrors.employeeFixedSalary.message}
                           aria-describedby='validation-basic-first-name'
                           inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         />
                       )}
                     />
-                    {/* {StaffErrors.fixedSalary && (
+                    {StaffErrors.employeeFixedSalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
+
                       </FormHelperText>
-                    )} */}
-                {/* </FormControl>
-                </Grid> */}
+                    )}
+                  </FormControl>
+                </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -558,7 +467,7 @@ const CreateStaff = () => {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           value={value}
-                          label='Working Day'
+                          label='Working/Hours Day'
                           onChange={onChange}
                           placeholder='Working Day'
                           error={Boolean(StaffErrors.employeeworkingHours)}
@@ -571,42 +480,29 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                {/* <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
-                    {/* <InputLabel
-                      id='validation-basic-select'
-                      error={Boolean(StaffErrors.staffPermission)}
-                      htmlFor='validation-basic-select'
-                    >
-                      Staff Permission*
-                    </InputLabel> */}
-                {/* <Controller
-                      name='staffPermission'
+                    <Controller
+                      name='employeeShiftHourly'
                       control={control}
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
-                        <Select
+                        <TextField
                           value={value}
-                          label='Staff Permission'
+                          label='ShiftHourly'
                           onChange={onChange}
-                          error={Boolean(StaffErrors.staffPermission)}
-                          labelId='validation-basic-select'
-                          aria-describedby='validation-basic-select'
-                        >
-                          <MenuItem value=''>Select</MenuItem>
-                          <MenuItem value='Manager'>Manager</MenuItem>
-                          <MenuItem value='Subadmin'>Subadmin</MenuItem>
-                          <MenuItem value='Staff'>Staff</MenuItem>
-                        </Select>
+                          placeholder='type Here'
+                          error={Boolean(StaffErrors.employeeShiftHourly)}
+                          helperText={StaffErrors.employeeShiftHourly && StaffErrors.employeeShiftHourly.message}
+                          aria-describedby='validation-basic-first-name'
+                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        />
                       )}
                     />
-                    {StaffErrors.staffPermission && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {StaffErrors.staffPermission.message}
-                      </FormHelperText>
-                    )}
                   </FormControl>
-                </Grid> */}
+                </Grid>
+
+
 
                 <Grid item xs={12}>
                   <FormControl fullWidth>
@@ -622,6 +518,7 @@ const CreateStaff = () => {
                           label='Designation'
                           error={Boolean(StaffErrors.employeeDesignation)}
                           aria-describedby='validation-basic-textarea'
+                          placeholder='Type Here'
                         />
                       )}
                     />
@@ -632,36 +529,6 @@ const CreateStaff = () => {
                     )}
                   </FormControl>
                 </Grid>
-
-                {/* <Box sx={{ display: 'flex' }}>
-                  <FormControl sx={{ m: 3 }} component='fieldset' variant='standard'>
-                    <FormLabel component='legend'>Payoll Calculating Setting </FormLabel>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={gilad} onChange={handleChange} name='gilad' />}
-                        label='Fixed'
-                      />
-                    </FormGroup>
-                  </FormControl>
-                  <FormControl required error={error} component='fieldset' sx={{ m: 3 }} variant='standard'>
-                    <FormLabel></FormLabel>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={gilad} onChange={handleChange} name='gilad' />}
-                        label='Hourly'
-                      />
-                    </FormGroup>
-                  </FormControl>
-                  <FormControl required error={error} component='fieldset' sx={{ m: 3 }} variant='standard'>
-                    <FormLabel></FormLabel>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={gilad} onChange={handleChange} name='gilad' />}
-                        label='Commission'
-                      />
-                    </FormGroup>
-                  </FormControl>
-                </Box> */}
                 <Grid item xs={12}>
                   <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}>
                     Submit

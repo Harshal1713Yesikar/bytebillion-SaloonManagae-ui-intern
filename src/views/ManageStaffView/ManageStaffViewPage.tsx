@@ -70,8 +70,8 @@ const ManageStaffViewPage = () => {
             allowScrollButtonsMobile
             aria-label="scrollable auto tabs example"
           >
-            <Tab label="staff List" {...a11yProps(0)} />
-            <Tab label="Add Staff" {...a11yProps(1)} /> 
+            <Tab label="Employee List" {...a11yProps(0)} />
+            <Tab label="Add Employee" {...a11yProps(1)} /> 
             <Tab label="Staff Schedule" {...a11yProps(2)} />
             <Tab label="Upload Attendance" {...a11yProps(3)} />
             <Tab label="Inactive Staff" {...a11yProps(4)} />

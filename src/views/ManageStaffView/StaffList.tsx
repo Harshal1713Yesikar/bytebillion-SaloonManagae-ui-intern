@@ -30,7 +30,8 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router-dom'
 import { StaticRouter } from 'react-router-dom/server'
-import { listAllStaffApi } from 'src/store/APIs/api'
+import { listAllEmployeeApi} from 'src/store/APIs/Api'
+
 
 interface StatusObj {
   [key: number]: {
@@ -47,8 +48,8 @@ const renderClient = (params: GridRenderCellParams) => {
   const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
   const color = states[stateNum]
 
-  if (row.avatar.length) {
-    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+  if (row?.avatar?.length) {
+    return <CustomAvatar src={`/images/avatars/${row?.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
   } else {
     return (
       <CustomAvatar
@@ -56,7 +57,7 @@ const renderClient = (params: GridRenderCellParams) => {
         color={color as ThemeColor}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+        {getInitials(row.employeeName ? row.employeeName : '')}
       </CustomAvatar>
     )
   }
@@ -139,13 +140,15 @@ const StaffList = (props: Props) => {
   // ... (other code)
 
   // useEffect to fetch data when the component mounts
-  useEffect(() => {
-    // Fetch staff data using listAllStaffApi
+  useEffect(() => { 
+    // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {
-        const response: any = await listAllStaffApi("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn"); // Pass customerId and salonId
+        const response: any = await listAllEmployeeApi("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn"); // Pass customerId and salonId
         // Update the component's state with the fetched data
-        setStaffData(response.data);
+        setStaffData(response?.data?.data);
+        console.log('setStaffData:', response?.data?.data);
+
       } catch (error) {
         console.error('Error fetching staff data:', error);
       }
@@ -156,6 +159,7 @@ const StaffList = (props: Props) => {
   }, []);
 
   const columns: GridColDef[] = [
+    
     {
       flex: 0.25,
       minWidth: 290,
@@ -191,18 +195,18 @@ const StaffList = (props: Props) => {
         </Typography>
       )
     },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'employeeDesignation ',
+      headerName: 'Employee Designation',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.employeeDesignation}
+        </Typography>
+      )
+    },
 
-    // {
-    //   flex: 0.15,
-    //   minWidth: 110,
-    //   field: 'salary',
-    //   headerName: 'Salary',
-    //   renderCell: (params: GridRenderCellParams) => (
-    //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-    //       {params.row.salary}
-    //     </Typography>
-    //   )
-    // },
     {
       flex: 0.15,
       minWidth: 110,
@@ -215,28 +219,32 @@ const StaffList = (props: Props) => {
       )
     },
 
-    // {
-    //   flex: 0.1,
-    //   field: 'Staff Id',
-    //   minWidth: 80,
-    //   headerName: 'Staff ID',
-    //   renderCell: (params: GridRenderCellParams) => (
-    //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-    //       {params.row.age}
-    //     </Typography>
-    //   )
-    // },
-    // {
-    //   flex: 0.2,
-    //   minWidth: 140,
-    //   field: 'status',
-    //   headerName: 'Status',
-    //   renderCell: (params: GridRenderCellParams) => {
-    //     const status = statusObj[params.row.status]
+    {
+      flex: 0.1,
+      field: 'employeeId',
+      minWidth: 80,
+      headerName: 'Staff ID',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.employeeId}
+        </Typography>
+      )
+    },
+    
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'employeeStatus',
+      headerName: 'Employee Status',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.employeeStatus == "active" ? <CustomChip rounded size='small' skin='light' color='success' label={params.row.employeeStatus} /> : <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.employeeStatus} />}
 
-    //     return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
-    //   }
-    // },
+
+        </Typography>
+      )
+    }
+
 
   ]
 
@@ -248,7 +256,7 @@ const StaffList = (props: Props) => {
           <Card sx={{ width: '100%', marginRight: 50 }}>
             <CardContent>
               {/* <Typography sx={{ color: 'black', fontSize: 23, fontWeight: '600' }}>Learn How To</Typography> */}
-              <Typography sx={{ color: 'black', fontSize: 20, fontWeight: '600' }}>Staff List</Typography>
+              <Typography sx={{fontSize: 20, fontWeight: '700' }}>Staff List</Typography>
               <Typography>
                 Ensure the management of staff attendance, their availability, payroll, commissions, and access
                 <br /> permissions.
@@ -264,7 +272,7 @@ const StaffList = (props: Props) => {
               columns={columns}
               pageSize={pageSize}
               disableSelectionOnClick
-              rowsPerPageOptions={[7, 10, 25, 50]}
+              rowsPerPageOptions={[7,10, 25, 50,80, 100]}
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             />
           </Card>
