@@ -250,7 +250,7 @@ const AddCategory = () => {
   const handleSubmit = async () => {
     try {
       await createNewCategory(categoryData)
-      // console.log(categoryData, "categoryData")
+      console.log(categoryData, "categoryData")
     }
     catch (err) {
       console.log("error", err)

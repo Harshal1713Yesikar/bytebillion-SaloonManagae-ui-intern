@@ -24,6 +24,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import { createNewCategory, getAllCategoryList } from 'src/store/APIs/Api';
+import { AddServicesApi } from 'src/store/APIs/Api'
 
 // ** Third Party Imports
 import toast from 'react-hot-toast'
@@ -44,6 +45,8 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { Console } from 'console'
+import { listAllEmployeeApi } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
@@ -64,6 +67,24 @@ interface FormInputs {
   designation: string
   category: string
   staffPermission: string
+}
+interface FormInputs {
+  customerId: ''
+  salonId: ''
+  serviceCategoryId: ''
+  serviceName: ''
+  serviceDescription: ''
+  serviceTime: ''
+  selectEmployee: ''
+  amountHistory: {
+    serviceAmount: ''
+  }
+}
+interface Data {
+  serviceId: number
+  serviceName: string
+  serviceStatus: number
+  currentServiceAmount: number
 }
 
 const AddStaffSchema = yup.object().shape({
@@ -120,8 +141,8 @@ interface CustomInputProps {
   label: string
   error: boolean
   onChange: (event: ChangeEvent) => void
-}
 
+}
 const defaultValues = {
   // dob: null,
   firstName: '',
@@ -181,6 +202,12 @@ const orgSelected = (organization: any) => {
     // setLoading(false)
   })
 }
+const empSelected = (organization: any) => {
+  listAllEmployeeApi("099f9bf2-8ac2-4f84-8286-83bb46595fde", "jkmli").then((res: any) => {
+    // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+    // setLoading(false)
+  })
+}
 
 const AddService = () => {
 
@@ -199,27 +226,39 @@ const AddService = () => {
     getData()
 
   }, [])
+  const [allEmpList, setAllEmpList] = useState([])
+  useEffect(() => {
+    const getEmpData = async () => {
+      const response = await listAllEmployeeApi("099f9bf2-8ac2-4f84-8286-83bb46595fde", "dqXUs")
+      console.log("skdfjklsjfksjdflkjds", response.data.data)
+      setAllEmpList(response?.data?.data)
+      // setLoading(false)
+
+      // console.log(res,"res")
+      // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+
+    }
+    getEmpData()
+
+  }, [])
 
 
 
-  const [defaultStudentValues, setDefaultStudentValues] = useState({
-    dob: null,
-    email: '',
-    radio: '',
-    select: '',
-    lastName: '',
-    password: '',
-    mobileNo: '',
-    textarea: '',
-    firstName: '',
-    Gender: '',
-    hourlyRate: '',
-    fixedSalary: '',
-    workingDay: '',
-    Designation: '',
-    category: '',
-    staffPermission: ''
+  const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'jkmli',
+    serviceCategoryId: 'HFm4p',
+    serviceName: '',
+    serviceDescription: '',
+    serviceTime: '',
+    selectStaff: '',
+    amountHistory: {
+      serviceAmount: ''
+    }
   })
+
+  // console.log(defaultStudentValues)
+
 
   const [checkbox, setCheckbox] = React.useState({
     gilad: true,
@@ -248,15 +287,26 @@ const AddService = () => {
   }
 
   // const onSubmit = () => toast.success('Form Submitted')
-  const onSubmit = (data: any) => {
-    console.log('Form Data', data)
-    toast.success('Form Submitted')
+  const onSubmit = (data: any, event: any) => {
+    event.preventDefault()
+    console.log('ABC', data)
+    // toast.success('Form Submitted')
+    // AddServicesApi(data)
+    // setDefaultStudentValues(data)
+    // console.log("adssaas", data)
   }
 
   const renderedOrganizations = allCategoryList.map((organization: any, index: number) => {
     return (
       <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.serviceCategoryName}>
         <Typography> {organization.serviceCategoryName}</Typography>
+      </MenuItem>
+    )
+  })
+  const addStaff = allEmpList.map((organization: any, index: number) => {
+    return (
+      <MenuItem onClick={() => empSelected(organization)} key={index} value={organization.employeeName}>
+        <Typography> {organization.employeeName}</Typography>
       </MenuItem>
     )
   })
@@ -414,10 +464,11 @@ const AddService = () => {
                             labelId='validation-basic-select'
                             aria-describedby='validation-basic-select'
                           >
-                            <MenuItem value=''>Select</MenuItem>
+                            {addStaff}
+                            {/* <MenuItem value=''>Select</MenuItem>
                             <MenuItem value='Manager'>Manager</MenuItem>
                             <MenuItem value='Subadmin'>Subadmin</MenuItem>
-                            <MenuItem value='Staff'>Staff</MenuItem>
+                            <MenuItem value='Staff'>Staff</MenuItem> */}
                           </Select>
                         )}
                       />
@@ -458,6 +509,16 @@ const AddService = () => {
 
                 </Grid>
               </Grid>
+
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+                color='primary'
+                onSubmit={onSubmit}
+              >
+                Submit
+              </Button>
             </form>
           </CardContent>
         </Card>

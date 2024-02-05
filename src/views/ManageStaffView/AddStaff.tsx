@@ -248,6 +248,7 @@ const CreateStaff = () => {
   const onSubmit = (data: any) => {
     console.log('Form Data', data);
     toast.success('Form Submitted');
+    console.log(data)
     staffRegistrationApi(data)
   }
 

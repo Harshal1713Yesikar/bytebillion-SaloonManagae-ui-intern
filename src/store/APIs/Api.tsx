@@ -327,6 +327,33 @@ export async function listAllEmployeeApi(customerId: any, salonId: any) {
 }
 
 
+// #ServicesAPI
+export async function AddServicesApi(serviceFormData: any) {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_SERVICE_API}`,
+      serviceFormData,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+export async function ListAllServiceApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_SERVICE_LIST_API}customerId=${customerId}&salonId=${salonId}`, { headers })
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
 
 
 
