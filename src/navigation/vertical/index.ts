@@ -58,7 +58,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/expense',
       icon: 'fa-regular:money-bill-alt',
     },
-    
+
     {
       path: '/entity',
       action: 'read',
@@ -73,7 +73,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Settings',
       icon: 'material-symbols:settings',
     },
-   
+
   ]
 }
 

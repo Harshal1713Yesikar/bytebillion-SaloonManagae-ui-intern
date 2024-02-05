@@ -66,9 +66,9 @@ interface FormInputs {
   // employeeBankName: '',
   // employeeAccountNo: '',
   // employeeIfsceCode: ''
-  employeeFixedSalary:'',
-  emoloyeeHourlySalary:'',
-  employeeShiftHourly:''
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
 
 }
 
@@ -84,6 +84,9 @@ const AddStaffSchema = yup.object().shape({
     .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
+  // password: yup.string().min(8).required(),
+  // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+
   employeeJoiningDate: yup.date().required(),
 
   employeePhone: yup
@@ -93,7 +96,7 @@ const AddStaffSchema = yup.object().shape({
     .max(10)
     .required(),
 
-    emoloyeeHourlySalary: yup
+  emoloyeeHourlySalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
     .matches(/^\d+$/, 'Required,must contain only numbers')
@@ -109,7 +112,7 @@ const AddStaffSchema = yup.object().shape({
     .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
 
-    employeeShiftHourly: yup
+  employeeShiftHourly: yup
     .string()
     .max(2, 'Required must be at most 2 characters')
     .matches(/^\d+$/, 'This field is required')
@@ -118,7 +121,7 @@ const AddStaffSchema = yup.object().shape({
   // staffpermission: yup.string(),
   employeeDesignation: yup.string().required().max(100),
   employeeAddress: yup.string().required().max(100),
-  
+
 })
 
 
@@ -145,9 +148,9 @@ const defaultValues = {
   // employeeBankName: '',
   // employeeAccountNo: '',
   // employeeIfsceCode: '',
-  employeeFixedSalary:'',
-  emoloyeeHourlySalary:'',
-  employeeShiftHourly:''
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
 }
 
 const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
@@ -203,9 +206,9 @@ const CreateStaff = () => {
     // employeeBankName: '',
     // employeeAccountNo: '',
     // employeeIfsceCode: '',
-    employeeFixedSalary:'',
-    emoloyeeHourlySalary:'',
-    employeeShiftHourly:''
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
   })
 
   const [checkbox, setCheckbox] = React.useState({
@@ -239,6 +242,7 @@ const CreateStaff = () => {
   const onSubmit = (data: any) => {
     console.log('Form Data staff', data);
     toast.success('Form Submitted');
+    console.log(data)
     staffRegistrationApi(data)
   }
 
@@ -262,8 +266,8 @@ const CreateStaff = () => {
   return (
     <Grid>
       <Grid>
-        <Card> 
-          <CardHeader title='Add Employee' sx={{fontWeight:'700' ,fontSize:"20"}} />
+        <Card>
+          <CardHeader title='Add Employee' sx={{ fontWeight: '700', fontSize: "20" }} />
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
@@ -295,7 +299,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-              
+
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -337,7 +341,7 @@ const CreateStaff = () => {
                         />
                       )}
                     />
-                    {StaffErrors.employeeAddress&& (
+                    {StaffErrors.employeeAddress && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
                         This field is required
                       </FormHelperText>
@@ -373,7 +377,7 @@ const CreateStaff = () => {
                   />
                   {StaffErrors.employeeJoiningDate && (
                     <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
-                     This field is required 
+                      This field is required
                     </FormHelperText>
                   )}
                 </Grid>
@@ -419,12 +423,12 @@ const CreateStaff = () => {
                         />
                       )}
                     />
-                     {StaffErrors.emoloyeeHourlySalary && (
+                    {StaffErrors.emoloyeeHourlySalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        
+
                       </FormHelperText>
                     )}
-                 </FormControl>
+                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -448,10 +452,10 @@ const CreateStaff = () => {
                     />
                     {StaffErrors.employeeFixedSalary && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                       
+
                       </FormHelperText>
                     )}
-                 </FormControl>
+                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -498,7 +502,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                
+
 
                 <Grid item xs={12}>
                   <FormControl fullWidth>

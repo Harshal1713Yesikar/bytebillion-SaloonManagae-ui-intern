@@ -42,6 +42,7 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { createNewCategory } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
@@ -105,7 +106,7 @@ const AddStaffSchema = yup.object().shape({
   workingDay: yup
     .string()
     .max(2, 'Fixed Day must be at most 2 characters')
-    .matches(/^\d+$/, 'This field is required') 
+    .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
   staffpermission: yup.string(),
   designation: yup.string().required().max(100),
@@ -223,12 +224,17 @@ const AddCategory = () => {
   }
 
   // const onSubmit = () => toast.success('Form Submitted')
-  const onSubmit = (data:any) => {
+  const onSubmit = (data: any) => {
     console.log('Form Data', data);
     toast.success('Form Submitted');
   }
 
   const [checked, setChecked] = useState(true)
+  const [categoryData, setCategoryData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "dqXUs",
+    serviceCategoryName: ""
+  })
 
   const {
     reset: studentReset,
@@ -241,11 +247,23 @@ const AddCategory = () => {
     defaultValues: defaultStudentValues,
     resolver: yupResolver(AddStaffSchema)
   })
+  const handleSubmit = async () => {
+    try {
+      await createNewCategory(categoryData)
+      console.log(categoryData, "categoryData")
+    }
+    catch (err) {
+      console.log("error", err)
+    }
+  }
+  const handleInputChange = (key: any, value: any) => {
+    setCategoryData({ ...categoryData, [key]: value });
+  }
   return (
     <Grid>
       <Grid>
         <Card>
-          <CardHeader title='Add Category'/>
+          <CardHeader title='Add Category' />
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
@@ -261,8 +279,14 @@ const AddCategory = () => {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           value={value}
-                          label='Name'
-                          onChange={onChange}
+                          label='serviceCategory'
+                          onChange={(e) => {
+                            onChange(e);
+                            setCategoryData((prevData) => ({
+                              ...prevData,
+                              serviceCategoryName: e.target.value
+                            }));
+                          }}
                           placeholder='Type Here'
                           error={Boolean(StaffErrors.firstName)}
                           aria-describedby='validation-basic-first-name'
@@ -282,9 +306,10 @@ const AddCategory = () => {
         </Card>
 
       </Grid>
-        <Card>
-          <CardContent sx={{fontWeight:"bold"}} >Add Group</CardContent>
-        </Card>
+      <Card>
+        <CardContent sx={{ fontWeight: "bold" }} >Add Group</CardContent>
+      </Card>
+      <Button variant='contained' onClick={handleSubmit}>Add</Button>
     </Grid>
   )
 }
