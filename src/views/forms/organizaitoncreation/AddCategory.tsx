@@ -123,22 +123,22 @@ interface CustomInputProps {
 }
 
 const defaultValues = {
-  // dob: null,
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  dob: '',
-  doJ: '',
-  mobileNo: '',
-  hourlyRate: '',
-  fixedSalary: '',
-  workingDay: '',
-  staffpermission: '',
-  designation: '',
-  gender: '',
-  staffPermission: ''
-}
+//   // dob: null,
+//   firstName: '',
+//   lastName: '',
+//   email: '',
+//   password: '',
+//   dob: '',
+//   doJ: '',
+//   mobileNo: '',
+//   hourlyRate: '',
+//   fixedSalary: '',
+//   workingDay: '',
+//   staffpermission: '',
+//   designation: '',
+//   gender: '',
+//   staffPermission: ''
+ }
 
 const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
   return <TextField inputRef={ref} {...props} sx={{ width: '100%' }} />
@@ -247,6 +247,9 @@ const AddCategory = () => {
     defaultValues: defaultStudentValues,
     resolver: yupResolver(AddStaffSchema)
   })
+
+
+
   const handleSubmit = async () => {
     try {
       await createNewCategory(categoryData)
@@ -279,7 +282,7 @@ const AddCategory = () => {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           value={value}
-                          label='serviceCategory'
+                          label='Category Name'
                           onChange={(e) => {
                             onChange(e);
                             setCategoryData((prevData) => ({

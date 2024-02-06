@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardHeader,
   Dialog,
   DialogActions,
   DialogContent,
@@ -49,7 +50,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { AddServicesApi, ListAllServiceApi, listAllEmployeeApi } from 'src/store/APIs/Api'
+import { AddServicesApi, ListAllServiceApi, getAllCategoryList, listAllEmployeeApi,createNewCategory} from 'src/store/APIs/Api'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -60,6 +61,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { Router } from 'react-router-dom'
 
 type Order = 'asc' | 'desc'
 
@@ -75,6 +77,12 @@ interface FormInputs {
     serviceAmount: ''
   }
 }
+interface FormInput{
+  customerId: string
+  salonId: string
+  serviceCategoryName: string
+}
+
 interface Data {
   serviceId: number
   serviceName: string
@@ -321,11 +329,19 @@ const orgSelected = (organization: any) => {
   })
 }
 
+// const CategorySelected = async (organization: any) => {
+//  await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
+//     // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+//     // setLoading(false)
+//   })
+// }
+
 const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
   const [serviceData, setServiceData] = useState<any>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
+  const [categoryList, setCategoryList] = useState([])
 
   useEffect(() => {
     // Fetch staff data using listAllEmployeeApi
@@ -344,6 +360,20 @@ const Service = () => {
     fetchData()
   }, [])
 
+    // Fetch staff data using listAllCategoryList
+    const data = async () => {
+      try {
+        const response: any = await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs')
+        setCategoryList(response?.data.data)
+        console.log('formData', response?.data?.data)
+      } catch (err) {
+        console.log('ABC', err)
+      }
+    }
+    useEffect(() => {
+    data()
+  }, [])
+
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'E7uqn',
@@ -356,6 +386,9 @@ const Service = () => {
       serviceAmount: ''
     }
   })
+
+
+ 
 
   const handleOption = (event: MouseEvent<HTMLButtonElement>) => {
     setOption(event.currentTarget)
@@ -385,12 +418,11 @@ const Service = () => {
     setOrderBy(property)
   }
 
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false)
 
-  const handleClickOpen = () => setOpen(true);
+  const handleClickOpen = () => setOpen(true)
 
-  const handleClose = () => setOpen(false);
-
+  const handleClose = () => setOpen(false)
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -443,7 +475,6 @@ const Service = () => {
 
   const [openImportDialog, setOpenImportDialog] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
-
   const [employeeList, setEmployeeList] = useState([])
 
   useEffect(() => {
@@ -457,7 +488,7 @@ const Service = () => {
       }
     }
     fatchData()
-  })
+  }, [])
 
   const handleImportClick = () => {
     handleCloseOption()
@@ -499,13 +530,6 @@ const Service = () => {
   const [personName, setPersonName] = React.useState<string[]>([])
 
   const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    // const {
-    //   target: { value }
-    // } = event
-    // setPersonName(
-    //   // On autofill we get a stringified value.
-    //   typeof value === 'string' ? value.split(',') : value
-    // )
     console.log(event.target.value)
   }
 
@@ -516,11 +540,49 @@ const Service = () => {
       </MenuItem>
     )
   })
+
+  const renderedCategory = categoryList.map((organization: any, index: number) => {
+    return (
+      <MenuItem onClick={() => CategorySelected(organization)} key={index} value={organization.serviceCategoryName}>
+        <Typography> {organization.serviceCategoryName}</Typography>
+      </MenuItem>
+    )
+  })
+
+  const [categoryData, setCategoryData] = useState({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'dqXUs',
+    serviceCategoryName: ''
+  })
+
+  const onSubmitButtom =()=>{
+    console.log(categoryData)
+  }
+
+
+
+
   const onSubmit = (data: any) => {
     AddServicesApi(data)
     setDefaultStudentValues(data)
 
     console.log('kvjvb', data)
+  }
+
+  
+  
+  const handleSubmit = async () => {
+    try {
+      await createNewCategory(categoryData)
+      await data()
+      console.log(categoryData, "categoryData")
+    }
+    catch (err) {
+      console.log("error", err)
+    }
+  }
+  const handleInputChange = (key: any, value: any) => {
+    setCategoryData({ ...categoryData, [key]: value });
   }
   const {
     reset: serviceReset,
@@ -533,6 +595,17 @@ const Service = () => {
     defaultValues: defaultStudentValues
   })
 
+  const {
+    reset: CategoryReset,
+    control: Category,
+    getValues: serviceValue,
+    handleSubmit: handleCategorySubmit,
+    formState: { errors: CategroyErrors }
+  } = useForm<FormInput>({
+    defaultValues: categoryData
+  })
+
+  
   return (
     <>
       <Grid sx={{ display: 'flex', width: '100%' }}>
@@ -569,7 +642,6 @@ const Service = () => {
                     <MenuItem onClick={handleCloseOption}>Sample File</MenuItem>
                   </Menu>
                 </Grid>
-                
               </Box>
               <Box sx={{ marginTop: '10px' }}>
                 <Button
@@ -634,7 +706,9 @@ const Service = () => {
                                 error={Boolean(ServiceErrors.selectEmployee)}
                                 labelId='validation-basic-select'
                                 aria-describedby='validation-basic-select'
-                              ></Select>
+                              >
+                                {renderedCategory}
+                              </Select>
                             )}
                           />
                           {ServiceErrors.selectEmployee && (
@@ -644,11 +718,15 @@ const Service = () => {
                           )}
                         </FormControl>
                         <Fragment>
-                          <Button variant='outlined' onClick={handleClickOpen} sx={{borderRadius:100,backgroundColor:"blue",color:"white"}}>
+                          <Button
+                            variant='outlined'
+                            onClick={handleClickOpen}
+                            sx={{ borderRadius: 100, backgroundColor: 'blue', color: 'gray' }}
+                          >
                             +
                           </Button>
                           <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                            <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
+                            {/* <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
                             <DialogContent>
                               <TextField
                                 id='name'
@@ -657,36 +735,59 @@ const Service = () => {
                                 type='Name'
                                 label='Name'
                               />
-                            </DialogContent>
-                            {/* <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth>
-                              <Controller
-                                name='serviceName'
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field: { value, onChange } }) => (
-                                  <TextField
-                                    value={value}
-                                    label='Service Name'
-                                    onChange={onChange}
-                                    placeholder='Type Here'
-                                    error={Boolean(ServiceErrors.serviceName)}
-                                    aria-describedby='validation-basic-first-name'
-                                  />
-                                )}
-                              />
-                              {ServiceErrors.serviceName && (
-                                <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                                  This field is required
-                                </FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid> */}
-                            <DialogActions>
-                              <Button variant='outlined' color='secondary' onClick={handleClose}>
-                                Submit
-                              </Button>
-                            </DialogActions>
+                            </DialogContent> */}
+
+                            <Grid>
+                              <Card>
+                                <CardHeader title='Add Category' />
+                                <CardContent>
+                                  <form onSubmit={handleCategorySubmit(onSubmitButtom)}>
+                                    <Grid>
+                                      <Grid >
+                                        <FormControl fullWidth>
+                                          <Controller
+                                            name='serviceCategoryName'
+                                            control={Category}
+                                            rules={{ required: true }}
+                                            render={({ field: { value, onChange } }) => (
+                                              <TextField
+                                                value={value}
+                                                label='Category Name'
+                                                onChange={e => {
+                                                  onChange(e)
+                                                  setCategoryData(prevData => ({
+                                                    ...prevData,
+                                                    serviceCategoryName: e.target.value
+                                                  }))
+                                                // {console.log(e.target.value)}
+                                                }}
+                                                placeholder='Type Here'
+                                                error={Boolean(CategroyErrors.serviceCategoryName)}
+                                                aria-describedby='validation-basic-first-name'
+                                              />
+                                            )}
+                                          />
+                                          {CategroyErrors.serviceCategoryName && (
+                                            <FormHelperText
+                                              sx={{ color: 'error.main' }}
+                                              id='validation-basic-first-name'
+
+                                            >
+                                              This field is required
+                                            </FormHelperText>
+                                          )}
+                                        </FormControl>
+                                      </Grid>
+                                    </Grid>
+                                  </form>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+
+                            {/* <Button variant='outlined' color='secondary' type='submit' onSubmit={handleSubmit}> */}
+                            <Button variant='outlined' color='secondary' type='submit' onClick={handleSubmit}>
+                              Submit
+                            </Button>
                           </Dialog>
                         </Fragment>
                       </Grid>
