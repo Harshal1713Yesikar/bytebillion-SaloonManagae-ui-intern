@@ -23,6 +23,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { ThemeColor } from 'src/@core/layouts/types'
+import debounce from 'lodash.debounce'
 
 // ** MUI Imports
 import Table from '@mui/material/Table'
@@ -185,8 +186,8 @@ const renderClient = (params: GridRenderCellParams) => {
 }
 const columns: GridColDef[] = [
   {
-    flex: 0.25,
-    minWidth: 290,
+    flex: 0.55,
+    minWidth: 120,
     field: 'serviceName',
     headerName: 'Service Name',
     // hide: hideNameColumn,
@@ -217,13 +218,13 @@ const columns: GridColDef[] = [
     )
   },
   {
-    flex: 0.15,
+    flex: 0.175,
     minWidth: 110,
     field: 'selectStaff ',
     headerName: 'Staff Name',
     renderCell: (params: GridRenderCellParams) => (
       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        {params?.row.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
       </Typography>
     )
   },
@@ -241,9 +242,9 @@ const columns: GridColDef[] = [
   // },
 
   {
-    flex: 0.1,
+    flex: 0.175,
     field: 'employeeId',
-    minWidth: 80,
+    minWidth: 120,
     headerName: 'Staff ID',
     renderCell: (params: GridRenderCellParams) => (
       <Typography variant='body2' sx={{ color: 'text.primary' }}>
@@ -264,6 +265,20 @@ const columns: GridColDef[] = [
         ) : (
           <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
         )}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.175,
+    minWidth: 150,
+    field: 'updateService',
+    headerName: 'Edit Service',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        <Button >
+
+          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+        </Button>
       </Typography>
     )
   }
@@ -329,7 +344,7 @@ const Service = () => {
 
   useEffect(() => {
     // Fetch staff data using listAllEmployeeApi
-    const fetchData = async () => {
+    const fetchData = debounce(async () => {
       try {
         const response: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli') // Pass customerId and salonId
         // Update the component's state with the fetched data
@@ -338,7 +353,7 @@ const Service = () => {
       } catch (error) {
         console.error('Error fetching Service data:', error)
       }
-    }
+    }, 1000)
 
     // Call the fetchData function
     fetchData()
@@ -447,7 +462,7 @@ const Service = () => {
   const [employeeList, setEmployeeList] = useState([])
 
   useEffect(() => {
-    const fatchData = async () => {
+    const fatchData = debounce(async () => {
       try {
         const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
         setEmployeeList(response?.data?.data)
@@ -455,9 +470,9 @@ const Service = () => {
       } catch (err) {
         return err
       }
-    }
+    }, 1000)
     fatchData()
-  })
+  }, [])
 
   const handleImportClick = () => {
     handleCloseOption()
@@ -569,7 +584,7 @@ const Service = () => {
                     <MenuItem onClick={handleCloseOption}>Sample File</MenuItem>
                   </Menu>
                 </Grid>
-                
+
               </Box>
               <Box sx={{ marginTop: '10px' }}>
                 <Button
@@ -620,7 +635,7 @@ const Service = () => {
                             error={Boolean(ServiceErrors.selectEmployee)}
                             htmlFor='validation-basic-select'
                           >
-                            Select Categary*
+                            Select Category
                           </InputLabel>
                           <Controller
                             name='selectEmployee'
@@ -644,15 +659,15 @@ const Service = () => {
                           )}
                         </FormControl>
                         <Fragment>
-                          <Button variant='outlined' onClick={handleClickOpen} sx={{borderRadius:100,backgroundColor:"blue",color:"white"}}>
+                          <Button variant='outlined' onClick={handleClickOpen} sx={{ borderRadius: 100, backgroundColor: "blue", color: "white" }}>
                             +
                           </Button>
                           <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                            <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
+                            <DialogTitle id='form-dialog-title'> Add Category</DialogTitle>
                             <DialogContent>
                               <TextField
                                 id='name'
-                                autoFocus 
+                                autoFocus
                                 fullWidth
                                 type='Name'
                                 label='Name'
@@ -878,14 +893,10 @@ const Service = () => {
                         aria-checked={isItemSelected}
                         onClick={event => handleClick(event, row.serviceName)}
                       >
-                        <TableCell>
-                          {/* <Checkbox checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} /> */}
-                        </TableCell>
                         <TableCell component='th' id={labelId} scope='row' padding='none'>
                           {row.serviceName}
                         </TableCell>
                         <TableCell align='right'>{row.serviceId}</TableCell>
-                        {/* <TableCell align='right'>{row.serviceId}</TableCell> */}
                         <TableCell align='right'>{row.currentServiceAmount}</TableCell>
                         <TableCell align='right'>{row.serviceStatus}</TableCell>
                       </TableRow>
@@ -903,16 +914,7 @@ const Service = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {/* <TablePagination
-              page={page}
-              component='div'
-              // rows = {serviceData}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            /> */}
+
             <DataGrid
               autoHeight
               rows={serviceData}
@@ -923,8 +925,8 @@ const Service = () => {
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             />
           </Grid>
-        </Card>
-      </Grid>
+        </Card >
+      </Grid >
     </>
   )
 }

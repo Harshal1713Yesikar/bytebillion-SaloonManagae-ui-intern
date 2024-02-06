@@ -142,11 +142,11 @@ export const salonRegistration = async ({ newOrganizationDetails }: any) => {
 
 export const organizationDetails = async (id: string) => {
   try {
+    console.log("AAAAA")
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
       { headers }
     );
-    console.log("AAAAA")
     return res.data;
 
   } catch (err) {
@@ -299,7 +299,7 @@ export async function getAllCategoryList(customerId: any, salonId: any) {
 
     return err;
   }
-} 
+}
 
 
 // #Employee API
@@ -348,6 +348,20 @@ export async function AddServicesApi(serviceFormData: any) {
     return err;
   }
 }
+export async function updateServicesApi(updateServiceFormData: any) {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_UPDATE_SERVICE_API}`,
+      updateServiceFormData,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
 
 export async function ListAllServiceApi(customerId: any, salonId: any) {
   try {
@@ -360,6 +374,5 @@ export async function ListAllServiceApi(customerId: any, salonId: any) {
   }
 
 }
-
 
 

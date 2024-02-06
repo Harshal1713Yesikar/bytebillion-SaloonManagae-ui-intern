@@ -145,8 +145,8 @@ const connectedAccountsArr: ConnectedAccountsType[] = [
 ]
 
 const UserViewConnection = () => {
-  
-  let mainId = ''
+
+  const mainId = ''
   let userDetails: any
   const dispatch = useDispatch()
 
@@ -692,7 +692,7 @@ const UserViewConnection = () => {
                     maxLength: 50
                   }}
                   startAdornment={
-                    <InputAdornment position='start'>{mainId ? mainId.toUpperCase() + ' - ' : ''}</InputAdornment>
+                    <InputAdornment position='start'>{mainId ? mainId?.toUpperCase() + ' - ' : ''}</InputAdornment>
                   }
                 />
               </FormControl>
@@ -858,4 +858,4 @@ const UserViewConnection = () => {
   )
 }
 
-export default UserViewConnection
+export default UserViewConnection;
