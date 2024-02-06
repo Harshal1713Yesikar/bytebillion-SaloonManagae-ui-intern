@@ -23,7 +23,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { ThemeColor } from 'src/@core/layouts/types'
-import debounce from 'lodash.debounce'
+// import debounce from 'lodash.debounce'
 
 // ** MUI Imports
 import Table from '@mui/material/Table'
@@ -184,6 +184,144 @@ const renderClient = (params: GridRenderCellParams) => {
     )
   }
 }
+
+const EditServiceButton = () => {
+
+  const { control, handleSubmit, formState: { errors } } = useForm();
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  return (
+    <Typography variant='body2' sx={{ color: 'text.primary' }}>
+      <Button onClick={handleOpenDialog}>
+        <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+      </Button>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Edit Service</DialogTitle>
+        <DialogContent sx={{ '& > *': { mb: 4 } }}>
+          <Controller
+            name="serviceName"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Service Name"
+                fullWidth
+                style={{ width: '40%', marginRight: '20px' }}
+                error={!!errors.serviceName}
+                helperText={errors.serviceName ? errors.serviceName.message : ''}
+              />
+            )}
+            rules={{ required: 'Service Name is required' }}
+          />
+          <Controller
+            name="serviceTime"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Service Time"
+                fullWidth
+                style={{ width: '40%' }}
+                error={!!errors.serviceName}
+                helperText={errors.serviceName ? errors.serviceName.message : ''}
+              />
+            )}
+            rules={{ required: 'Service time is required' }}
+          />
+          <Controller
+            name="staffName"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Staff Name"
+                fullWidth
+                style={{ width: '40%', marginRight: '20px' }}
+                error={!!errors.serviceName}
+                helperText={errors.serviceName ? errors.serviceName.message : ''}
+              />
+            )}
+            rules={{ required: 'Staff Name is required' }}
+          />
+          <Controller
+            name="serviceStatus"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Service Status"
+                fullWidth
+                style={{ width: '40%' }}
+                error={!!errors.serviceName}
+                helperText={errors.serviceName ? errors.serviceName.message : ''}
+              />
+            )}
+            rules={{ required: 'Service Name is required' }}
+          />
+          {/* Add more fields as needed */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} variant='contained' autoFocus>
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Typography>
+  );
+};
+const DeleteServiceButton = () => {
+
+  const { control, handleSubmit, formState: { errors } } = useForm();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+  const onSubmit = (data: any) => {
+    console.log(data);
+    // Handle form submission here, e.g., save data, close dialog, etc.
+    // onclose();
+  };
+
+  return (
+    <Typography variant='body2' sx={{ color: 'text.primary' }}>
+      <Button onClick={handleOpenDialog}>
+        <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+      </Button>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Delete Service</DialogTitle>
+        <DialogContent>
+          {/* Content of the dialog goes here */}
+          <Typography>This is the content of the dialog.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} variant='contained' autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Typography>
+  );
+};
 const columns: GridColDef[] = [
   {
     flex: 0.55,
@@ -229,18 +367,6 @@ const columns: GridColDef[] = [
     )
   },
 
-  // {
-  //   flex: 0.15,
-  //   minWidth: 110,
-  //   field: 'employeePhone ',
-  //   headerName: 'contact',
-  //   renderCell: (params: GridRenderCellParams) => (
-  //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-  //       {params.row.serviceName}
-  //     </Typography>
-  //   )
-  // },
-
   {
     flex: 0.175,
     field: 'employeeId',
@@ -273,15 +399,16 @@ const columns: GridColDef[] = [
     minWidth: 150,
     field: 'updateService',
     headerName: 'Edit Service',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        <Button >
-
-          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
-        </Button>
-      </Typography>
-    )
+    renderCell: () => <EditServiceButton />,
+  },
+  {
+    flex: 0.175,
+    minWidth: 150,
+    field: 'deleteService',
+    headerName: 'Delete Service',
+    renderCell: () => <DeleteServiceButton />,
   }
+
 ]
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -344,7 +471,7 @@ const Service = () => {
 
   useEffect(() => {
     // Fetch staff data using listAllEmployeeApi
-    const fetchData = debounce(async () => {
+    const fetchData = async () => {
       try {
         const response: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli') // Pass customerId and salonId
         // Update the component's state with the fetched data
@@ -353,7 +480,7 @@ const Service = () => {
       } catch (error) {
         console.error('Error fetching Service data:', error)
       }
-    }, 1000)
+    }
 
     // Call the fetchData function
     fetchData()
@@ -462,7 +589,7 @@ const Service = () => {
   const [employeeList, setEmployeeList] = useState([])
 
   useEffect(() => {
-    const fatchData = debounce(async () => {
+    const fatchData = async () => {
       try {
         const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
         setEmployeeList(response?.data?.data)
@@ -470,7 +597,7 @@ const Service = () => {
       } catch (err) {
         return err
       }
-    }, 1000)
+    }
     fatchData()
   }, [])
 
@@ -862,6 +989,9 @@ const Service = () => {
               </Box>
             </Grid>
           </Grid>
+
+
+
           <Grid>
             <EnhancedTableToolbar numSelected={selected.length} />
             <Grid item xs={6}>
