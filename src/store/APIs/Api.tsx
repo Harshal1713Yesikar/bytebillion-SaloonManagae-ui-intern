@@ -299,7 +299,7 @@ export async function getAllCategoryList(customerId: any, salonId: any) {
 
     return err;
   }
-} 
+}
 
 
 // #Employee API
