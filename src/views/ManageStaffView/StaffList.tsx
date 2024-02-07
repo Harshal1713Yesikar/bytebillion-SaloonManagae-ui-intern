@@ -11,6 +11,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Third Party Components
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/router';
 
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
@@ -30,7 +31,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router-dom'
 import { StaticRouter } from 'react-router-dom/server'
-import { listAllEmployeeApi} from 'src/store/APIs/Api'
+import { listAllEmployeeApi,getSingleEmployee} from 'src/store/APIs/Api'
 
 
 interface StatusObj {
@@ -129,6 +130,8 @@ interface Props {
 }
 const StaffList = (props: Props) => {
   // ** States
+  const router = useRouter();
+  const [singleEmployeeData,setSingleEmployeeData]=useState([])
   const [pageSize, setPageSize] = useState<number>(7)
   const [hideNameColumn, setHideNameColumn] = useState(false)
   const { updateCollegeState, setUpdateCollegeState } = props
@@ -158,6 +161,23 @@ const StaffList = (props: Props) => {
     fetchData();
   }, []);
 
+
+  
+  useEffect(()=>{
+
+    const fetchData1 = async () => {
+            try {
+              const response: any = await getSingleEmployee("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn","XiqXU"); // Pass customerId and salonId
+              // Update the component's state with the fetched data
+              console.log('setSingleEmployeeData:', response.data.data);
+              setSingleEmployeeData(response?.data?.data);
+            } catch (error) {
+              console.error('Error fetching staff data:', error);
+            }
+          };
+  fetchData1()
+  },[])
+// }
   const columns: GridColDef[] = [
     
     {
@@ -247,7 +267,11 @@ const StaffList = (props: Props) => {
 
 
   ]
-
+  
+  const handleCellClick = (row: any) => {
+    console.log("ID",row)
+    router.push(`/managesatff/${row.row.employeeId}`)
+  }
 
   return (
     <>
@@ -270,6 +294,8 @@ const StaffList = (props: Props) => {
               autoHeight
               rows={staffData}
               columns={columns}
+              getRowId={(row) => row.employeeId}
+              onCellClick={handleCellClick}
               pageSize={pageSize}
               disableSelectionOnClick
               rowsPerPageOptions={[7,10, 25, 50,80, 100]}

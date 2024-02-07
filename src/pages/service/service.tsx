@@ -50,7 +50,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { AddServicesApi, ListAllServiceApi, getAllCategoryList, listAllEmployeeApi,createNewCategory} from 'src/store/APIs/Api'
+import {
+  AddServicesApi,
+  ListAllServiceApi,
+  getAllCategoryList,
+  listAllEmployeeApi,
+  createNewCategory
+} from 'src/store/APIs/Api'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -77,7 +83,7 @@ interface FormInputs {
     serviceAmount: ''
   }
 }
-interface FormInput{
+interface FormInput {
   customerId: string
   salonId: string
   serviceCategoryName: string
@@ -329,12 +335,12 @@ const orgSelected = (organization: any) => {
   })
 }
 
-// const CategorySelected = async (organization: any) => {
-//  await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
-//     // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
-//     // setLoading(false)
-//   })
-// }
+const CategorySelected = async (organization: any) => {
+ await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
+    // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+    // setLoading(false)
+  })
+}
 
 const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
@@ -360,17 +366,17 @@ const Service = () => {
     fetchData()
   }, [])
 
-    // Fetch staff data using listAllCategoryList
-    const data = async () => {
-      try {
-        const response: any = await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs')
-        setCategoryList(response?.data.data)
-        console.log('formData', response?.data?.data)
-      } catch (err) {
-        console.log('ABC', err)
-      }
+  // Fetch staff data using listAllCategoryList
+  const data = async () => {
+    try {
+      const response: any = await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs')
+      setCategoryList(response?.data.data)
+      console.log('formData', response?.data?.data)
+    } catch (err) {
+      console.log('ABC', err)
     }
-    useEffect(() => {
+  }
+  useEffect(() => {
     data()
   }, [])
 
@@ -386,9 +392,6 @@ const Service = () => {
       serviceAmount: ''
     }
   })
-
-
- 
 
   const handleOption = (event: MouseEvent<HTMLButtonElement>) => {
     setOption(event.currentTarget)
@@ -555,12 +558,9 @@ const Service = () => {
     serviceCategoryName: ''
   })
 
-  const onSubmitButtom =()=>{
+  const onSubmitButtom = () => {
     console.log(categoryData)
   }
-
-
-
 
   const onSubmit = (data: any) => {
     AddServicesApi(data)
@@ -569,20 +569,17 @@ const Service = () => {
     console.log('kvjvb', data)
   }
 
-  
-  
   const handleSubmit = async () => {
     try {
       await createNewCategory(categoryData)
       await data()
-      console.log(categoryData, "categoryData")
-    }
-    catch (err) {
-      console.log("error", err)
+      console.log(categoryData, 'categoryData')
+    } catch (err) {
+      console.log('error', err)
     }
   }
   const handleInputChange = (key: any, value: any) => {
-    setCategoryData({ ...categoryData, [key]: value });
+    setCategoryData({ ...categoryData, [key]: value })
   }
   const {
     reset: serviceReset,
@@ -605,7 +602,6 @@ const Service = () => {
     defaultValues: categoryData
   })
 
-  
   return (
     <>
       <Grid sx={{ display: 'flex', width: '100%' }}>
@@ -743,7 +739,7 @@ const Service = () => {
                                 <CardContent>
                                   <form onSubmit={handleCategorySubmit(onSubmitButtom)}>
                                     <Grid>
-                                      <Grid >
+                                      <Grid>
                                         <FormControl fullWidth>
                                           <Controller
                                             name='serviceCategoryName'
@@ -759,7 +755,7 @@ const Service = () => {
                                                     ...prevData,
                                                     serviceCategoryName: e.target.value
                                                   }))
-                                                // {console.log(e.target.value)}
+                                                  // {console.log(e.target.value)}
                                                 }}
                                                 placeholder='Type Here'
                                                 error={Boolean(CategroyErrors.serviceCategoryName)}
@@ -771,7 +767,6 @@ const Service = () => {
                                             <FormHelperText
                                               sx={{ color: 'error.main' }}
                                               id='validation-basic-first-name'
-
                                             >
                                               This field is required
                                             </FormHelperText>
