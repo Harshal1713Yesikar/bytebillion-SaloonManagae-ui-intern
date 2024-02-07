@@ -361,5 +361,18 @@ export async function ListAllServiceApi(customerId: any, salonId: any) {
 
 }
 
+export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_PRODUCT_CREATE_API}`,
+      productDetailsforApi,
+      { headers }
+    );
 
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
 

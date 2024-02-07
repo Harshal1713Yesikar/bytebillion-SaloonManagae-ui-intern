@@ -2,6 +2,27 @@ import { Box, Button, Card, FormControl, FormHelperText, Grid, InputAdornment, I
 import React, { useState } from 'react'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
+import { ProductCreateRegistrationApi } from 'src/store/APIs/Api';
+import { debounce } from 'lodash'
+import * as yup from 'yup';
+
+
+
+const validationSchema = yup.object().shape({
+  productName: yup.string().required('Product Name is required'),
+  Barcode: yup.string().required('Barcode is required'),
+  costPrice: yup.string().required('Cost Price is required'),
+  fullPrice: yup.string().required('Full Price is required'),
+  sellPrice: yup.string().required('Sell Price is required'),
+  productDescription: yup.string().required('Product Description is required'),
+  inStockQuantity: yup.string().required('In Stock Quantity is required'),
+  quantityAlert: yup.string().required('Quantity Alert is required'),
+  productUsage: yup.string().required('Product Usage is required'),
+  Brand: yup.string().required('Brand is required'),
+  productType: yup.string().required('Product Type is required'),
+  vendor: yup.string().required('Vendor is required'),
+});
 
 const AddProductPop = () => {
   const [Brand, setBrand] = useState('');
@@ -11,7 +32,27 @@ const AddProductPop = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
 
-
+  const [defaultProductValues, setDefaultProductValues] = useState<any>({
+    customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    "productName": "",
+    "Barcode": "",
+    "costPrice": "",
+    "fullPrice": "",
+    "sellPrice": "",
+    "productDescription": "",
+    "brandId": "",
+    "vendorName": [],
+    "productCategoryId": "",
+    "availableStock": {
+      "retail": {
+        "retailStock": ""
+      },
+      "inHouse": {
+        "inHouseStock": ""
+      }
+    }
+  })
 
   const handleRetail = (event: SelectChangeEvent) => {
     setRetail(event.target.value);
@@ -29,235 +70,54 @@ const AddProductPop = () => {
   };
 
   const [productName, setProductName] = useState('');
-  const [errorName, setErrorName] = useState('');
-  const [barcode, setBarcode] = useState('');
-  const [errorBarcode, setErrorBarcode] = useState('');
-  const [costPrice, setCostPrice] = useState('');
-  const [errorCostPrice, setErrorCostPrice] = useState('');
+  const [Barcode, setBarcode] = useState('');
   const [fullPrice, setFullPrice] = useState('');
-  const [errorFullPrice, setErrorFullPrice] = useState('');
   const [sellPrice, setSellPrice] = useState('');
-  const [errorSellPrice, setErrorSellPrice] = useState('');
-  const [description, setDescription] = useState('');
-  const [errorDescription, setErrorDescription] = useState('');
+  const [costPrice, setCostPrice] = useState('');
+  const [productDescription, setDescription] = useState('');
   const [inStockQuantity, setInStockQuantity] = useState('');
-  const [inStockError, setInStockError] = useState('');
   const [quantityAlert, setQuantityAlert] = useState('');
-  const [quantityAlertError, setQuantityAlertError] = useState('');
   const [productUsage, setProductUsage] = useState('');
+  const [errorName, setErrorName] = useState('');
+  const [errorBarcode, setErrorBarcode] = useState('');
+  const [errorCostPrice, setErrorCostPrice] = useState('');
+  const [errorFullPrice, setErrorFullPrice] = useState('');
+  const [errorSellPrice, setErrorSellPrice] = useState('');
+  const [errorDescription, setErrorDescription] = useState('');
+  const [inStockError, setInStockError] = useState('');
+  const [quantityAlertError, setQuantityAlertError] = useState('');
   const [errorpro, setErrorpro] = useState('');
-
-
-  const handleChange = (event: any) => {
-    const inputValue = event.target.value.trim();
-    const wordCount = inputValue.split(/\s+/).length;
-    if (inputValue === '') {
-      setErrorName('Name cannot be empty');
-    } else if (wordCount > 5) {
-      setErrorName('Name should contain maximum 5 words');
-    } else {
-      setErrorName('');
-    }
-    setProductName(inputValue);
-  };
-
-  const handleBarcode = (event: any) => {
-    const inputText = event.target.value;
-    if (inputText.length > 13) {
-      setBarcode(inputText.substring(0, 13)); // Truncate input to 13 characters
-      setErrorBarcode('Exceeded maximum word limit of 13');
-    } else {
-      setBarcode(inputText);
-      setErrorBarcode('');
-    }
-  };
-
-  const handleInputChange = (event: any) => {
-    const inputValue = event.target.value;
-
-    // Check if input is empty
-    if (!inputValue.trim()) {
-      setErrorCostPrice('Field is required');
-    } else if (!/^\d+$/.test(inputValue)) { // Check if input contains only digits
-      setErrorCostPrice('Only numbers are allowed');
-    } else {
-      setErrorCostPrice('');
-    }
-
-    setCostPrice(inputValue);
-  };
-
-  const handleInputChangefull = (event: any) => {
-    const inputValue = event.target.value;
-
-    if (!inputValue.trim()) {
-      setErrorFullPrice('Field is required');
-    } else if (!/^\d+$/.test(inputValue)) {
-      setErrorFullPrice('Only numbers are allowed');
-    } else {
-      setErrorFullPrice('');
-    }
-
-    setFullPrice(inputValue);
-  };
-
-  const handleInputChangesell = (event: any) => {
-    const inputValue = event.target.value;
-
-    if (!inputValue.trim()) {
-      setErrorSellPrice('Field is required');
-    } else if (!/^\d+$/.test(inputValue)) {
-      setErrorSellPrice('Only numbers are allowed');
-    } else {
-      setErrorSellPrice('');
-    }
-
-    setSellPrice(inputValue);
-  };
-
-
-  const handleDescriptionChange = (event: any) => {
-    const inputText = event.target.value;
-    setDescription(inputText);
-    if (inputText.trim() === '') {
-      setErrorDescription('Description cannot be empty');
-    } else {
-      setErrorDescription('');
-    }
-  };
-
-  const handleInStockChange = (event: any) => {
-    const inputText = event.target.value;
-    setInStockQuantity(inputText);
-    if (inputText.trim() === '') {
-      setInStockError('In Stock Quantity cannot be empty');
-    } else {
-      setInStockError('');
-    }
-  };
-
-  const handleQuantityAlertChange = (event: any) => {
-    const inputText = event.target.value;
-    setQuantityAlert(inputText);
-    if (inputText.trim() === '') {
-      setQuantityAlertError('Quantity Alert cannot be empty');
-    } else {
-      setQuantityAlertError('');
-    }
-  };
-
-  const handleChangeprod = (event: any) => {
-    const inputText = event.target.value;
-    setProductUsage(inputText);
-    if (inputText.trim() === '') {
-      setErrorpro('Product Usage cannot be empty');
-    } else {
-      setErrorpro('');
-    }
-  };
-
-
   const [errorBrand, setErrorBrand] = useState('');
-
-  const handleBrands = (event: any) => {
-    const selectedBrand = event.target.value;
-
-    // Check if a brand is selected
-    if (!selectedBrand) {
-      setErrorBrand('Please select a brand');
-    } else {
-      setErrorBrand('');
-    }
-
-    setBrand(selectedBrand);
-  };
-
-
   const [productTypeError, setProductTypeError] = useState('');
   const [vendorError, setVendorError] = useState('');
 
-  const handleProductType = (event: any) => {
-    const selectedProductType = event.target.value;
 
-    if (!selectedProductType) {
-      setProductTypeError('Please select a product type');
-    } else {
-      setProductTypeError('');
-    }
 
-    setProductType(selectedProductType);
-  };
+  const handleCommon = (e: any) => {
+    setDefaultProductValues({ ...defaultProductValues, [e.target.name]: e.target.value })
+  }
 
-  const handleVendor = (event: any) => {
-    const selectedVendor = event.target.value;
+  console.log(defaultProductValues, "defef")
 
-    if (!selectedVendor) {
-      setVendorError('Please select a vendor');
-    } else {
-      setVendorError('');
+
+  const handleSubmit = async () => {
+    try {
+      await validationSchema.validate(defaultProductValues, { abortEarly: false });
+      console.log("defaultProductValues", defaultProductValues)
+      ProductCreateRegistrationApi(defaultProductValues)
+    } catch (error) {
+      // Handle validation errors
+      console.error("Validation Error:", error);
     }
 
-    setVendor(selectedVendor);
-  };
+  }
 
-  const handleSubmit = () => {
-    let hasError = false;
 
-    // Validate each field
-    if (productName.trim() === '') {
-      setErrorName('Name cannot be empty');
-      hasError = true;
-    }
-    if (barcode.trim() === '') {
-      setErrorBarcode('Barcode cannot be empty');
-      hasError = true;
-    }
-    if (costPrice.trim() === '') {
-      setErrorCostPrice('Cost Price cannot be empty');
-      hasError = true;
-    }
-    if (fullPrice.trim() === '') {
-      setErrorFullPrice('Full Price cannot be empty');
-      hasError = true;
-    }
-    if (sellPrice.trim() === '') {
-      setErrorSellPrice('Sell Price cannot be empty');
-      hasError = true;
-    }
-    if (description.trim() === '') {
-      setErrorDescription('Description cannot be empty');
-      hasError = true;
-    }
-    if (inStockQuantity.trim() === '') {
-      setInStockError('In Stock Quantity cannot be empty');
-      hasError = true;
-    }
-    if (quantityAlert.trim() === '') {
-      setQuantityAlertError('Quantity Alert cannot be empty');
-      hasError = true;
-    }
-    if (productUsage.trim() === '') {
-      setErrorpro('Product Usage cannot be empty');
-      hasError = true;
-    }
 
-    if (!productType) {
-      setProductTypeError('Please select a product type');
-      return;
-    }
+  const debouncedSubmit = debounce(() => {
+    handleSubmit()
 
-    if (!vendor) {
-      setVendorError('Please select a product type');
-      return;
-    }
-    // If any field has error, return without saving
-    if (hasError) {
-      return;
-    }
-
-    // Proceed with saving logic...
-    console.log('Form saved successfully');
-  };
+  }, 300)
 
   return (
     <>
@@ -266,7 +126,7 @@ const AddProductPop = () => {
           <Grid sx={{ borderBottom: '2px solid lightGray' }}>
             <Grid sx={{ p: 3 }}>
               <Grid sx={{ display: 'flex' }}>
-                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={() => { handleClose() }} ><CloseIcon /></Box>
+                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={() => { setIsOpen(false) }} ><CloseIcon /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Add Product</Typography>
               </Grid>
               <Grid item sx={{ display: 'flex' }} >
@@ -275,10 +135,11 @@ const AddProductPop = () => {
                   id='outlined-basic'
                   label='Product Name'
                   size='small'
-                  value={productName}
-                  onChange={handleChange}
+                  value={defaultProductValues.productName}
+                  onChange={handleCommon}
                   error={!!errorName}
                   helperText={errorName}
+                  name="productName"
                 />
 
                 <TextField
@@ -288,25 +149,25 @@ const AddProductPop = () => {
                   label='Barcode'
                   size='small'
                   variant='outlined'
-                  value={barcode}
-                  onChange={handleBarcode}
+                  value={defaultProductValues.Barcode}
+                  onChange={handleCommon}
                   error={!!errorBarcode}
                   helperText={errorBarcode}
+                  name="Barcode"
+
                 />              </Grid>
               <Grid item sx={{ display: 'flex', width: '100%', maxWidth: '100%' }} xs={12}>
                 <Grid>
                   <TextField
                     size='small'
                     placeholder="Cost Price"
-                    id="outlined-start-adornment"
+                    id='outlined-basic'
                     sx={{ m: 1, width: '25ch' }}
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
-                    }}
-                    value={costPrice}
-                    onChange={handleInputChange}
+                    value={defaultProductValues.costPrice}
+                    onChange={handleCommon}
                     error={!!errorCostPrice}
                     helperText={errorCostPrice}
+                    name='costPrice'
                   />
                 </Grid>
                 <Grid>
@@ -318,10 +179,11 @@ const AddProductPop = () => {
                     InputProps={{
                       startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
                     }}
-                    value={fullPrice}
-                    onChange={handleInputChangefull}
+                    value={defaultProductValues.fullPrice}
+                    onChange={handleCommon}
                     error={!!errorFullPrice}
                     helperText={errorFullPrice}
+                    name='fullPrice'
                   />
                 </Grid>
                 <Grid>
@@ -333,24 +195,26 @@ const AddProductPop = () => {
                     InputProps={{
                       startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
                     }}
-                    value={sellPrice}
-                    onChange={handleInputChangesell}
+                    value={defaultProductValues.sellPrice}
+                    onChange={handleCommon}
                     error={!!errorSellPrice}
                     helperText={errorSellPrice}
+                    name='sellPrice'
                   />
                 </Grid>
               </Grid>
               <Box>
                 <TextField
                   id="outlined-multiline-static"
-                  label="Description"
+                  label="productDescription"
                   multiline
                   rows={3}
                   sx={{ width: '77ch', m: 1 }}
-                  value={description}
-                  onChange={handleDescriptionChange}
+                  value={defaultProductValues.productDescription}
+                  onChange={handleCommon}
                   error={!!errorDescription}
                   helperText={errorDescription}
+                  name='productDescription'
                 />
               </Box>
 
@@ -361,9 +225,10 @@ const AddProductPop = () => {
                     labelId="demo-select-small-label"
                     id="demo-select-small"
                     size='small'
-                    value={Brand}
+                    value={defaultProductValues.Brand}
                     label="Select Brand"
-                    onChange={handleBrands}
+                    onChange={handleCommon}
+                    name='Brand'
                   >
                     <MenuItem value="">
                       <em>Select Brand</em>
@@ -380,9 +245,10 @@ const AddProductPop = () => {
                     labelId="demo-select-product-type-label"
                     id="demo-select-product-type"
                     size='small'
-                    value={productType}
+                    value={defaultProductValues.productType}
                     label="Select Product Type"
-                    onChange={handleProductType}
+                    onChange={handleCommon}
+                    name='productType'
                   >
                     <MenuItem value="">
                       <em>Select Product Type</em>
@@ -400,9 +266,10 @@ const AddProductPop = () => {
                     labelId="demo-select-vendor-label"
                     id="demo-select-vendor"
                     size='small'
-                    value={vendor}
+                    value={defaultProductValues.vendor}
                     label="Select Vendor"
-                    onChange={handleVendor}
+                    onChange={handleCommon}
+                    name='vendor'
                   >
                     <MenuItem value="">
                       <em>Select Vendor</em>
@@ -417,9 +284,10 @@ const AddProductPop = () => {
               <Grid sx={{ m: 1, width: '25ch' }}>
                 <TextField
                   type="file"
-                  value={selectedFile}
+                  value={defaultProductValues.selectedFile}
                   onChange={handleFileChange}
                   inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
+                  name='selectedFile'
                 />
               </Grid>
               <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Stock Control</Typography>
@@ -430,53 +298,42 @@ const AddProductPop = () => {
                   placeholder="In Stock Quantity"
                   id='outlined-basic'
                   sx={{ m: 1, width: '25ch' }}
-                  value={inStockQuantity}
-                  onChange={handleInStockChange}
+                  value={defaultProductValues.inStockQuantity}
+                  onChange={handleCommon}
                   error={!!inStockError}
                   helperText={inStockError}
+                  name='inStockQuantity'
                 />
                 <TextField
                   size='small'
                   placeholder="Quantity Alert"
                   id='outlined-basic'
                   sx={{ m: 1, width: '25ch' }}
-                  value={quantityAlert}
-                  onChange={handleQuantityAlertChange}
+                  value={defaultProductValues.quantityAlert}
+                  onChange={handleCommon}
                   error={!!quantityAlertError}
                   helperText={quantityAlertError}
+                  name='quantityAlert'
                 />
               </Grid>
               <Grid sx={{ mb: 2 }}>
-                <FormControl sx={{ m: 1, width: '25ch' }} size="small">
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    size='small'
-                    value={retail}
-                    onChange={handleRetail}
-                    placeholder='Retail'
-                  >
-                    <MenuItem value="">
-                    </MenuItem>
-                    <MenuItem value={10}>Retail</MenuItem>
-                    <MenuItem value={20}>In House</MenuItem>
-                  </Select>
-                </FormControl>
                 <TextField
                   size='small'
                   placeholder="Product Usage"
                   id='outlined-basic'
                   sx={{ m: 1, width: '25ch' }}
-                  value={productUsage}
-                  onChange={handleChangeprod}
+                  value={defaultProductValues.productUsage}
+                  onChange={handleCommon}
                   error={!!errorpro}
                   helperText={errorpro}
+                  name='productUsage'
                 />
               </Grid>
             </Grid>
           </Grid>
           <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
-            <Button variant="contained" onClick={handleSubmit}>Save</Button>          </Grid>
+            <Button variant="contained" onClick={debouncedSubmit}>Save</Button>
+          </Grid>
         </Card >
       }
     </>

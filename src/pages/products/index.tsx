@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ProductTableFront from 'src/views/table/productTable/productTableFront';
 import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
 import { useRouter } from 'next/router';
+import Normaltable from 'src/views/table/productTable/Normaltable';
 
 
 const Index = () => {
@@ -249,7 +249,7 @@ const Index = () => {
         < AddProductPop />
       </Dialog >
       <Card>
-        <ProductTableFront />
+        <Normaltable />
         <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
           <Button variant='outlined' >
             Previous
