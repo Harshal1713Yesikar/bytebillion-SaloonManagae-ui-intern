@@ -1,30 +1,129 @@
-import { Box, Button, Card, Dialog, FormControl, Grid, InputLabel, Menu, MenuItem, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
 import { useRouter } from 'next/router';
 import Normaltable from 'src/views/table/productTable/Normaltable';
+import QuickSearchToolbar from 'src/views/table/TableFilter';
+import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
+import { rows } from 'src/@fake-db/table/static-data';
 
+// ** Custom Components
+import CustomChip from 'src/@core/components/mui/chip'
+import CustomAvatar from 'src/@core/components/mui/avatar'
 
+// ** Utils Import
+import { getInitials } from 'src/@core/utils/get-initials'
+import { DataGridRowType } from 'src/@fake-db/types'
+import { ListAllProductListApi } from 'src/store/APIs/Api';
+
+const escapeRegExp = (value: string) => {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
+// ** renders client column
+const renderClient = (params: GridRenderCellParams) => {
+  const { row } = params
+
+  return (
+    <CustomAvatar
+      skin='light'
+      color="primary"
+      sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
+    >
+      {getInitials(row.full_name ? row.full_name : 'John Doe')}
+    </CustomAvatar>
+  )
+}
+
+const columns: GridColumns = [
+  {
+    flex: 0.275,
+    minWidth: 290,
+    field: 'productName',
+    headerName: 'productName',
+    renderCell: (params: GridRenderCellParams) => {
+      const { row } = params
+
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {renderClient(params)}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+              {row.productName}
+            </Typography>
+          </Box>
+        </Box>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 120,
+    headerName: 'Barcode',
+    field: 'Barcode',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.Barcode}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 110,
+    field: 'costPrice',
+    headerName: 'costPrice',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.costPrice}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.125,
+    field: 'fullPrice',
+    minWidth: 80,
+    headerName: 'fullPrice',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.fullPrice}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 140,
+    field: 'empty',
+    headerName: 'empty',
+    renderCell: (params: GridRenderCellParams) => (
+      <CustomChip rounded size='small' skin='light' color="primary" label="Current" />
+    )
+  }
+]
 const Index = () => {
   // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [anchorAl, setAnchorAl] = useState<null | HTMLElement>(null)
+  const [productBl, setProductBl] = useState<null | HTMLElement>(null)
+  const [anchorCl, setAnchorCl] = useState<null | HTMLElement>(null)
+  const [anchorDl, setAnchorDl] = useState<null | HTMLElement>(null)
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [data] = useState<DataGridRowType[]>([])
+  const [pageSize, setPageSize] = useState<number>(7)
+  const [searchText, setSearchText] = useState<string>('')
+  const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
+  const [productList, setProductList] = useState<DataGridRowType[]>([])
 
   const handleCheckboxChange = (checkboxId: string) => {
     setSelectedCheckbox(checkboxId === selectedCheckbox ? null : checkboxId);
   };
 
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-
   const handleButtonClick = () => {
     setShowAdvancedFilters(!showAdvancedFilters);
   };
-
-
-
-  const [anchorAl, setAnchorAl] = useState<null | HTMLElement>(null)
 
   const handleReturn = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorAl(event.currentTarget)
@@ -34,8 +133,6 @@ const Index = () => {
     setAnchorAl(null)
   }
 
-  const [productBl, setProductBl] = useState<null | HTMLElement>(null)
-
   const handleProduct = (event: MouseEvent<HTMLButtonElement>) => {
     setProductBl(event.currentTarget)
   }
@@ -43,8 +140,6 @@ const Index = () => {
   const handleCloseProduct = () => {
     setProductBl(null)
   }
-
-  const [anchorCl, setAnchorCl] = useState<null | HTMLElement>(null)
 
   const handleEdit = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorCl(event.currentTarget)
@@ -54,8 +149,6 @@ const Index = () => {
     setAnchorCl(null)
   }
 
-  const [anchorDl, setAnchorDl] = useState<null | HTMLElement>(null)
-
   const handleAssign = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorDl(event.currentTarget)
   }
@@ -63,8 +156,6 @@ const Index = () => {
   const handleCloseAssign = () => {
     setAnchorDl(null)
   }
-
-  const [isDialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -78,13 +169,10 @@ const Index = () => {
   const handleInventory = () => {
     inventory.push('../products/inventoryReturn');
   }
-
   const returnOrder = useRouter();
   const handleReturnOrder = () => {
     returnOrder.push('../products/returnOrder');
   }
-
-
   const productOrder = useRouter();
   const handleProductOrder = () => {
     productOrder.push('../products/productOrder');
@@ -93,6 +181,34 @@ const Index = () => {
   const handlevendor = () => {
     vendor.push('../service/service');
   }
+
+  const handleSearch = (searchValue: string) => {
+    setSearchText(searchValue)
+    const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
+    const filteredRows = data.filter(row => {
+      return Object.keys(row).some(field => {
+        // @ts-ignore
+        return searchRegex.test(row[field].toString())
+      })
+    })
+    if (searchValue.length) {
+      setFilteredData(filteredRows)
+    } else {
+      setFilteredData([])
+    }
+  }
+  useEffect(() => {
+    const fatchData = async () => {
+      try {
+        const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+        setProductList(response?.data?.data)
+        console.log('aaa', response.data.data)
+      } catch (err) {
+        return err
+      }
+    }
+    fatchData()
+  }, [])
 
   return (
     <>
@@ -249,7 +365,29 @@ const Index = () => {
         < AddProductPop />
       </Dialog >
       <Card>
-        <Normaltable />
+        <Card>
+          <CardHeader title='Quick Filter' />
+          <DataGrid
+            autoHeight
+            columns={columns}
+            pageSize={pageSize}
+            // rows={filteredData.length ? filteredData : data}
+            rows={productList}
+            rowsPerPageOptions={[7, 10, 25, 50]}
+            components={{ Toolbar: QuickSearchToolbar }}
+            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            componentsProps={{
+              baseButton: {
+                variant: 'outlined'
+              },
+              toolbar: {
+                value: searchText,
+                clearSearch: () => handleSearch(''),
+                onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+              }
+            }}
+          />
+        </Card>
         <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
           <Button variant='outlined' >
             Previous

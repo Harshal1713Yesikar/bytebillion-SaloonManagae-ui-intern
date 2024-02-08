@@ -15,6 +15,7 @@ import QuickSearchToolbar from 'src/views/table/TableFilter'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
+import { DataGridRowType } from 'src/@fake-db/types'
 
 const escapeRegExp = (value: string) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')

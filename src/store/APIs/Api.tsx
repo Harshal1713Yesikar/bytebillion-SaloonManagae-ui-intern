@@ -376,3 +376,28 @@ export const ProductCreateRegistrationApi = async (productDetailsforApi: any) =>
   }
 }
 
+// export async function ListAllProductListApi(customerId: any, salonId: any) {
+//   try {
+//     const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_PRODUCT_LIST_API}customerId=${customerId}&salonId=${salonId}`, { headers })
+//     console.log("product Data", res.data)
+//     return res
+//   }
+
+//   catch (err) {
+//     return err;
+//   }
+
+// }
+
+export async function ListAllProductListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/getAllProduct?customerId=${customerId}&salonId=${salonId}`, { headers })
+    console.log("product Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}

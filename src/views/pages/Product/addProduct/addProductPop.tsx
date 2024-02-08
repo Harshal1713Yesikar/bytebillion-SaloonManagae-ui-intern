@@ -1,20 +1,19 @@
 import { Box, Button, Card, FormControl, FormHelperText, Grid, InputAdornment, InputLabel, MenuItem, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import CloseIcon from '@mui/icons-material/Close';
-import axios from 'axios';
-import { ProductCreateRegistrationApi } from 'src/store/APIs/Api';
+import { ListAllProductListApi, ProductCreateRegistrationApi } from 'src/store/APIs/Api';
 import { debounce } from 'lodash'
 import * as yup from 'yup';
 
 
 
 const validationSchema = yup.object().shape({
-  productName: yup.string().required('Product Name is required'),
+  productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
   Barcode: yup.string().required('Barcode is required'),
-  costPrice: yup.string().required('Cost Price is required'),
-  fullPrice: yup.string().required('Full Price is required'),
-  sellPrice: yup.string().required('Sell Price is required'),
+  costPrice: yup.string().matches(/^[0-9]+$/, 'Cost Price must be a number').required('Cost Price is required'),
+  fullPrice: yup.string().matches(/^[0-9]+$/, 'Full Price must be a number').required('Full Price is required'),
+  sellPrice: yup.string().matches(/^[0-9]+$/, 'Sell Price must be a number').required('Sell Price is required'),
   productDescription: yup.string().required('Product Description is required'),
   inStockQuantity: yup.string().required('In Stock Quantity is required'),
   quantityAlert: yup.string().required('Quantity Alert is required'),
@@ -23,6 +22,8 @@ const validationSchema = yup.object().shape({
   productType: yup.string().required('Product Type is required'),
   vendor: yup.string().required('Vendor is required'),
 });
+
+
 
 const AddProductPop = () => {
   const [Brand, setBrand] = useState('');
@@ -54,23 +55,28 @@ const AddProductPop = () => {
     }
   })
 
-  const handleRetail = (event: SelectChangeEvent) => {
-    setRetail(event.target.value);
-  };
 
   const handleFileChange = (event: any) => {
     // Handle file selection here
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleClose = () => {
-    setIsOpen(false);
 
-    // Additional logic or cleanup can be added here
-  };
+  const getProductListData = async () => {
+    try {
+      const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+      console.log('aaa', response.data.data)
+    } catch (err) {
+      return err
+    }
+  }
+
+  useEffect(() => {
+    getProductListData()
+  }, [])
+
 
   const [productName, setProductName] = useState('');
-  const [Barcode, setBarcode] = useState('');
   const [fullPrice, setFullPrice] = useState('');
   const [sellPrice, setSellPrice] = useState('');
   const [costPrice, setCostPrice] = useState('');
@@ -92,41 +98,122 @@ const AddProductPop = () => {
   const [vendorError, setVendorError] = useState('');
 
 
-
   const handleCommon = (e: any) => {
-    setDefaultProductValues({ ...defaultProductValues, [e.target.name]: e.target.value })
+    setDefaultProductValues({ ...defaultProductValues, [e.target.name]: e.target.value });
+    // Clear the error message for the corresponding field
+    switch (e.target.name) {
+      case 'productName':
+        setErrorName('');
+        break;
+      case 'Barcode':
+        setErrorBarcode('');
+        break;
+      case 'costPrice':
+        setErrorCostPrice('');
+        break;
+      case 'fullPrice':
+        setErrorFullPrice('');
+        break;
+      case 'sellPrice':
+        setErrorSellPrice('');
+        break;
+      case 'productDescription':
+        setErrorDescription('');
+        break;
+      case 'inStockQuantity':
+        setInStockError('');
+        break;
+      case 'quantityAlert':
+        setQuantityAlertError('');
+        break;
+      case 'productUsage':
+        setErrorpro('');
+        break;
+      case 'Brand':
+        setErrorBrand('');
+        break;
+      case 'productType':
+        setProductTypeError('');
+        break;
+      case 'vendor':
+        setVendorError('');
+        break;
+      default:
+        break;
+    }
   }
 
-  console.log(defaultProductValues, "defef")
 
 
   const handleSubmit = async () => {
     try {
       await validationSchema.validate(defaultProductValues, { abortEarly: false });
       console.log("defaultProductValues", defaultProductValues)
-      ProductCreateRegistrationApi(defaultProductValues)
+      await ProductCreateRegistrationApi(defaultProductValues)
+      await getProductListData()
+      setIsOpen(false);
     } catch (error) {
-      // Handle validation errors
-      console.error("Validation Error:", error);
+      error.inner.forEach(err => {
+        switch (err.path) {
+          case 'productName':
+            setErrorName(err.message);
+            break;
+          case 'Barcode':
+            setErrorBarcode(err.message);
+            break;
+          case 'costPrice':
+            setErrorCostPrice(err.message);
+            break;
+          case 'fullPrice':
+            setErrorFullPrice(err.message);
+            break;
+          case 'sellPrice':
+            setErrorSellPrice(err.message);
+            break;
+          case 'productDescription':
+            setErrorDescription(err.message);
+            break;
+          case 'inStockQuantity':
+            setInStockError(err.message);
+            break;
+          case 'quantityAlert':
+            setQuantityAlertError(err.message);
+            break;
+          case 'productUsage':
+            setErrorpro(err.message);
+            break;
+          case 'Brand':
+            setErrorBrand(err.message);
+            break;
+          case 'productType':
+            setProductTypeError(err.message);
+            break;
+          case 'vendor':
+            setVendorError(err.message);
+            break;
+          default:
+            break;
+        }
+      });
     }
-
-  }
-
-
+  };
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   const debouncedSubmit = debounce(() => {
     handleSubmit()
 
-  }, 300)
+  }, 1000)
 
   return (
     <>
       {isOpen &&
-        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
+        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} onClick={handleClose}>
+          <Box sx={{ m: 2, cursor: 'pointer' }}  ><CloseIcon /></Box>
           <Grid sx={{ borderBottom: '2px solid lightGray' }}>
             <Grid sx={{ p: 3 }}>
               <Grid sx={{ display: 'flex' }}>
-                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={() => { setIsOpen(false) }} ><CloseIcon /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Add Product</Typography>
               </Grid>
               <Grid item sx={{ display: 'flex' }} >
@@ -168,6 +255,8 @@ const AddProductPop = () => {
                     error={!!errorCostPrice}
                     helperText={errorCostPrice}
                     name='costPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
                   />
                 </Grid>
                 <Grid>
@@ -184,7 +273,10 @@ const AddProductPop = () => {
                     error={!!errorFullPrice}
                     helperText={errorFullPrice}
                     name='fullPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
                   />
+
                 </Grid>
                 <Grid>
                   <TextField
@@ -200,6 +292,8 @@ const AddProductPop = () => {
                     error={!!errorSellPrice}
                     helperText={errorSellPrice}
                     name='sellPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
                   />
                 </Grid>
               </Grid>
@@ -341,3 +435,5 @@ const AddProductPop = () => {
 }
 
 export default AddProductPop
+
+
