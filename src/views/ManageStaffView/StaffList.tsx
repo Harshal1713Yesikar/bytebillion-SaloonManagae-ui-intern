@@ -27,6 +27,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 // ** Data Import
 import { rows } from 'src/@fake-db/table/static-data'
 
+
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router-dom'
@@ -162,14 +163,16 @@ const StaffList = (props: Props) => {
   }, []);
 
 
-  
+
   useEffect(()=>{
 
     const fetchData1 = async () => {
             try {
-              const response: any = await getSingleEmployee("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn","XiqXU"); // Pass customerId and salonId
+              const response: any = await getSingleEmployee("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn","XiqXU"); 
+
+              // Pass customerId and salonId
               // Update the component's state with the fetched data
-              console.log('setSingleEmployeeData:', response.data.data);
+              console.log('AAA', response.data.data);
               setSingleEmployeeData(response?.data?.data);
             } catch (error) {
               console.error('Error fetching staff data:', error);
@@ -271,7 +274,7 @@ const StaffList = (props: Props) => {
   const handleCellClick = (row: any) => {
     console.log("ID",row)
     router.push(`/managesatff/${row.row.employeeId}`)
-  }
+      }
 
   return (
     <>

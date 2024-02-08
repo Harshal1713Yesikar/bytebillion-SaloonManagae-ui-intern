@@ -1,10 +1,11 @@
 import React from 'react'
-import ViewSingleManageSaff from 'src/views/ManageStaffView/SaffViewLeft'
+import ViewSingleManageStaff from 'src/views/ManageStaffView/StaffViewLeft'
+
 
 const Managesaff = () => {
   return (
     <>
-    <ViewSingleManageSaff/>
+   <ViewSingleManageStaff/>
     </>
   )
 }

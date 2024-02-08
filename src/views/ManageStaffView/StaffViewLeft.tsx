@@ -54,7 +54,7 @@ const statusColors: ColorsType = {
   inactive: 'secondary'
 }
 
-const ViewSingleManageSaff = () => {
+const ViewSingleManageStaff = () => {
   const router = useRouter()
   const id = router.query.id
   const [name, setName] = useState('')
@@ -70,17 +70,18 @@ const ViewSingleManageSaff = () => {
   const [followUp, setFollowUp] = useState<any>([])
   const [submitted, setSubmitted] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
+  const employeeId = router.query.managesaff
+  console.log('ABC', employeeId)
   const [deleteBatchPopup, setDeleteBatchPopup] = useState<boolean>(false)
 
-  const [updateEmployeeData,setUpdateEmployeeData] = useState({
-     customerId :"99f9bf2-8ac2-4f84-8286-83bb46595fde",
-     salonId : "E7uqn",
-     employeeId:"rOs4k",
-     employeeName:"",
-     employeePhone:"",
-     employeeJoiningDate:"",
-     employeeStatus:""
-
+  const [updateEmployeeData, setUpdateEmployeeData] = useState({
+    customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    employeeId: employeeId,
+    employeeName: '',
+    employeePhone: '',
+    employeeJoiningDate: '',
+    employeeStatus: ''
   })
 
   const handleChange = (event: any, newValue: string) => {
@@ -101,7 +102,8 @@ const ViewSingleManageSaff = () => {
   useEffect(() => {
     const singleEmployeeeDetailsFunc = async () => {
       try {
-        const res: any = await getSingleEmployee('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', 'rOs4k')
+        const res: any = await getSingleEmployee('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', employeeId)
+        console.log('res', res)
         setStaffData(res?.data?.data)
       } catch (error: any) {
         console.log(error)
@@ -111,21 +113,53 @@ const ViewSingleManageSaff = () => {
   }, [])
 
 
+  // const handleUpdateEmployeeData = (e:any) => {
+  //   setUpdateEmployeeData({ ...updateEmployeeData: e.target.value })
+  // }
 
- const UpdateEmployeeFunc = async() => {
-    
+
+
+
+
+  // const UpdateEmployeeFunc = async () => {
+  //   try {
+  //     const response:any = await updateEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', employeeId)
+  //     console.log('formData', response)
+  //     setUpdateEmployeeData(response?.data)
+  //   } catch (error: any) {
+  //     return error
+  //   }
+  //   UpdateEmployeeFunc
+  // }
+
+
+ 
+
+
+  const UpdateEmployeeFunc = async () => {
     try {
-        const response = await updateEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde','E7uqn','rOs4k')
-        // console.log("formData",response?.data)
-        setUpdateEmployeeData(response?.data)
-    } catch (error:any) {
-        return error
+      const response:any = await updateEmployeeApi(updateEmployeeData);
+      console.log('Data', response?.data?.data);
+      // Assuming response.data contains updated employee data
+      setUpdationData(response);
+    } catch (error) {
+      console.error('Error updating employee:', error);
+      // Handle error if needed
     }
+  };
+
+  // Assuming you want to load employee data when the component mounts
+  useEffect(() => {
     UpdateEmployeeFunc()
- }
+    // Call your function to fetch initial data, e.g., UpdateEmployeeFunc();
+  }, []);
 
 
-
+  
+  const handleUpdateEmployeeData = (e: { target: { name: any; value: any } }) => {
+    setUpdateEmployeeData({ ...updateEmployeeData, [e.target.name]: e.target.value })
+    console.log("AAA",)
+  }
 
 
 
@@ -249,7 +283,9 @@ const ViewSingleManageSaff = () => {
                           </Skeleton>
                         ) : (
                           // : <Typography sx={{ color: 'text.secondary' }}>{staffData ? staffData.email : ''}</Typography>
-                          <Typography sx={{ color: 'text.secondary' }}>{staffData ? staffData.salonId : ''}</Typography>
+                          <Typography sx={{ color: 'text.secondary' }}>
+                            {staffData ? staffData.employeeId : ''}
+                          </Typography>
                         )}
                       </Box>
 
@@ -326,148 +362,56 @@ const ViewSingleManageSaff = () => {
 
         {/* Edit Form Filled */}
 
-        {/* <DialogContent>
-          <Box>
-            <Grid container spacing={1}  >
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginTop: 5 }}>
-                <TextField
-                  fullWidth
-                  name="name"
-                  required
-                  inputProps={{
-                    maxLength: 50,
-                  }}
-                  onChange={(e) => { setName(e.target.value); setFormUpdateButton(true) }}
-                  value={name}
-                  label='Name'
-                />
-              </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={updataionData.status}
-                    label="Status"
-                    onChange={(e: any) => {
-                      setFormUpdateButton(true)
-                      setUpdationData({
-                        ...updataionData, "status": e.target.value
-                      })
-                    }}
-                  >
-                    <MenuItem value={"active"}>Active</MenuItem>
-                    <MenuItem value={"in active"}>In active</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+        <DialogContent>
+        <Box>
+      <Grid container spacing={2}>
+        <Grid item md={6} xs={12}>
+          <TextField
+            fullWidth
+            label='Employee Name'
+            name='employeeName'
+            required
+            inputProps={{
+              maxLength: 50,
+            }}
+            onChange={handleUpdateEmployeeData}
+            value={updateEmployeeData.employeeName}
+          />
+        </Grid>
 
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <TextField
-                  fullWidth
-                  name="lastName"
-                  required
-                  onChange={(e) => { setLastName(e.target.value); setFormUpdateButton(true) }}
-                  value={lastName}
-                  label='Last name'
-                  inputProps={{
-                    maxLength: 50,
-                  }}
-                />
-              </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <TextField
-                  fullWidth
-                  sx={{
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      display: 'none'
-                    },
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield'
-                    }
-                  }}
-                  type='number'
-                  label='Mobile number'
-                  name="mobileNumber"
-                  required
-                  error={updataionData?.mobileNumber?.length > 13}
+        <Grid item md={6} xs={12}>
+          <TextField
+            fullWidth
+            label='Mobile Number'
+            name='employeePhone'
+            type='tel'
+            required
+            error={updateEmployeeData?.employeePhone?.length > 13}
+            onChange={handleUpdateEmployeeData}
+            value={updateEmployeeData?.employeePhone}
+          />
+        </Grid>
 
-                  onChange={(e) => {
-                    setUpdationData({
-                      ...updataionData, mobileNumber: e.target.value
+        <Grid item md={6} xs={12}>
+          <TextField
+            fullWidth
+            label='Employee Joining Date'
+            name='employeeJoiningDate'
+            type='date'
+            required
+            onChange={handleUpdateEmployeeData}
+            value={updateEmployeeData?.employeeJoiningDate}
+          />
+        </Grid>
+      </Grid>
 
-                    }); setFormUpdateButton(true)
-                  }}
-                  value={updataionData?.mobileNumber}
-                />
-              </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <TextField
-                  fullWidth
-                  type='email'
-                  label='Email'
-                  required
-                  name="email"
-                  inputProps={{
-                    maxLength: 50,
-                  }}
-                  onChange={(e) => {
-                    setUpdationData({
-                      ...updataionData, email: e.target.value
-                    }); setFormUpdateButton(true)
-                  }}
-                  value={updataionData?.email}
-                />
-              </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <TextField
-                  fullWidth
-                  type='string'
-                  label="Parent/Guardian's name"
-                  name="parentName"
+      <Button onClick={UpdateEmployeeFunc} variant="contained" color="primary">
+        Update Employee
+      </Button>
+    </Box>
+        </DialogContent>
 
-                  inputProps={{
-                    maxLength: 50,
-                  }}
-                  onChange={(e) => {
-                    setUpdationData({
-                      ...updataionData, parentName: e.target.value
-                    }); setFormUpdateButton(true)
-                  }}
-                  value={updataionData?.parentName}
-                />
-              </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <TextField
-                  sx={{
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      display: 'none'
-                    },
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield'
-                    }
-                  }}
-                  fullWidth
-                  type='number'
-                  label="Parent/Guardian's contact"
-                  name="parentContact"
-
-                  error={staffData?.mobileNumber?.length > 13}
-                  onChange={(e) => {
-                    setUpdationData({
-                      ...updataionData, parentContact: e.target.value
-                    }); setFormUpdateButton(true)
-                  }}
-                  value={updataionData?.parentContact}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          
-        </DialogContent> */}
-
-        <DialogContent sx={{ p: { xs: 6, sm: 12 } }}>
+        {/* <DialogContent sx={{ p: { xs: 6, sm: 12 } }}>
           <TableContainer>
             <CardHeader title='Edit Staff' sx={{ fontWeight: '800', fontSize: '40' }} />
             <Grid container spacing={5} mt={2}>
@@ -563,7 +507,7 @@ const ViewSingleManageSaff = () => {
               </Grid>
             </Grid>
           </TableContainer>
-        </DialogContent>
+        </DialogContent> */}
 
         {/*         
         <DialogActions sx={{ textAlign: 'center', alignItems: 'right', justifyContent: 'right' }}>
@@ -575,7 +519,7 @@ const ViewSingleManageSaff = () => {
           }
 
         </DialogActions> */}
-
+{/* 
         <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'right' }}>
           <Box className='demo-space-x'>
             <Button
@@ -590,11 +534,11 @@ const ViewSingleManageSaff = () => {
             >
               Cancel
             </Button>
-            <Button size='large' type='submit' variant='contained' disabled={!formUpdateButton}>
+            <Button size='large' type='submit' variant='contained'>
               Update
             </Button>
           </Box>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
       <Dialog open={deleteAlert} onClose={() => setDeleteAlert(false)}>
         <Grid container justifyContent='flex-end'>
@@ -628,21 +572,23 @@ const ViewSingleManageSaff = () => {
             <Typography sx={{ fontSize: '1.125rem', mb: 6 }}>Are you sure you want to delete this Staff!</Typography>
           </Box>
         </DialogContent>
-          <DialogActions sx={{ justifyContent: 'right' }}>
-            <Button variant='outlined' color='secondary' onClick={() => setDeleteBatchPopup(false)}>
-              Cancel
-            </Button>
-            <Button variant='contained' sx={{ mr: 1.5 }} onClick={() => {
-
-            //   deleteApiCall('delete');
-            }}>
-              Delete
-            </Button>
-
-          </DialogActions>
+        <DialogActions sx={{ justifyContent: 'right' }}>
+          <Button variant='outlined' color='secondary' onClick={() => setDeleteBatchPopup(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant='contained'
+            sx={{ mr: 1.5 }}
+            onClick={() => {
+              //   deleteApiCall('delete');
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   )
 }
 
-export default ViewSingleManageSaff
+export default ViewSingleManageStaff

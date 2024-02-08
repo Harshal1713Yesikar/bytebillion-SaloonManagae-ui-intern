@@ -351,13 +351,13 @@ export async function getSingleEmployee(customerId: any, salonId: any, employeeI
     return err
   }
 }
-export async function updateEmployeeApi(customerId: any, solonId: any, employeeId:any) {
+
+export async function updateEmployeeApi(updateEmployeeData: any) {
   try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_UPDATE_EMPLOYEE_DETAIILS}customerId=${customerId}&solonId=${solonId}&employeeId=${employeeId}`,
-      { headers }
-    )
-    return res
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_EMPLOYEE_DETAIILS}`, updateEmployeeData, { headers })
+
+    console.log('success data', res) 
+    return res.data
   } catch (err) {
     return err
   }
