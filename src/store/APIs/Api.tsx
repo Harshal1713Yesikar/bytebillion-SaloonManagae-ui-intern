@@ -263,7 +263,11 @@ export async function getAllOrganizationList(customerId: any) {
   }
 }
 
-// CATEGORY API
+
+
+
+
+// --------------------CATEGORY API-----------------------
 
 export async function createNewCategory(categoryData: any) {
   try {
@@ -283,40 +287,18 @@ export async function getAllCategoryList(customerId: any, salonId: any) {
       `${process.env.NEXT_PUBLIC_GET_ALL_CATEGORY_LIST_API}?customerId=${customerId}&salonId=${salonId}`,
       { headers }
     )
-    // console.log(res, "resssssss")
     return res
   } catch (err: any) {
     return err
   }
 }
 
-// #Employee API
 
-export const staffRegistrationApi = async (staffDetailsforApi: any) => {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`, staffDetailsforApi, { headers })
 
-    console.log('success data', res)
-    return res.data
-  } catch (err) {
-    return err
-  }
-}
 
-export async function listAllEmployeeApi(customerId: any, salonId: any) {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`,
-      { headers }
-    )
-    console.log('staff Data', res.data)
-    return res
-  } catch (err) {
-    return err
-  }
-}
 
-// #ServicesAPI
+// -----------// #ServicesAPI-----------------------
+
 export async function AddServicesApi(serviceFormData: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_SERVICE_API}`, serviceFormData, { headers })
@@ -340,6 +322,12 @@ export async function ListAllServiceApi(customerId: any, salonId: any) {
   }
 }
 
+
+
+
+
+// -------------------employee API--------------------
+
 export async function getSingleEmployee(customerId: any, salonId: any, employeeId: any) {
   try {
     const res = await axios.get(
@@ -362,3 +350,55 @@ export async function updateEmployeeApi(updateEmployeeData: any) {
     return err
   }
 }
+
+export async function listAllEmployeeApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`,
+      { headers }
+    )
+    console.log('staff Data', res.data)
+    return res
+  } catch (err) {
+    return err
+  }
+}
+
+export const staffRegistrationApi = async (staffDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`, staffDetailsforApi, { headers })
+
+    console.log('success data', res)
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+
+
+// ---------------------Client APi---------------------------
+
+export async function CreateClientApi(updateClientData: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_CILENT_REGISTRATION_API}`, updateClientData, { headers })
+
+    console.log('success data', res) 
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export async function ListAllClientsApi(customerId:any,salonId:any) {
+  try{
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_LIST_ALL_CILENT_API}customerId=${customerId}&salonId=${salonId}`,{headers})
+    return res
+  }
+  catch(err){
+    return err
+  }
+  
+}
+
+

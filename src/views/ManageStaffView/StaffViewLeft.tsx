@@ -99,69 +99,44 @@ const ViewSingleManageStaff = () => {
     setOpen(false)
   }
 
-  useEffect(() => {
-    const singleEmployeeeDetailsFunc = async () => {
-      try {
-        const res: any = await getSingleEmployee('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', employeeId)
-        console.log('res', res)
-        setStaffData(res?.data?.data)
-      } catch (error: any) {
-        console.log(error)
-      }
+  const handleOpan = () => {
+    handleClose()
+  }
+
+  const singleEmployeeeDetailsFunc = async () => {
+    try {
+      const res: any = await getSingleEmployee('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', employeeId)
+
+      setStaffData(res?.data?.data)
+    } catch (error: any) {
+      console.log(error)
     }
+  }
+  useEffect(() => {
     singleEmployeeeDetailsFunc()
   }, [])
 
-
-  // const handleUpdateEmployeeData = (e:any) => {
-  //   setUpdateEmployeeData({ ...updateEmployeeData: e.target.value })
-  // }
-
-
-
-
-
-  // const UpdateEmployeeFunc = async () => {
-  //   try {
-  //     const response:any = await updateEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', employeeId)
-  //     console.log('formData', response)
-  //     setUpdateEmployeeData(response?.data)
-  //   } catch (error: any) {
-  //     return error
-  //   }
-  //   UpdateEmployeeFunc
-  // }
-
-
- 
-
-
   const UpdateEmployeeFunc = async () => {
     try {
-      const response:any = await updateEmployeeApi(updateEmployeeData);
-      console.log('Data', response?.data?.data);
+      const response: any = await updateEmployeeApi(updateEmployeeData)
+      console.log('Datas', response?.data)
       // Assuming response.data contains updated employee data
-      setUpdationData(response);
+      setUpdationData(response?.data?.data)
     } catch (error) {
-      console.error('Error updating employee:', error);
+      console.error('Error updating employee:', error)
       // Handle error if needed
     }
-  };
-
+  }
   // Assuming you want to load employee data when the component mounts
-  useEffect(() => {
-    UpdateEmployeeFunc()
-    // Call your function to fetch initial data, e.g., UpdateEmployeeFunc();
-  }, []);
+  // useEffect(() => {
+  //   UpdateEmployeeFunc()
+  //   // Call your function to fetch initial data, e.g., UpdateEmployeeFunc();
+  // }, [])
 
-
-  
   const handleUpdateEmployeeData = (e: { target: { name: any; value: any } }) => {
     setUpdateEmployeeData({ ...updateEmployeeData, [e.target.name]: e.target.value })
-    console.log("AAA",)
+    console.log('AAA')
   }
-
-
 
   useEffect(() => {
     setUpdationData({ ...updataionData, followUp: followUp })
@@ -185,10 +160,11 @@ const ViewSingleManageStaff = () => {
     <>
       <Grid container spacing={10} className='enquirylistpage'>
         <Grid item xs={4} className='enquirylistpagecard'>
-          <Card>
-            <Button onClick={() => router.push('/managesatff/')} sx={{ marginTop: 2, ml: 2 }} variant='outlined'>
+        <Button onClick={() => router.push('/managesatff/')} sx={{ marginTop: 2, ml: 2 ,marginBottom:3}} variant='outlined'>
               &#8592; Staff List
             </Button>
+          <Card>
+           
             <CardContent sx={{ pt: 12, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               <CustomAvatar
                 skin='light'
@@ -199,22 +175,6 @@ const ViewSingleManageStaff = () => {
                 {staffData?.employeeName ? staffData.employeeName.charAt(0).toUpperCase() : 'J'}
               </CustomAvatar>
             </CardContent>
-
-            {!loading && (
-              <>
-                <Box
-                  onClick={() => {
-                    localStorage.setItem('enquiryStudent', JSON.stringify(staffData))
-                    router.push('/student/studentAdmission/')
-                  }}
-                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <Typography variant='h6' sx={{ fontSize: '1.125rem !important' }}>
-                    <Button variant='contained'>Set as Student</Button>
-                  </Typography>
-                </Box>
-              </>
-            )}
 
             <CardContent>
               {/*
@@ -302,7 +262,7 @@ const ViewSingleManageStaff = () => {
                           </Typography>
                         )}
                       </Box>
-
+                      {/* 
                       <Box sx={{ display: 'flex', mb: 4 }}>
                         <Typography sx={{ mr: 2, fontWeight: 700, color: 'text.secondary' }}>Status:</Typography>
                         <CustomChip
@@ -313,6 +273,26 @@ const ViewSingleManageStaff = () => {
                           sx={{ fontWeight: 500 }}
                           color={statusColors[staffData?.employeeStatus]}
                         />
+                      </Box> */}
+
+                      <Box sx={{ display: 'flex', mb: 4 }}>
+                        <Typography sx={{ mr: 2, fontWeight: 700, color: 'text.secondary' }}> Status :</Typography>
+                        {staffData.employeeStatus ? (
+                          <div>
+                            <CustomChip
+                              style={{ height: '30px', margin: '5px', cursor: 'pointer' }}
+                              rounded
+                              size='small'
+                              skin='light'
+                              color={staffData.employeeStatus == 'active' ? 'success' : 'warning'}
+                              label={staffData.employeeStatus}
+                            />
+                          </div>
+                        ) : (
+                          <Skeleton>
+                            <Typography sx={{ color: 'text.secondary' }}>Loading...</Typography>
+                          </Skeleton>
+                        )}
                       </Box>
                     </Box>
                   </TabPanel>
@@ -363,163 +343,66 @@ const ViewSingleManageStaff = () => {
         {/* Edit Form Filled */}
 
         <DialogContent>
-        <Box>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
-          <TextField
-            fullWidth
-            label='Employee Name'
-            name='employeeName'
-            required
-            inputProps={{
-              maxLength: 50,
-            }}
-            onChange={handleUpdateEmployeeData}
-            value={updateEmployeeData.employeeName}
-          />
-        </Grid>
-
-        <Grid item md={6} xs={12}>
-          <TextField
-            fullWidth
-            label='Mobile Number'
-            name='employeePhone'
-            type='tel'
-            required
-            error={updateEmployeeData?.employeePhone?.length > 13}
-            onChange={handleUpdateEmployeeData}
-            value={updateEmployeeData?.employeePhone}
-          />
-        </Grid>
-
-        <Grid item md={6} xs={12}>
-          <TextField
-            fullWidth
-            label='Employee Joining Date'
-            name='employeeJoiningDate'
-            type='date'
-            required
-            onChange={handleUpdateEmployeeData}
-            value={updateEmployeeData?.employeeJoiningDate}
-          />
-        </Grid>
-      </Grid>
-
-      <Button onClick={UpdateEmployeeFunc} variant="contained" color="primary">
-        Update Employee
-      </Button>
-    </Box>
-        </DialogContent>
-
-        {/* <DialogContent sx={{ p: { xs: 6, sm: 12 } }}>
-          <TableContainer>
-            <CardHeader title='Edit Staff' sx={{ fontWeight: '800', fontSize: '40' }} />
-            <Grid container spacing={5} mt={2}>
-              <Grid item xs={12} sm={6}>
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
+                  label='Employee Name'
+                  name='employeeName'
                   required
-                  label='Name'
-                  placeholder='Type Here'
-                  // value={updatedCourse.courseName ? updatedCourse.courseName : orgData.courseName}
-
-                  name='courseName'
-                  onChange={event => {
-                    setFormUpdateButton(true)
-                  }}
-                  // error={submitted ? updateCourseDetails.courseName ? false : true : false}
-                  // helperText={submitted && !updateCourseDetails.courseName ? 'Required,max 50 chars' : ''}
                   inputProps={{
                     maxLength: 50
                   }}
+                  onChange={handleUpdateEmployeeData}
+                  value={updateEmployeeData.employeeName}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   fullWidth
-                  required
-                  name='Joining Date'
-                  label='Joining Date'
-                  placeholder='Select Date'
-                  // value={updatedCourse.courseDescription ? updatedCourse.courseDescription : orgData.courseDescription}
-                  // error={submitted ? updateCourseDetails.courseDescription ? false : true : false}
-                  // helperText={submitted && !updateCourseDetails.courseDescription ? 'Required,max 50 chars' : ''}
-                  onChange={event => {
-                    setFormUpdateButton(true)
-                  }}
-                  minRows={2}
-                  inputProps={{
-                    maxLength: 500
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  sx={{
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      display: 'none'
-                    },
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield'
-                    }
-                  }}
-                  required
-                  fullWidth
+                  label='Mobile Number'
+                  name='employeePhone'
                   type='number'
-                  label='Contect No.'
-                  placeholder='Type Here'
-                  name='courseFee'
-                  // value={updatedCourse.courseFee ? updatedCourse.courseFee : orgData.courseFee}
-                  // error={submitted ? updateCourseDetails.courseFee ? false : true : false}
-                  // helperText={submitted && !updateCourseDetails.courseFee ? 'Required,value must be a positive number' : ''}
-                  onChange={event => {
-                    setFormUpdateButton(true)
-                  }}
-                  // inputProps={{
-                  // //   inputMode: 'numeric',
-                  // //   pattern: '[0-9]*',
-                  //   min: 0,
-                  // }}
+                  required
+                  error={updateEmployeeData?.employeePhone?.length > 13}
+                  onChange={handleUpdateEmployeeData}
+                  value={updateEmployeeData?.employeePhone}
                 />
               </Grid>
-              <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label'>Status</InputLabel>
-                  <Select
-                    labelId='demo-simple-select-label'
-                    id='demo-simple-select'
-                    value={updataionData.status}
-                    label='Status'
-                    onChange={(e: any) => {
-                      setFormUpdateButton(true)
-                      setUpdationData({
-                        ...updataionData,
-                        status: e.target.value
-                      })
-                    }}
-                  >
-                    <MenuItem value={'active'}>Active</MenuItem>
-                    <MenuItem value={'in active'}>In active</MenuItem>
-                  </Select>
-                </FormControl>
+
+              <Grid item md={6} xs={12}>
+                <TextField
+                  fullWidth
+                  label='Employee Joining Date'
+                  name='employeeJoiningDate'
+                  type='date'
+                  required
+                  onChange={handleUpdateEmployeeData}
+                  value={updateEmployeeData?.employeeJoiningDate}
+                />
               </Grid>
             </Grid>
-          </TableContainer>
-        </DialogContent> */}
 
-        {/*         
-        <DialogActions sx={{ textAlign: 'center', alignItems: 'right', justifyContent: 'right' }}>
-          {
-            <>
-              <Button disabled={true} variant='outlined' onClick={() => { setOpen(false); setFormUpdateButton(false) }}>Discard</Button>
-              <Button variant='contained' onClick={() => { setOpen(false) }} disabled={!formUpdateButton}>Update</Button>
-            </>
-          }
+            {/* <Grid sx={{ marginBottom: 3, marginTop: 2 }}>
+              <FormControl sx={{ width: 300 }}>
+                <InputLabel id='demo-simple-select-label'>Status</InputLabel>
+                <Select
+                  labelId='demo-simple-select-label'
+                  id='demo-simple-select'
+                  value={updateEmployeeData?.employeeStatus}
+                  label='Status'
+                  onChange={handleUpdateEmployeeData}
+                >
+                  <MenuItem value={'active'}>Active</MenuItem>
+                  <MenuItem value={'in active'}>In active</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid> */}
+          </Box>
+        </DialogContent>
 
-        </DialogActions> */}
-{/* 
         <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'right' }}>
           <Box className='demo-space-x'>
             <Button
@@ -534,11 +417,20 @@ const ViewSingleManageStaff = () => {
             >
               Cancel
             </Button>
-            <Button size='large' type='submit' variant='contained'>
+            <Button
+              size='large'
+              type='submit'
+              variant='contained'
+              onClick={() => {
+                UpdateEmployeeFunc()
+                singleEmployeeeDetailsFunc()
+                handleOpan()
+              }}
+            >
               Update
             </Button>
           </Box>
-        </DialogActions> */}
+        </DialogActions>
       </Dialog>
       <Dialog open={deleteAlert} onClose={() => setDeleteAlert(false)}>
         <Grid container justifyContent='flex-end'>
@@ -560,7 +452,6 @@ const ViewSingleManageStaff = () => {
             icon='bx:x'
           />
         </Grid>
-        {/* <DialogTitle>Are you sure you want to delete this Staff</DialogTitle> */}
         <DialogContent sx={{ pb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
             <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>

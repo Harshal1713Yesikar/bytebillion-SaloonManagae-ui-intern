@@ -190,7 +190,9 @@ function MyTabs() {
 }
 
 const CreateStaff = () => {
+  const [open, setOpen] = useState(false)
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+
     customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'E7uqn',
     employeeName: '',
@@ -216,6 +218,10 @@ const CreateStaff = () => {
     jason: false,
     antoine: false
   })
+
+  const handleClose=()=>{
+    setOpen(true)
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -535,7 +541,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}>
+                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleClose}>
                     Submit
                   </Button>
                 </Grid>

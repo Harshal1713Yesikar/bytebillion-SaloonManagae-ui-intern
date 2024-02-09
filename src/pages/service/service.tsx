@@ -849,6 +849,7 @@ const Service = () => {
                                     value={value}
                                     label='Service Time'
                                     onChange={onChange}
+                                    // value = "time"
                                     placeholder='Service Time'
                                     error={Boolean(ServiceErrors.serviceTime)}
                                     aria-describedby='validation-basic-last-name'
