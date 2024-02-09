@@ -111,6 +111,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
   }
   const handleClose: any = () => {
     setOpen(false)
+    router.push('/home')
   }
 
   const handleLogout = () => {

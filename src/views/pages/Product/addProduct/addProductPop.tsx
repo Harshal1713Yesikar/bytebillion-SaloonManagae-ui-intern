@@ -209,11 +209,11 @@ const AddProductPop = () => {
   return (
     <>
       {isOpen &&
-        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} onClick={handleClose}>
-          <Box sx={{ m: 2, cursor: 'pointer' }}  ><CloseIcon /></Box>
+        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
           <Grid sx={{ borderBottom: '2px solid lightGray' }}>
             <Grid sx={{ p: 3 }}>
               <Grid sx={{ display: 'flex' }}>
+                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={handleClose} ><CloseIcon /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Add Product</Typography>
               </Grid>
               <Grid item sx={{ display: 'flex' }} >

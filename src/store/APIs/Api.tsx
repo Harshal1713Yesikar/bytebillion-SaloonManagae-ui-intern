@@ -401,3 +401,19 @@ export async function ListAllProductListApi(customerId: any, salonId: any) {
   }
 
 }
+
+
+
+export const updateProductApi = async (productDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/updateProduct`,
+      productDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}

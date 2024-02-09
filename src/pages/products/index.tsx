@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, IconButton, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
@@ -9,6 +9,7 @@ import Normaltable from 'src/views/table/productTable/Normaltable';
 import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 import { rows } from 'src/@fake-db/table/static-data';
+import EditIcon from '@mui/icons-material/Edit';
 
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
@@ -38,70 +39,7 @@ const renderClient = (params: GridRenderCellParams) => {
   )
 }
 
-const columns: GridColumns = [
-  {
-    flex: 0.275,
-    minWidth: 290,
-    field: 'productName',
-    headerName: 'productName',
-    renderCell: (params: GridRenderCellParams) => {
-      const { row } = params
 
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(params)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.productName}
-            </Typography>
-          </Box>
-        </Box>
-      )
-    }
-  },
-  {
-    flex: 0.2,
-    minWidth: 120,
-    headerName: 'Barcode',
-    field: 'Barcode',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.Barcode}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.2,
-    minWidth: 110,
-    field: 'costPrice',
-    headerName: 'costPrice',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.costPrice}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.125,
-    field: 'fullPrice',
-    minWidth: 80,
-    headerName: 'fullPrice',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.fullPrice}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.2,
-    minWidth: 140,
-    field: 'empty',
-    headerName: 'empty',
-    renderCell: (params: GridRenderCellParams) => (
-      <CustomChip rounded size='small' skin='light' color="primary" label="Current" />
-    )
-  }
-]
 const Index = () => {
   // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
@@ -111,11 +49,14 @@ const Index = () => {
   const [anchorCl, setAnchorCl] = useState<null | HTMLElement>(null)
   const [anchorDl, setAnchorDl] = useState<null | HTMLElement>(null)
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpenUpdate, setDialogOpenUpdate] = useState(false);
   const [data] = useState<DataGridRowType[]>([])
   const [pageSize, setPageSize] = useState<number>(7)
   const [searchText, setSearchText] = useState<string>('')
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
   const [productList, setProductList] = useState<DataGridRowType[]>([])
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
 
   const handleCheckboxChange = (checkboxId: string) => {
     setSelectedCheckbox(checkboxId === selectedCheckbox ? null : checkboxId);
@@ -164,6 +105,13 @@ const Index = () => {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+  const handleOpenDialogUpdate = () => {
+    setDialogOpenUpdate(true);
+  };
+
+  const handleCloseDialogUpdate = () => {
+    setDialogOpenUpdate(false);
+  };
 
   const inventory = useRouter();
   const handleInventory = () => {
@@ -181,6 +129,81 @@ const Index = () => {
   const handlevendor = () => {
     vendor.push('../service/service');
   }
+  const columns: GridColumns = [
+    {
+      flex: 0.275,
+      minWidth: 290,
+      field: 'productName',
+      headerName: 'productName',
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
+
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row.productName}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      }
+    },
+    {
+      flex: 0.2,
+      minWidth: 120,
+      headerName: 'Barcode',
+      field: 'Barcode',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.Barcode}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.2,
+      minWidth: 110,
+      field: 'costPrice',
+      headerName: 'costPrice',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.costPrice}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.125,
+      field: 'fullPrice',
+      minWidth: 80,
+      headerName: 'fullPrice',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.fullPrice}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.2,
+      minWidth: 140,
+      field: 'empty',
+      headerName: 'empty',
+      renderCell: (params: GridRenderCellParams) => (
+        <CustomChip rounded size='small' skin='light' color="primary" label="Current" />
+      )
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'edit',
+      headerName: 'Edit',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="edit" onClick={handleOpenDialogUpdate}>
+          <EditIcon />
+        </IconButton>
+      )
+    }
+  ]
 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
@@ -209,6 +232,8 @@ const Index = () => {
     }
     fatchData()
   }, [])
+
+
 
   return (
     <>
@@ -397,6 +422,9 @@ const Index = () => {
           </Button>
         </Grid>
       </Card>
+      <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
+        < Normaltable />
+      </Dialog >
     </>
   )
 }
