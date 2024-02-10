@@ -533,27 +533,15 @@ const Index = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleClose}>
+                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleSave}>
                     Submit
                   </Button>
-                   {/* <Button onClick={handleSave}  variant='contained' color='primary'>
-              Save
-            </Button>
-            <Button onClick={closeModal} variant='contained' color='secondary'>
-              Cancel
-            </Button> */}
+                
                 </Grid>
               </Grid>
             </form>
           </CardContent>
-          {/* <DialogActions>
-            <Button onClick={handleSave} variant='contained' color='primary'>
-              Save
-            </Button>
-            <Button onClick={closeModal} variant='contained' color='secondary'>
-              Cancel
-            </Button>
-          </DialogActions> */}
+
         </Dialog>
       </Grid>
       <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: '20px', display: 'flex' }}>
@@ -659,10 +647,7 @@ const Index = () => {
           }
         }}
       />
-      <Grid style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '20px' }}>
-        <Button variant='outlined'>Previous</Button>
-        <Button variant='contained'>Next</Button>
-      </Grid>
+     
     </Card>
   )
 }

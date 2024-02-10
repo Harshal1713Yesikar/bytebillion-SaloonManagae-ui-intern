@@ -402,4 +402,59 @@ export async function ListAllClientsApi(customerId:any,salonId:any) {
   
 }
 
+export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_PRODUCT_CREATE_API}`,
+      productDetailsforApi,
+      { headers }
+    );
 
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+// export async function ListAllProductListApi(customerId: any, salonId: any) {
+//   try {
+//     const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_PRODUCT_LIST_API}customerId=${customerId}&salonId=${salonId}`, { headers })
+//     console.log("product Data", res.data)
+//     return res
+//   }
+
+//   catch (err) {
+//     return err;
+//   }
+
+// }
+
+export async function ListAllProductListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/getAllProduct?customerId=${customerId}&salonId=${salonId}`, { headers })
+    console.log("product Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
+
+
+
+export const updateProductApi = async (productDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/updateProduct`,
+      productDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
