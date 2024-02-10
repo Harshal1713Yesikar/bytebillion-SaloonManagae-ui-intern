@@ -243,7 +243,7 @@ const Index = () => {
           <Typography >Efficiently manage your client's details by accessing their appointment history, appointments, and other relevant .</Typography>
         </Grid>
         <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
-          <Button onClick={openModal} variant='contained' >add</Button>
+          <Button onClick={openModal} variant='contained' size='small' >add</Button>
         </Grid>
 
         <Dialog open={isModalOpen} onClose={closeModal}>
