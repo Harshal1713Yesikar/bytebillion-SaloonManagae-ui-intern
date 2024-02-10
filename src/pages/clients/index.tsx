@@ -16,6 +16,8 @@ import QuickSearchToolbar from 'src/views/table/TableFilter'
 // ** Types Imports
 import { ThemeColor } from 'src/@core/layouts/types'
 import { DataGridRowType } from 'src/@fake-db/types'
+import EditIcon from '@mui/icons-material/Edit';
+
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -29,6 +31,7 @@ import {
   DialogTitle,
   FormHelperText,
   Grid,
+  IconButton,
   Menu,
   TextField
 } from '@mui/material'
@@ -45,8 +48,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { ListAllClientsApi } from 'src/store/APIs/Api'
+import { ListAllClientsApi} from 'src/store/APIs/Api'
 import { CreateClientApi } from 'src/store/APIs/Api'
+import { UpdateClientApi } from 'src/store/APIs/Api'
+import { getSingleClient } from 'src/store/APIs/Api'
+import { update } from 'lodash'
 
 
 
@@ -54,16 +60,26 @@ interface FormInputs {
   customerId: string
   salonId: string
   clientId:string
-
   clientName: string
   clientPhoneNumber: string
   clientEmail: string
   clientGender: string
   clientStatus:string
-
 }
 
 interface defaultValues {
+  customerId: ''
+  salonId: ''
+  clientId:''
+  clientName: ''
+  clientPhoneNumber: ''
+  clientEmail: ''
+  clientGender: ''
+  clientStatus:''
+
+}
+
+interface defaultClientsValues {
   customerId: ''
   salonId: ''
   clientId:''
@@ -95,6 +111,31 @@ const AddClientSchema = yup.object().shape({
 
 
 })
+
+
+
+
+const AddClientReSchema = yup.object().shape({
+  clientName: yup
+    .string()
+    .matches(/^[A-Z a-z]+$/)
+    .max(25)
+    .required(),
+    clientEmail: yup
+    .string()
+    .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
+    .email()
+    .required(),
+    clientPhoneNumber: yup
+    .string()
+    .min(10)
+    .matches(/^[0-9]+$/)
+    .max(10)
+    .required(),
+
+
+})
+
 interface StatusObj {
   [key: number]: {
     title: string
@@ -136,79 +177,9 @@ const statusObj: StatusObj = {
 const escapeRegExp = (value: string) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
   
+
 }
 
-
-
-// const columns: GridColumns = [
-//   {
-//     flex: 0.275,
-//     minWidth: 290,
-//     field: 'clientName',
-//     headerName: 'Name',
-//     renderCell: (params: GridRenderCellParams) => {
-//       const { row } = params
-
-//       return (
-//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//           {renderClient(params)}
-//           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-//             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-//               {row.clientName}
-//             </Typography>
-//             <Typography noWrap variant='caption'>
-//               {row.clientEmail}
-//             </Typography>
-//           </Box>
-//         </Box>
-//       )
-//     }
-//   },
-//   // {
-//   //   flex: 0.2,
-//   //   minWidth: 120,
-//   //   headerName: 'Date',
-//   //   field: 'start_date',
-//   //   renderCell: (params: GridRenderCellParams) => (
-//   //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//   //       {params.row.start_date}
-//   //     </Typography>
-//   //   )
-//   // },
-//   {
-//     flex: 0.2,
-//     minWidth: 110,
-//     field: 'clientPhoneNumber',
-//     headerName: 'Phone Number',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.clientPhoneNumber}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.125,
-//     field: 'clientId',
-//     minWidth: 80,
-//     headerName: 'Client id',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.clientId}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.2,
-//     minWidth: 140,
-//     field: 'clientStatus',
-//     headerName: 'Status',
-//     renderCell: (params: GridRenderCellParams) => {
-//       const status = statusObj[params.row.clientStatus]
-
-//       return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
-//     }
-//   }
-// ]
 
 const Index = () => {
   // ** States
@@ -217,9 +188,24 @@ const Index = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [clientData,setClientData] =useState<any[]>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
+  const [isDialogOpenUpdate, setDialogOpenUpdate] = useState(false);
+  const [singleClient,setSingleClient] =useState<any[]>([])
 
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
   const [defaultClientValues,setDefaultClientValues] =useState<any>({
+
+    customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId:'6GZr2',
+    clientId:'',
+    clientName:'',
+    clientPhoneNumber:'',
+    clientEmail:'',
+    clientGender:'',
+    clientStatus:''
+
+  })
+
+  const [defaultClientReValues,setDefaultClientReValues] =useState<any>({
 
     customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId:'6GZr2',
@@ -283,6 +269,17 @@ const Index = () => {
       )
     },
     {
+      flex: 0.1,
+      field: 'clientGender',
+      minWidth: 80,
+      headerName: 'clientGender',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.clientGender}
+        </Typography>
+      )
+    },
+    {
       flex: 0.175,
       minWidth: 150,
       field: 'clientStatus',
@@ -296,21 +293,58 @@ const Index = () => {
           )}
         </Typography>
       )
+    },
+
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'edit',
+      headerName: 'Edit',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="edit" onClick={()=>handleOpenDialogUpdate(params.row)}>
+          <EditIcon />
+        </IconButton>
+      )
     }
 
   
   ]
 
+  const handleOpenDialogUpdate = (data:any) => {
+    singleClientDetailsFunc(data)
+    setDialogOpenUpdate(true);
+  };
+  
+  const handleCloseDialogUpdate = () => {
+    setDialogOpenUpdate(false);
+  };
+
+
+  
+ const singleClientDetailsFunc = async (data:any) => {
+  try {
+    const res: any = await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs', data.clientId)
+    console.log("ress",res.data.data)
+    setSingleClient(res?.data?.data)
+
+  } catch (error: any) {
+    console.log(error)
+  }
+}
+// useEffect(() => {
+//   singleClientDetailsFunc()
+// }, [])
+
 
 
  const FatchData = async ()=>{
   try{
-    const res:any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde','6GZr2') 
+    const res:any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde','dqXUs') 
     console.log("fatchData",res?.data.data)
     setClientData(res?.data?.data)
   }
   catch(err){
-    return err
+    return err 
   }
  }
  useEffect(()=>{
@@ -374,6 +408,8 @@ const Index = () => {
 
   const [openImportDialog, setOpenImportDialog] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
+  const [isOpen, setIsOpen] = useState(true);
+
 
   const handleImportClick = () => {
     handleClose()
@@ -409,13 +445,70 @@ const Index = () => {
     resolver: yupResolver(AddClientSchema)
   })
 
- const onSubmit = ((data:any)=>{
-  console.log("abs",data)
-  CreateClientApi(data)
- })
+  
 
+  const {
+    reset: clientReset,
+    control : ABC,
+    getValues: clientsValues,
+    handleSubmit: handleClientReSubmit,
+    formState: { errors: ClientReErrors }
+
+  } = useForm<FormInputs>({
+    defaultValues: defaultClientReValues,
+    resolver: yupResolver(AddClientReSchema)
+  })
+
+console.log(clientsValues(),"clientsValues")
+
+//  const onSubmit = ((data:any)=>{
+//   console.log("abs",data)
+//   CreateClientApi(data)
+//  })
+
+ const onSubmit = async () => {
+    try {
+      await CreateClientApi(studentValues())
+      console.log(studentValues(), "defaultClientValues")
+    }
+    catch (err) {
+      console.log("error", err)
+    }
+  }
+
+
+
+
+
+//  const ClientSubmit = ((data:any)=>{
+//   console.log("AAAAA",data)
+//   updateEmployeeApi(data)
+//  })
+
+ const ClientSubmit = async () => {
+    try {
+      await UpdateClientApi(clientsValues())
+      console.log(clientsValues(), "ADC")
+    }
+    catch (err) {
+      console.log("error", err)
+    }
+  }
+
+
+
+ const handleCloss = () => {
+  setIsOpen(false);
+};
+
+
+
+const handleChange=(e:any)=>{
+  console.log(e.target.value)
+}
 
   return (
+    <>
     <Card>
       <Grid style={{ display: 'flex', width: '100%' }}>
         <Grid style={{ marginLeft: '20px', padding: '10px', width: '100%' }}>
@@ -430,32 +523,7 @@ const Index = () => {
 
         <Dialog open={isModalOpen} onClose={closeModal}>
           <DialogTitle>Add Client</DialogTitle>
-          {/* <DialogContent>
-            <Grid style={{ display: 'flex' }}>
-              <TextField
-                sx={{ m: 5, width: "40%" }}
-                label="Name"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <TextField
-                sx={{ m: 5, width: "40%" }}
-                label="Contact"
-                fullWidth
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-              />
-            </Grid>
-            <Typography sx={{ fontSize: 20 }}>Select Group</Typography>
-            <TextField
-              sx={{ m: 5, width: "90%" }}
-              label="Group"
-              fullWidth
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
-            />
-          </DialogContent> */}
+          
           <CardContent>
             <form onSubmit={handleClientSubmit(onSubmit)}>
               <Grid container spacing={5}>
@@ -532,6 +600,43 @@ const Index = () => {
                     )}
                   </FormControl>
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id='validation-basic-select'
+                          error={Boolean(ClientErrors.clientGender)}
+                          htmlFor='validation-basic-select'
+                        >
+                          Gender*
+                        </InputLabel>
+                        <Controller
+                          name='clientGender'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <Select
+                              value={value}
+                              label='Country'
+                              onChange={onChange}
+                              error={Boolean(ClientErrors.clientGender)}
+                              labelId='validation-basic-select'
+                              aria-describedby='validation-basic-select'
+                            >
+                              {/* <MenuItem value=''>Select</MenuItem> */}
+                              <MenuItem value='Male'>Male</MenuItem>
+                              <MenuItem value='Canada'>Female</MenuItem>
+                              
+                            </Select>
+                          )}
+                        />
+                        {ClientErrors.clientGender && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                            {ClientErrors.clientGender.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
                 <Grid item xs={12}>
                   <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleSave}>
                     Submit
@@ -544,90 +649,7 @@ const Index = () => {
 
         </Dialog>
       </Grid>
-      <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: '20px', display: 'flex' }}>
-        <Grid style={{ display: 'flex', flexDirection: 'column' }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Typography>Date</Typography>
-            <DatePicker
-              label='From'
-              slotProps={{
-                textField: {
-                  size: 'small',
-                  style: { width: '150px' }
-                }
-              }}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label='To'
-            slotProps={{
-              textField: {
-                size: 'small',
-                style: { width: '250px', marginLeft: '5px', marginTop: '25px' }
-              }
-            }}
-          />
-        </LocalizationProvider>
-        <Grid style={{ display: 'flex', flexDirection: 'column', margin: '0px', marginLeft: '5px' }}>
-          <Typography>Client Type</Typography>
-          <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size='small'>
-            <InputLabel id='demo-select-small-label'>All Clients</InputLabel>
-            <Select
-              labelId='demo-select-small-label'
-              id='demo-select-small'
-              value={client}
-              label='All Clients'
-              onChange={handleClient}
-            >
-              <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid style={{ padding: '0', marginTop: '25px', marginLeft: '10px' }}>
-          <Button variant='contained'>Search</Button>
-        </Grid>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: '20px' }}>
-          <Button
-            variant='contained'
-            aria-controls='simple-menu'
-            aria-haspopup='true'
-            onClick={handleClick}
-            endIcon={<ArrowDropDownIcon />}
-          >
-            Action
-          </Button>
-          <Grid>
-            <Menu keepMounted id='simple-menu' anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)}>
-              <MenuItem onClick={handleCustomer}>Client Groups</MenuItem>
-              <MenuItem onClick={handleClose}>Simple File Download</MenuItem>
-              <MenuItem onClick={handleImportClick}>Import Client</MenuItem>
-            </Menu>
-          </Grid>
-          <Dialog open={openImportDialog} onClose={handleDialogClose} fullWidth>
-            <DialogTitle>Import Client</DialogTitle>
-            <DialogContent>
-              {/* File input for importing */}
-              <TextField
-                type='file'
-                onChange={handleFileChange}
-                inputProps={{ accept: '.csv, .xlsx' }} // Specify allowed file types
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleImportSubmit} color='primary' variant='contained'>
-                Import
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
-      </Container>
+    
       <DataGrid
         autoHeight
         columns={columns}
@@ -649,6 +671,184 @@ const Index = () => {
       />
      
     </Card>
+
+
+
+
+
+    <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
+    {isOpen &&
+        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
+          <CardContent>
+            <form onSubmit={handleClientReSubmit(ClientSubmit)}>
+              <Grid container spacing={5}>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='clientName'
+                      control={ABC}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <TextField
+                          value={value ? value : singleClient.clientName}
+                          // value={singleClient.clientName}
+                          label='First Name'
+                          onChange={onChange}
+                          placeholder='First Name'
+                          error={Boolean(ClientReErrors.clientName)}
+                          aria-describedby='validation-basic-first-name'
+                        />
+                      )}
+                    />
+                    {ClientReErrors.clientName && (
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                        This field is required
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <Controller
+                      name='clientEmail'
+                      control={ABC}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <TextField
+                          type='Email'
+                          // value={value}
+                      value={value ?value:singleClient.clientEmail}
+
+                          onChange={onChange}
+                          label='Email '
+                          placeholder='john.doecxvvbdffdd@example.co  '
+                          error={Boolean(ClientReErrors.clientEmail)}
+                        />
+                      )}
+                    />
+                    {ClientReErrors.clientEmail && (
+                      <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+              
+
+                
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <Controller
+                      control={ABC}
+                      name='clientPhoneNumber'
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <TextField
+                          type='number'
+                          value={value ?value:singleClient?.clientPhoneNumber}
+                          onChange={onChange}
+                          label='MobileNumber'
+                          placeholder='Type Here'
+                          error={Boolean(ClientReErrors.clientPhoneNumber)}
+                        />
+                      )}
+                    />
+                    {ClientReErrors.clientPhoneNumber && (
+                      <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id='validation-basic-select'
+                          error={Boolean(ClientErrors.clientGender)}
+                          htmlFor='validation-basic-select'
+                        >
+                          Gender*
+                        </InputLabel>
+                        <Controller
+                          name='clientGender'
+                          control={ABC}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <Select
+                              value={value}
+                              label='Country'
+                              onChange={onChange}
+                              error={Boolean(ClientReErrors.clientGender)}
+                              labelId='validation-basic-select'
+                              aria-describedby='validation-basic-select'
+                            >
+                              {/* <MenuItem value=''>Select</MenuItem> */}
+                              <MenuItem value='Male'>Male</MenuItem>
+                              <MenuItem value='Canada'>Female</MenuItem>
+                              
+                            </Select>
+                          )}
+                        />
+                        {ClientReErrors.clientGender && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                            {ClientReErrors.clientGender.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    
+                <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id='validation-basic-select'
+                          error={Boolean(ClientReErrors.clientStatus)}
+                          htmlFor='validation-basic-select'
+                        >
+                          Status*
+                        </InputLabel>
+                        <Controller
+                          name='clientStatus'
+                          control={ABC}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <Select
+                              value={value}
+                              label='clientStatus'
+                              
+                              onChange={onChange}
+                              error={Boolean(ClientReErrors.clientStatus)}
+                              labelId='validation-basic-select'
+                              aria-describedby='validation-basic-select'
+                            >
+                              {/* <MenuItem value=''>Select</MenuItem> */}
+                              <MenuItem value='Active'>Active</MenuItem>
+                              <MenuItem value='In Active'>In Active</MenuItem>
+                              
+                            </Select>
+                          )}
+                        />
+                        {ClientReErrors.clientStatus && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                            {ClientReErrors.clientStatus.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                <Grid item xs={12}>
+                  <Button size='large' type='submit' variant='contained' onSubmit={ClientSubmit} onClick={handleSave}>
+                    Submit
+                  </Button>
+                
+                </Grid>
+              </Grid>
+            </form>
+          </CardContent>
+          <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
+            {/* <Button variant="contained" onClick={debouncedSubmit}>Save</Button> */}
+          </Grid>
+        </Card >
+      }
+      </Dialog >
+    </>  
   )
 }
 

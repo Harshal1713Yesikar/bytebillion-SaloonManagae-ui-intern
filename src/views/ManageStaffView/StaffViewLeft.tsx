@@ -122,6 +122,7 @@ const ViewSingleManageStaff = () => {
       console.log('Datas', response?.data)
       // Assuming response.data contains updated employee data
       setUpdationData(response?.data?.data)
+      singleEmployeeeDetailsFunc()
     } catch (error) {
       console.error('Error updating employee:', error)
       // Handle error if needed
@@ -400,6 +401,8 @@ const ViewSingleManageStaff = () => {
                 </Select>
               </FormControl>
             </Grid> */}
+            
+         
           </Box>
         </DialogContent>
 

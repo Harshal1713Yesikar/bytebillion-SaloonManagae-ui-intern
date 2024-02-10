@@ -412,14 +412,7 @@ const Index = () => {
             }}
           />
         </Card>
-        <Grid style={{ display: 'flex', justifyContent: 'center', gap: "20px", padding: "20px" }}>
-          <Button variant='outlined' >
-            Previous
-          </Button>
-          <Button variant='contained' >
-            Next
-          </Button>
-        </Grid>
+       
       </Card>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
         < Normaltable />

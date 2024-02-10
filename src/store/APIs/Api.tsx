@@ -402,6 +402,17 @@ export async function ListAllClientsApi(customerId:any,salonId:any) {
   
 }
 
+export async function UpdateClientApi(updateClient: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
+
+    console.log('success data', res) 
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
 export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
   try {
     const res = await axios.post(
@@ -456,5 +467,17 @@ export const updateProductApi = async (productDetailsforApi: any) => {
     return res.data;
   } catch (err) {
     return err;
+  }
+}
+
+export async function getSingleClient(customerId: any, salonId: any, clientId: any) {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_SINGLE_CLIENT_API}?customerId=${customerId}&salonId=${salonId}&clientId=${clientId}`,
+      { headers }
+    )
+    return res
+  } catch (err) {
+    return err
   }
 }
