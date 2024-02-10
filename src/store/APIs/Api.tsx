@@ -348,16 +348,37 @@ export async function AddServicesApi(serviceFormData: any) {
     return err;
   }
 }
-export async function updateServicesApi(updateServiceFormData: any) {
+
+export async function getSingleServiceApi(customerId: any, salonId: any, serviceId: any) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_SINGLE_SERVICE_API}`, { headers })
+    return res?.data;
+  } catch (error) {
+
+  }
+}
+export async function updateServicesApi(serviceFormData: any) {
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_UPDATE_SERVICE_API}`,
-      updateServiceFormData,
+      serviceFormData,
       { headers }
     );
 
     console.log("success data", res)
-    return res.data;
+    return res?.data;
+  } catch (err) {
+    return err;
+  }
+}
+export async function deleteServicesApi(deleteServiceData: any) {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_DELTE_SERVICE_API}`,
+      deleteServiceData,
+      { headers }
+    );
+    return res?.data;
   } catch (err) {
     return err;
   }

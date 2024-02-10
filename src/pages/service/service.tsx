@@ -50,9 +50,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { AddServicesApi, ListAllServiceApi, listAllEmployeeApi } from 'src/store/APIs/Api'
+import { AddServicesApi, ListAllServiceApi, listAllEmployeeApi, deleteServicesApi, updateServicesApi, getSingleServiceApi } from 'src/store/APIs/Api'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
+import { useRouter } from 'next/router'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 // import { rows } from 'src/@fake-db/table/static-data'
@@ -61,6 +62,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { AnyAbility } from '@casl/ability'
 
 type Order = 'asc' | 'desc'
 
@@ -150,8 +152,6 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
   stabilizedThis.sort((a, b) => {
@@ -185,19 +185,124 @@ const renderClient = (params: GridRenderCellParams) => {
   }
 }
 
-const EditServiceButton = () => {
+const EditServiceButton = ({ props }: any) => {
 
+  console.log("props", props)
   const { control, handleSubmit, formState: { errors } } = useForm();
 
+  const [singleServiceData, setSingleServiceData] = useState({})
+  const [formUpdateButton, setFormUpdateButton] = useState<boolean>(false)
+  const [submit, setSubmit] = useState<boolean>(false)
+
+  const [serviceData, setServiceData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: '',
+    serviceCategoryId: "",
+    serviceName: "",
+    serviceDescription: "",
+    serviceTime: "",
+    selectStaff: [
+      {
+        employeeId: ""
+      }
+    ],
+    amountHistory: {
+      serviceAmount: ''
+    }
+  })
+  const [updateServiceData, setUpdateServiceData] = useState({
+
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: "GKhlc",
+    serviceCategoryId: "",
+    serviceName: "",
+    serviceDescription: "",
+    serviceTime: "",
+    selectStaff: [
+      {
+        employeeId: ""
+      }
+    ],
+    amountHistory: {
+      serviceAmount: ''
+    }
+
+  })
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleOpenDialog = async () => {
+    const serviceId =
+      setOpenDialog(true);
+    listAllServicesApiFunc();
+    // try {
+    //   const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
+    //   setSingleServiceData(res?.data?.data[0]);
+    //   console.log(res, "myRes")
+    // } catch (error: any) {
+    //   console.log(error);
+    // }
   };
 
+  const handleChange = (e: any) => {
+    setSingleServiceData({
+      ...singleServiceData,
+      [e.target.name]: e.target.value
+    })
+  }
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
+  const listAllServicesApiFunc = async () => {
+    try {
+      const service: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli') // Pass customerId and salonId
+      // Update the component's state with the fetched data
+      console.log("serviceId", service)
+      setServiceData(service?.data?.data)
+      const serviceId = service?.data?.data?.serviceId
+      if (serviceId) {
+        try {
+          const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', serviceId)
+          console.log("singleservice", res?.data[0])
+          setSingleServiceData(res?.data[0]);
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+      console.log('ListAllServiceApiData', service?.data?.data)
+    } catch (error) {
+      console.error('Error fetching Service data:', error)
+    }
+  }
+  // const getSingleServiceApiFunc = async () => {
+  //   try {
+  //     const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'Hxk5r')
+  //     console.log("singleservice", res?.data[0])
+  //     setSingleServiceData(res?.data[0]);
+  //   } catch (error: any) {
+  //     console.log(error);
+  //   }
+  // }
+  const updateServiceApiFunc = async () => {
+    try {
+
+      const response = await updateServicesApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
+      setUpdateServiceData(response?.data[0])
+      setOpenDialog(false);
+
+    } catch (error: any) {
+      console.log(error);
+
+    }
+  }
+
+  useEffect(() => {
+    setSingleServiceData({
+      ...singleServiceData
+    })
+  }, [])
 
   return (
     <Typography variant='body2' sx={{ color: 'text.primary' }}>
@@ -206,19 +311,23 @@ const EditServiceButton = () => {
       </Button>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Edit Service</DialogTitle>
-        <DialogContent sx={{ '& > *': { mb: 4 } }}>
+        <DialogContent sx={{ '& > *': { mb: 4 }, textAlign: 'center' }}>
           <Controller
-            name="serviceName"
+            name="serviceCount"
             control={control}
-            defaultValue=""
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Service Name"
+                label="Service Count"
                 fullWidth
+                onChange={event => {
+                  handleChange(event)
+                  setFormUpdateButton(true)
+                }}
                 style={{ width: '40%', marginRight: '20px' }}
                 error={!!errors.serviceName}
-                helperText={errors.serviceName ? errors.serviceName.message : ''}
+                value={singleServiceData ? singleServiceData?.serviceCount : ''}
+              // helperText={errors.serviceName ? errors.serviceName.message : ''}
               />
             )}
             rules={{ required: 'Service Name is required' }}
@@ -234,7 +343,13 @@ const EditServiceButton = () => {
                 fullWidth
                 style={{ width: '40%' }}
                 error={!!errors.serviceName}
-                helperText={errors.serviceName ? errors.serviceName.message : ''}
+                onChange={event => {
+                  handleChange(event)
+                  setFormUpdateButton(true)
+                }}
+                value={singleServiceData ? singleServiceData?.serviceTime : ''}
+
+              // helperText={errors.serviceName ? errors.serviceName.message : ''}
               />
             )}
             rules={{ required: 'Service time is required' }}
@@ -250,32 +365,70 @@ const EditServiceButton = () => {
                 fullWidth
                 style={{ width: '40%', marginRight: '20px' }}
                 error={!!errors.serviceName}
-                helperText={errors.serviceName ? errors.serviceName.message : ''}
+                onChange={event => {
+                  handleChange(event)
+                  setFormUpdateButton(true)
+                }}
+                value={singleServiceData ? singleServiceData?.selectStaff : ''}
+
+              // helperText={errors.serviceName ? errors.serviceName.message : ''}
               />
             )}
             rules={{ required: 'Staff Name is required' }}
           />
           <Controller
-            name="serviceStatus"
+            name="serviceDescription"
             control={control}
             defaultValue=""
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Service Status"
+                label="Service Description"
                 fullWidth
-                style={{ width: '40%' }}
+                style={{ width: '40%', marginRight: '20px' }}
                 error={!!errors.serviceName}
-                helperText={errors.serviceName ? errors.serviceName.message : ''}
+                onChange={event => {
+                  handleChange(event)
+                  setFormUpdateButton(true)
+                }}
+                value={singleServiceData && singleServiceData?.serviceDescription}
+
+              // helperText={errors.serviceName ? errors.serviceName.message : ''}
               />
             )}
-            rules={{ required: 'Service Name is required' }}
+            rules={{ required: 'Staff Name is required' }}
           />
+          <Controller
+            name="amountHistory"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Service Amount"
+                fullWidth
+                style={{ width: '40%', marginRight: '20px' }}
+                error={!!errors.serviceAmount}
+                onChange={event => {
+                  handleChange(event)
+                  setFormUpdateButton(true)
+                }}
+                value={(singleServiceData?.amountHistory || []).map((e: any) => e.serviceAmount).join(', ') || ''}
+              />
+            )}
+            rules={{ required: 'Staff Name is required' }}
+          />
+
           {/* Add more fields as needed */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleCloseDialog} variant='contained' autoFocus>
+          <Button
+            onClick={() => {
+              updateServiceApiFunc()
+              setSubmit(true)
+            }}
+            variant='contained' autoFocus>
             Update
           </Button>
         </DialogActions>
@@ -306,110 +459,130 @@ const DeleteServiceButton = () => {
       <Button onClick={handleOpenDialog}>
         <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
       </Button>
+
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Delete Service</DialogTitle>
-        <DialogContent>
-          {/* Content of the dialog goes here */}
-          <Typography>This is the content of the dialog.</Typography>
+        <DialogContent sx={{ pb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <Box sx={{ mb: 9, maxWidth: '95%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
+              <Icon icon='bx:error-circle' fontSize='4.2rem' style={{ marginTop: '20px' }} />
+              <Typography variant='h4' sx={{ color: 'text.secondary' }}>
+                Are you sure?
+              </Typography>
+            </Box>
+            <Typography sx={{ fontSize: '1.125rem', mb: 5 }}>You won't be able to revert Expense!</Typography>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleCloseDialog} variant='contained' autoFocus>
-            Delete
+            Yes, I am Sure!
           </Button>
         </DialogActions>
       </Dialog>
     </Typography>
   );
 };
-const columns: GridColDef[] = [
-  {
-    flex: 0.55,
-    minWidth: 120,
-    field: 'serviceName',
-    headerName: 'Service Name',
-    // hide: hideNameColumn,
-    renderCell: (params: GridRenderCellParams) => {
-      const { row } = params
+// const columns: GridColDef[] = [
 
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(params)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.serviceName.charAt(0).toUpperCase() + row.serviceName.slice(1)}
-            </Typography>
-          </Box>
-        </Box>
-      )
-    }
-  },
-  {
-    flex: 0.175,
-    minWidth: 120,
-    headerName: 'Service Time',
-    field: 'serviceTime',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceTime}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.175,
-    minWidth: 110,
-    field: 'selectStaff ',
-    headerName: 'Staff Name',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params?.row.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
-      </Typography>
-    )
-  },
 
-  {
-    flex: 0.175,
-    field: 'employeeId',
-    minWidth: 120,
-    headerName: 'Staff ID',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceCategoryId}
-      </Typography>
-    )
-  },
+//   {
+//     flex: 0.55,
+//     minWidth: 120,
+//     field: 'serviceName',
+//     headerName: 'Service Name',
+//     // hide: hideNameColumn,
+//     renderCell: (params: GridRenderCellParams) => {
+//       const { row } = params
 
-  {
-    flex: 0.175,
-    minWidth: 150,
-    field: 'serviceStatus',
-    headerName: 'Service Status',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceStatus == 'active' ? (
-          <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
-        ) : (
-          <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
-        )}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.175,
-    minWidth: 150,
-    field: 'updateService',
-    headerName: 'Edit Service',
-    renderCell: () => <EditServiceButton />,
-  },
-  {
-    flex: 0.175,
-    minWidth: 150,
-    field: 'deleteService',
-    headerName: 'Delete Service',
-    renderCell: () => <DeleteServiceButton />,
-  }
+//       return (
+//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+//           {renderClient(params)}
+//           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+//             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+//               {row?.serviceName ? (row?.serviceName?.charAt(0).toUpperCase() + row.serviceName.slice(1)) : ''}
+//             </Typography>
+//           </Box>
+//         </Box>
+//       )
+//     }
+//   },
+//   {
+//     flex: 0.175,
+//     minWidth: 120,
+//     headerName: 'Service Time',
+//     field: 'serviceTime',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.serviceTime}
+//       </Typography>
+//     )
+//   },
+//   {
+//     flex: 0.175,
+//     minWidth: 110,
+//     field: 'selectStaff ',
+//     headerName: 'Staff Name',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.selectStaff}
+//         {/* {params.row.selectStaff ? (params?.row?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)) : ""} */}
+//       </Typography>
+//     )
+//   },
 
-]
+//   {
+//     flex: 0.175,
+//     field: 'employeeId',
+//     minWidth: 120,
+//     headerName: 'Staff ID',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.serviceCategoryId}
+//       </Typography>
+//     )
+//   },
+
+//   {
+//     flex: 0.175,
+//     minWidth: 150,
+//     field: 'serviceStatus',
+//     headerName: 'Service Status',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.serviceStatus == 'active' ? (
+//           <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
+//         ) : (
+//           <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
+//         )}
+//       </Typography>
+//     )
+//   },
+//   {
+//     flex: 0.175,
+//     minWidth: 150,
+//     field: 'updateService',
+//     headerName: 'Edit Service',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Button onClick={() => handleButtonClick(params.row.serviceId)}>
+//         <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+//       </Button>
+//     )
+//     // renderCell: () => <EditServiceButton />,
+//   },
+//   {
+//     flex: 0.175,
+//     minWidth: 150,
+//     field: 'deleteService',
+//     headerName: 'Delete Service',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Button >
+//         <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+//       </Button>
+//     )
+//     // renderCell: () => <DeleteServiceButton />,
+//   }
+
+// ]
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   // ** Props
@@ -464,10 +637,44 @@ const orgSelected = (organization: any) => {
 }
 
 const Service = () => {
+
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
   const [serviceData, setServiceData] = useState<any>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
+
+  const [singleServiceData, setSingleServiceData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: 'GKhlc',
+    serviceCategoryId: "",
+    serviceName: "",
+    serviceDescription: "",
+    serviceTime: "",
+    selectStaff: [
+      {
+        employeeId: "123"
+      }
+    ],
+    amountHistory: {
+      serviceAmount: ''
+    }
+  })
+
+  const [updateServiceData, setUpdateServiceData] = useState({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    serviceCategoryId: 'HFm4p',
+    serviceName: '',
+    serviceDescription: '',
+    serviceTime: '',
+    selectStaff: '',
+    amountHistory: {
+      serviceAmount: ''
+    }
+  })
+
+  const router = useRouter()
 
   useEffect(() => {
     // Fetch staff data using listAllEmployeeApi
@@ -481,10 +688,33 @@ const Service = () => {
         console.error('Error fetching Service data:', error)
       }
     }
-
-    // Call the fetchData function
     fetchData()
   }, [])
+
+  // useEffect(() => {
+  //   const GetSingleServiceApiFunc = async () => {
+  //     try {
+  //       const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
+  //       console.log("singleservice", res)
+  //       setSingleServiceData(res?.data);
+  //     } catch (error: any) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   GetSingleServiceApiFunc();
+  // }, [])
+  // const updateServiceApiFunc = async () => {
+  //   try {
+
+  //     const response = await updateServicesApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli')
+  //     setUpdateServiceData(response?.data.data)
+  //     // setOpenDialog(true);
+
+  //   } catch (error: any) {
+  //     console.log(error);
+
+  //   }
+  // }
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -520,7 +750,7 @@ const Service = () => {
   const [orderBy, setOrderBy] = useState<keyof Data>('serviceId')
   const [selected, setSelected] = useState<readonly string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [pageSize, setPageSize] = useState<number>(7)
+  const [pageSize, setPageSize] = useState<number>(10)
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
@@ -674,6 +904,113 @@ const Service = () => {
   } = useForm<FormInputs>({
     defaultValues: defaultStudentValues
   })
+
+
+  const handleCellClick = (row: any) => {
+    console.log("row", row)
+    router.push(`/service/serviceDetails/${row}`)
+  }
+  const columns: GridColDef[] = [
+
+
+    {
+      flex: 0.55,
+      minWidth: 120,
+      field: 'serviceName',
+      headerName: 'Service Name',
+      // hide: hideNameColumn,
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
+
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row?.serviceName ? (row?.serviceName?.charAt(0).toUpperCase() + row.serviceName.slice(1)) : ''}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      }
+    },
+    {
+      flex: 0.175,
+      minWidth: 120,
+      headerName: 'Service Time',
+      field: 'serviceTime',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceTime}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.175,
+      minWidth: 110,
+      field: 'selectStaff ',
+      headerName: 'Staff Name',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.selectStaff}
+          {/* {params.row.selectStaff ? (params?.row?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)) : ""} */}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.175,
+      field: 'employeeId',
+      minWidth: 120,
+      headerName: 'Staff ID',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceCategoryId}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'serviceStatus',
+      headerName: 'Service Status',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceStatus == 'active' ? (
+            <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
+          ) : (
+            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
+          )}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'updateService',
+      headerName: 'Edit Service',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button onClick={() => handleCellClick(params.row.serviceId)}>
+          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+        </Button>
+      )
+      // renderCell: () => <EditServiceButton />,
+    },
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'deleteService',
+      headerName: 'Delete Service',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button >
+          <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+        </Button>
+      )
+      // renderCell: () => <DeleteServiceButton />,
+    }
+
+  ]
 
   return (
     <>
@@ -1009,27 +1346,29 @@ const Service = () => {
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle'>
                 <TableBody>
-                  {/* if you don't need to support IE11, you can replace the `stableSort` call with: rows.slice().sort(getComparator(order, orderBy)) */}
                   {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                     const isItemSelected = selected.includes(row.serviceName)
                     const labelId = `enhanced-table-checkbox-${index}`
 
                     return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.serviceName}
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                        onClick={event => handleClick(event, row.serviceName)}
-                      >
-                        <TableCell component='th' id={labelId} scope='row' padding='none'>
-                          {row.serviceName}
-                        </TableCell>
-                        <TableCell align='right'>{row.serviceId}</TableCell>
-                        <TableCell align='right'>{row.currentServiceAmount}</TableCell>
-                        <TableCell align='right'>{row.serviceStatus}</TableCell>
-                      </TableRow>
+                      <></>
+                      // <TableRow
+                      //   hover
+                      //   tabIndex={-1}
+                      //   key={row.serviceName}
+                      //   selected={isItemSelected}
+                      //   aria-checked={isItemSelected}
+                      //   onClick={event => handleClick(event, row.serviceName)}
+                      // >
+                      //   <TableCell component='th' id={labelId} scope='row' padding='none'>
+                      //     {row.serviceName}
+                      //   </TableCell>
+                      //   <TableCell align='right'>{row.serviceId}</TableCell>
+                      //   <TableCell align='right'>{row.currentServiceAmount}</TableCell>
+                      //   <TableCell align='right'>{row.serviceStatus}</TableCell>
+                      //   <TableCell align='right'><Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+                      //   </TableCell>
+                      // </TableRow>
                     )
                   })}
                   {emptyRows > 0 && (
@@ -1051,12 +1390,14 @@ const Service = () => {
               columns={columns}
               pageSize={pageSize}
               disableSelectionOnClick
-              rowsPerPageOptions={[7, 10, 25, 50, 80, 100]}
+              rowsPerPageOptions={[10, 25, 50, 80, 100]}
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             />
           </Grid>
         </Card >
       </Grid >
+
+
     </>
   )
 }
