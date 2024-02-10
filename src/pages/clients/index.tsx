@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
-import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
@@ -53,19 +53,26 @@ import { CreateClientApi } from 'src/store/APIs/Api'
 interface FormInputs {
   customerId: string
   salonId: string
+  clientId:string
+
   clientName: string
   clientPhoneNumber: string
   clientEmail: string
   clientGender: string
+  clientStatus:string
+
 }
 
 interface defaultValues {
   customerId: ''
   salonId: ''
+  clientId:''
   clientName: ''
   clientPhoneNumber: ''
   clientEmail: ''
   clientGender: ''
+  clientStatus:''
+
 }
 
 const AddClientSchema = yup.object().shape({
@@ -102,8 +109,8 @@ const renderClient = (params: GridRenderCellParams) => {
   const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
   const color = states[stateNum]
 
-  if (row.avatar.length) {
-    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+  if (row?.avatar?.length) {
+    return <CustomAvatar src={`/images/avatars/${row?.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
   } else {
     return (
       <CustomAvatar
@@ -111,10 +118,11 @@ const renderClient = (params: GridRenderCellParams) => {
         color={color as ThemeColor}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.clientName ? row.clientName: 'John Doe')}
+        {getInitials(row.clientName ? row.clientName : '')}
       </CustomAvatar>
     )
   }
+
 }
 
 const statusObj: StatusObj = {
@@ -132,75 +140,75 @@ const escapeRegExp = (value: string) => {
 
 
 
-const columns: GridColumns = [
-  {
-    flex: 0.275,
-    minWidth: 290,
-    field: 'clientName',
-    headerName: 'Name',
-    renderCell: (params: GridRenderCellParams) => {
-      const { row } = params
+// const columns: GridColumns = [
+//   {
+//     flex: 0.275,
+//     minWidth: 290,
+//     field: 'clientName',
+//     headerName: 'Name',
+//     renderCell: (params: GridRenderCellParams) => {
+//       const { row } = params
 
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(params)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.clientName}
-            </Typography>
-            {/* <Typography noWrap variant='caption'>
-              {row.email}
-            </Typography> */}
-          </Box>
-        </Box>
-      )
-    }
-  },
-  // {
-  //   flex: 0.2,
-  //   minWidth: 120,
-  //   headerName: 'Date',
-  //   field: 'start_date',
-  //   renderCell: (params: GridRenderCellParams) => (
-  //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-  //       {params.row.start_date}
-  //     </Typography>
-  //   )
-  // },
-  {
-    flex: 0.2,
-    minWidth: 110,
-    field: 'clientPhoneNumber',
-    headerName: 'Phone Number',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.clientPhoneNumber}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.125,
-    field: 'clientId',
-    minWidth: 80,
-    headerName: 'Client id',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.clientId}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.2,
-    minWidth: 140,
-    field: 'clientStatus',
-    headerName: 'Status',
-    renderCell: (params: GridRenderCellParams) => {
-      const status = statusObj[params.row.clientStatus]
+//       return (
+//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+//           {renderClient(params)}
+//           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+//             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+//               {row.clientName}
+//             </Typography>
+//             <Typography noWrap variant='caption'>
+//               {row.clientEmail}
+//             </Typography>
+//           </Box>
+//         </Box>
+//       )
+//     }
+//   },
+//   // {
+//   //   flex: 0.2,
+//   //   minWidth: 120,
+//   //   headerName: 'Date',
+//   //   field: 'start_date',
+//   //   renderCell: (params: GridRenderCellParams) => (
+//   //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//   //       {params.row.start_date}
+//   //     </Typography>
+//   //   )
+//   // },
+//   {
+//     flex: 0.2,
+//     minWidth: 110,
+//     field: 'clientPhoneNumber',
+//     headerName: 'Phone Number',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.clientPhoneNumber}
+//       </Typography>
+//     )
+//   },
+//   {
+//     flex: 0.125,
+//     field: 'clientId',
+//     minWidth: 80,
+//     headerName: 'Client id',
+//     renderCell: (params: GridRenderCellParams) => (
+//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
+//         {params.row.clientId}
+//       </Typography>
+//     )
+//   },
+//   {
+//     flex: 0.2,
+//     minWidth: 140,
+//     field: 'clientStatus',
+//     headerName: 'Status',
+//     renderCell: (params: GridRenderCellParams) => {
+//       const status = statusObj[params.row.clientStatus]
 
-      return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
-    }
-  }
-]
+//       return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
+//     }
+//   }
+// ]
 
 const Index = () => {
   // ** States
@@ -208,23 +216,98 @@ const Index = () => {
   const [pageSize, setPageSize] = useState<number>(7)
   const [searchText, setSearchText] = useState<string>('')
   const [clientData,setClientData] =useState<any[]>([])
+  const [hideNameColumn, setHideNameColumn] = useState(false)
+
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
   const [defaultClientValues,setDefaultClientValues] =useState<any>({
 
-    customerId:'dWnUU',
+    customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId:'6GZr2',
+    clientId:'',
     clientName:'',
     clientPhoneNumber:'',
     clientEmail:'',
-    clientGender:''
+    clientGender:'',
+    clientStatus:''
+
   })
 
 
+  const columns: GridColDef[] = [
+    
+    {
+      flex: 0.25,
+      minWidth: 290,
+      field: 'clientName',
+      headerName: 'Name',
+      hide: hideNameColumn,
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
 
- const FatchData = ()=>{
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row.clientName}
+              </Typography>
+              <Typography noWrap variant='caption'>
+                {row.email}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      }
+    },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'clientPhoneNumber ',
+      headerName: 'Phone Number',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.clientPhoneNumber}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.1,
+      field: 'clientId',
+      minWidth: 80,
+      headerName: 'client ID',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.clientId}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'clientStatus',
+      headerName: 'Status',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.clientStatus == 'active' ? (
+            <CustomChip rounded size='small' skin='light' color='success' label={params.row.clientStatus} />
+          ) : (
+            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.clientStatus  } />
+          )}
+        </Typography>
+      )
+    }
+
+  
+  ]
+
+
+
+ const FatchData = async ()=>{
   try{
-    const res:any = ListAllClientsApi('dWnUU','6GZr2') 
-    setClientData(res?.data)
+    const res:any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde','6GZr2') 
+    console.log("fatchData",res?.data.data)
+    setClientData(res?.data?.data)
   }
   catch(err){
     return err
@@ -232,7 +315,7 @@ const Index = () => {
  }
  useEffect(()=>{
   FatchData()
- })
+ },[])
 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
@@ -563,7 +646,7 @@ const Index = () => {
         pageSize={pageSize}
         rowsPerPageOptions={[7, 10, 25, 50]}
         components={{ Toolbar: QuickSearchToolbar }}
-        rows={filteredData.length ? filteredData : data}
+        rows={clientData}
         onPageSizeChange={newPageSize => setPageSize(newPageSize)}
         componentsProps={{
           baseButton: {

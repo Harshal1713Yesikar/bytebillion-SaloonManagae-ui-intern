@@ -392,7 +392,8 @@ export async function CreateClientApi(updateClientData: any) {
 
 export async function ListAllClientsApi(customerId:any,salonId:any) {
   try{
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_LIST_ALL_CILENT_API}customerId=${customerId}&salonId=${salonId}`,{headers})
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-client-fnp/readClient?customerId=${customerId}&salonId=${salonId}`,{headers})
+    console.log("data",res)
     return res
   }
   catch(err){
