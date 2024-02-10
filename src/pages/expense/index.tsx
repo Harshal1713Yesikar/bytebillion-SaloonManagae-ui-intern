@@ -235,7 +235,7 @@ const Index = () => {
         <Container style={{ border: '2px solid lightgray', borderRadius: '10px', padding: "20px", display: "flex", margin: "20px" }}>
           <Grid style={{ display: 'flex', flexDirection: "column" }}>
             <LocalizationProvider dateAdapter={AdapterDayjs} >
-              <Typography>Date</Typography>
+
               <DatePicker
                 label="From"
                 slotProps={{
@@ -253,13 +253,13 @@ const Index = () => {
               slotProps={{
                 textField: {
                   size: 'small',
-                  style: { width: '150px', marginLeft: "5px", marginTop: "24px" }
+                  style: { width: '150px', marginLeft: "5px" }
                 }
               }}
             />
           </LocalizationProvider>
           <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
-            <Typography>Client Type</Typography>
+
             <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
               <InputLabel id="demo-select-small-label">All Clients</InputLabel>
               <Select
@@ -278,12 +278,12 @@ const Index = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid style={{ padding: "0", marginTop: '25px', marginLeft: '10px' }}>
+          <Grid style={{ padding: "0", marginLeft: '10px' }}>
             <Button variant='contained' >
               Search
             </Button>
           </Grid>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", marginTop: "20px" }} >
+          <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }} >
             <Grid sx={{ mt: 2, cursor: 'pointer' }}>
               <PrintIcon />
             </Grid>

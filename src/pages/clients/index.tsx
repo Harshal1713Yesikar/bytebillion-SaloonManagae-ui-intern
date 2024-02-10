@@ -239,8 +239,8 @@ const Index = () => {
     <Card>
       <Grid style={{ display: 'flex', width: "100%" }}>
         <Grid style={{ marginLeft: "20px", padding: "10px", width: "100%" }}>
-          <CardHeader style={{ padding: "0px" }} title='Expense Transactions' />
-          <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
+          <CardHeader style={{ padding: "0px" }} title='Client list' />
+          <Typography >Efficiently manage your client's details by accessing their appointment history, appointments, and other relevant .</Typography>
         </Grid>
         <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
           <Button onClick={openModal} variant='contained' >add</Button>

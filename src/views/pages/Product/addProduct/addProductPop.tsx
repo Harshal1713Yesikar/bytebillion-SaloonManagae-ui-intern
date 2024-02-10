@@ -6,8 +6,6 @@ import { ListAllProductListApi, ProductCreateRegistrationApi } from 'src/store/A
 import { debounce } from 'lodash'
 import * as yup from 'yup';
 
-
-
 const validationSchema = yup.object().shape({
   productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
   Barcode: yup.string().required('Barcode is required'),

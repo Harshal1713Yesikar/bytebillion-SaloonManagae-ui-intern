@@ -42,10 +42,7 @@ const Normaltable = () => {
     "availableStock": {
       "retailStock": ""
     }
-
   })
-
-
 
   const [productName, setProductName] = useState('');
   const [fullPrice, setFullPrice] = useState('');

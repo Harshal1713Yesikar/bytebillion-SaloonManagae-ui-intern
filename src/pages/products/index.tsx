@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import Normaltable from 'src/views/table/productTable/Normaltable';
 import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
-import { rows } from 'src/@fake-db/table/static-data';
 import EditIcon from '@mui/icons-material/Edit';
 
 // ** Custom Components
