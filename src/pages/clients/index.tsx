@@ -38,7 +38,6 @@ interface StatusObj {
   }
 }
 
-// ** renders client column
 const renderClient = (params: GridRenderCellParams) => {
   const { row } = params
   const stateNum = Math.floor(Math.random() * 6)
