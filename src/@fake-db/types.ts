@@ -144,6 +144,7 @@ export type UserProfileActiveTab = ProfileTabType | TeamsTabType[] | ProjectsTab
 // Data Grid page
 //---------------
 export type DataGridRowType = {
+  productId: any
   customerId: string;
   organizationId: string;
   inventoryId: string;

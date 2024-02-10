@@ -238,13 +238,9 @@ const AddService = () => {
   const [allEmpList, setAllEmpList] = useState([])
   useEffect(() => {
     const getEmpData = async () => {
-      const response = await listAllEmployeeApi("099f9bf2-8ac2-4f84-8286-83bb46595fde", "dqXUs")
+      const response:any  = await listAllEmployeeApi("099f9bf2-8ac2-4f84-8286-83bb46595fde", "dqXUs")
       console.log("skdfjklsjfksjdflkjds", response.data.data)
       setAllEmpList(response?.data?.data)
-      // setLoading(false)
-
-      // console.log(res,"res")
-      // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
 
     }
     getEmpData()
@@ -376,7 +372,7 @@ const AddService = () => {
                       </FormHelperText>
                     )}
                   </FormControl>
-                </Grid> */}
+                </Grid> 
                 <Grid container spacing={5}>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
@@ -424,7 +420,7 @@ const AddService = () => {
                         <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
                       )}
                     </FormControl>
-                  </Grid> */}
+                  </Grid>
 
                   {/* <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>

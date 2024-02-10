@@ -38,16 +38,16 @@ const navigation = (): HorizontalNavItemsType => [
     path: '/appointments',
     icon: 'bx:home-circle',
   },
-  {
-    title: 'Report',
-    path: '/report',
-    icon: 'bx:home-circle',
-  },
-  {
-    title: 'Integration',
-    path: '/integration',
-    icon: 'bx:home-circle',
-  },
+  // {
+  //   title: 'Report',
+  //   path: '/report',
+  //   icon: 'bx:home-circle',
+  // },
+  // {
+  //   title: 'Integration',
+  //   path: '/integration',
+  //   icon: 'bx:home-circle',
+  // },
   {
     title: 'Sale Tools',
     path: '/saletools',

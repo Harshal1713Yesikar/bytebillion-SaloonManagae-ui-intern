@@ -1,14 +1,19 @@
-import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, IconButton, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, IconButton, InputAdornment, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AddProductPop from 'src/views/pages/Product/addProduct/addProductPop'
 import { useRouter } from 'next/router';
-import Normaltable from 'src/views/table/productTable/Normaltable';
 import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit';
+import { updateProductApi } from 'src/store/APIs/Api';
+import { ListAllProductListApi } from 'src/store/APIs/Api';
+import { debounce } from 'lodash'
+import * as yup from 'yup';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
@@ -17,7 +22,17 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 import { DataGridRowType } from 'src/@fake-db/types'
-import { ListAllProductListApi } from 'src/store/APIs/Api';
+
+
+
+
+const validationSchema = yup.object().shape({
+  productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
+  Barcode: yup.string().required('Barcode is required'),
+  costPrice: yup.string().matches(/^[0-9]+$/, 'Cost Price must be a number').required('Cost Price is required'),
+  fullPrice: yup.string().matches(/^[0-9]+$/, 'Full Price must be a number').required('Full Price is required'),
+  sellPrice: yup.string().matches(/^[0-9]+$/, 'Sell Price must be a number').required('Sell Price is required'),
+});
 
 const escapeRegExp = (value: string) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
@@ -55,7 +70,82 @@ const Index = () => {
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
   const [productList, setProductList] = useState<DataGridRowType[]>([])
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const [Brand, setBrand] = useState('');
+  const [productType, setProductType] = useState('');
+  const [retail, setRetail] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isOpen, setIsOpen] = useState(true);
 
+  const [defaultProductValues, setDefaultProductValues] = useState<any>({
+    "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    "salonId": "NRImf",
+    "productId": "",
+    "stockId": "",
+    "brandId": "",
+    "productName": "",
+    "productStatus": "",
+    "Barcode": "",
+    "costPrice": "",
+    "fullPrice": "",
+    "sellPrice": "",
+    "productDescription": "",
+    "vendorName": [],
+    "availableStock": {
+      "retailStock": ""
+    }
+  })
+
+  const [productName, setProductName] = useState('');
+  const [fullPrice, setFullPrice] = useState('');
+  const [sellPrice, setSellPrice] = useState('');
+  const [costPrice, setCostPrice] = useState('');
+  const [productDescription, setDescription] = useState('');
+  const [inStockQuantity, setInStockQuantity] = useState('');
+  const [quantityAlert, setQuantityAlert] = useState('');
+  const [productUsage, setProductUsage] = useState('');
+  const [errorName, setErrorName] = useState('');
+  const [errorBarcode, setErrorBarcode] = useState('');
+  const [errorCostPrice, setErrorCostPrice] = useState('');
+  const [errorFullPrice, setErrorFullPrice] = useState('');
+  const [errorSellPrice, setErrorSellPrice] = useState('');
+  const [updateSingleData, setUpdateSingleData] = useState<any>({});
+
+  const handleCommon = (e: any) => {
+    setDefaultProductValues({ ...defaultProductValues, [e.target.name]: e.target.value });
+    // Clear the error message for the corresponding field
+    switch (e.target.name) {
+      case 'productName':
+        setErrorName('');
+        break;
+      case 'Barcode':
+        setErrorBarcode('');
+        break;
+      case 'costPrice':
+        setErrorCostPrice('');
+        break;
+      case 'fullPrice':
+        setErrorFullPrice('');
+        break;
+      case 'sellPrice':
+        setErrorSellPrice('');
+        break;
+
+      default:
+        break;
+    }
+  }
+
+
+
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  const debouncedSubmit = debounce(() => {
+    handleSubmit()
+
+  }, 1000)
 
   const handleCheckboxChange = (checkboxId: string) => {
     setSelectedCheckbox(checkboxId === selectedCheckbox ? null : checkboxId);
@@ -104,7 +194,14 @@ const Index = () => {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
-  const handleOpenDialogUpdate = () => {
+
+
+  const handleEditProduct = (rowData: DataGridRowType) => {
+    console.log(rowData, "rowData");
+    setUpdateSingleData({
+      ...rowData,
+      // Populate other fields similarly
+    });
     setDialogOpenUpdate(true);
   };
 
@@ -197,7 +294,7 @@ const Index = () => {
       field: 'edit',
       headerName: 'Edit',
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton aria-label="edit" onClick={handleOpenDialogUpdate}>
+        <IconButton aria-label="edit" onClick={() => handleEditProduct(params.row)}>
           <EditIcon />
         </IconButton>
       )
@@ -219,18 +316,54 @@ const Index = () => {
       setFilteredData([])
     }
   }
-  useEffect(() => {
-    const fatchData = async () => {
-      try {
-        const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
-        setProductList(response?.data?.data)
-        console.log('aaa', response.data.data)
-      } catch (err) {
-        return err
-      }
+
+  const ProductAllListData = async () => {
+    try {
+      const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+      setProductList(response?.data?.data)
+      console.log('aaa', response.data.data)
+    } catch (err) {
+      return err
     }
-    fatchData()
+  }
+  useEffect(() => {
+
+    ProductAllListData()
   }, [])
+
+
+  const handleSubmit = async () => {
+    try {
+      await validationSchema.validate(defaultProductValues, { abortEarly: false });
+      console.log("defaultProductValues", defaultProductValues)
+      await updateProductApi(defaultProductValues);
+      ProductAllListData()
+      setIsOpen(false);
+
+    } catch (error) {
+      error.inner.forEach(err => {
+        switch (err.path) {
+          case 'productName':
+            setErrorName(err.message);
+            break;
+          case 'Barcode':
+            setErrorBarcode(err.message);
+            break;
+          case 'costPrice':
+            setErrorCostPrice(err.message);
+            break;
+          case 'fullPrice':
+            setErrorFullPrice(err.message);
+            break;
+          case 'sellPrice':
+            setErrorSellPrice(err.message);
+            break;
+          default:
+            break;
+        }
+      });
+    }
+  };
 
 
 
@@ -422,7 +555,115 @@ const Index = () => {
         </Grid>
       </Card>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
-        < Normaltable />
+
+        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
+          <Grid sx={{ borderBottom: '2px solid lightGray' }}>
+            <Grid sx={{ p: 3 }}>
+              <Grid sx={{ display: 'flex' }}>
+                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={handleClose}  ><CloseIcon /></Box>
+                <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Update Product</Typography>
+              </Grid>
+              <Grid item sx={{ display: 'flex' }} >
+                <TextField
+                  sx={{ width: '25ch', m: 1 }}
+                  id='outlined-basic'
+                  label='Product Name'
+                  size='small'
+                  value={updateSingleData && updateSingleData.productName}
+                  onChange={handleCommon}
+                  error={!!errorName}
+                  helperText={errorName}
+                  name="productName"
+                />
+
+                <TextField
+                  sx={{ width: '25ch', m: 1 }}
+                  fullWidth
+                  id='outlined-basic'
+                  label='Barcode'
+                  size='small'
+                  variant='outlined'
+                  value={updateSingleData && updateSingleData.Barcode}
+                  onChange={handleCommon}
+                  error={!!errorBarcode}
+                  helperText={errorBarcode}
+                  name="Barcode"
+
+                />              </Grid>
+              <Grid item sx={{ display: 'flex', width: '100%', maxWidth: '100%' }} xs={12}>
+                <Grid>
+                  <TextField
+                    size='small'
+                    placeholder="Cost Price"
+                    id='outlined-basic'
+                    sx={{ m: 1, width: '25ch' }}
+                    value={updateSingleData && updateSingleData.costPrice}
+                    // value={swati.costprice?swati.costprice:updateSingleData.costPrice}
+
+                    onChange={handleCommon}
+                    error={!!errorCostPrice}
+                    helperText={errorCostPrice}
+                    name='costPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                  />
+                </Grid>
+                <Grid>
+                  <TextField
+                    size='small'
+                    placeholder="Full Price"
+                    id="outlined-start-adornment"
+                    sx={{ m: 1, width: '25ch' }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
+                    }}
+                    value={updateSingleData && updateSingleData.fullPrice}
+                    onChange={handleCommon}
+                    error={!!errorFullPrice}
+                    helperText={errorFullPrice}
+                    name='fullPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                  />
+
+                </Grid>
+                <Grid>
+                  <TextField
+                    size='small'
+                    placeholder="Sell Price"
+                    id="outlined-start-adornment"
+                    sx={{ m: 1, width: '25ch' }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">Rs</InputAdornment>,
+                    }}
+                    value={updateSingleData && updateSingleData.sellPrice}
+                    onChange={handleCommon}
+                    error={!!errorSellPrice}
+                    helperText={errorSellPrice}
+                    name='sellPrice'
+                    type="number" // Specify input type as number
+                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                  />
+                </Grid>
+              </Grid>
+
+
+            </Grid>
+          </Grid>
+          <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
+            {/* <Button variant="contained" onClick={{debouncedSubmit}>Save</Button> */}
+            <Button variant="contained" onClick={() => {
+
+              debouncedSubmit()
+              ProductAllListData()
+
+
+
+            }}>Save</Button>
+
+          </Grid>
+        </Card >
+
       </Dialog >
     </>
   )
