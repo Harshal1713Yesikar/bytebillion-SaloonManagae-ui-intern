@@ -16,8 +16,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow"
-// import { getStudentBasicInfo } from 'src/store/APIs/Api'
+import TableRow from "@material-ui/core/TableRow";
 import DialogTitle from '@mui/material/DialogTitle'
 import { InputAdornment, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear';
@@ -179,7 +178,7 @@ const AutocompleteComponent = ({ hidden, settings }: Props) => {
     return () => {
       router.events.off('routeChangeStart', handleRouteChange);
     };
-  }, [router,defaultList]);
+  }, [defaultList, router]);
 
 
 

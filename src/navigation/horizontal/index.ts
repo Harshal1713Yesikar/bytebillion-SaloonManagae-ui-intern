@@ -3,11 +3,6 @@ import { HorizontalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): HorizontalNavItemsType => [
   // {
-  //   title: 'Dashboard',
-  //   path: '/home',
-  //   icon: 'bx:home-circle',
-  // },
-
   {
     title: 'Home',
     path: '/home',

@@ -160,7 +160,7 @@
   resolved "https://registry.npmjs.org/@emotion/memoize/-/memoize-0.8.1.tgz"
   integrity sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==
 
-"@emotion/react@^11.10.5":
+"@emotion/react@^11.11.3":
   version "11.11.3"
   resolved "https://registry.npmjs.org/@emotion/react/-/react-11.11.3.tgz"
   integrity sha512-Cnn0kuq4DoONOMcnoVsTOR8E+AdnKFf//6kUWc4LCdnxj31pZWn7rIULd6Y7/Js1PiPHzn7SKCM9vB/jBni8eA==
@@ -836,10 +836,10 @@
     "@iconify/types" "*"
     pathe "^0.3.0"
 
-"@iconify/react@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@iconify/react/-/react-4.0.0.tgz"
-  integrity sha512-YE+z5PCegYyuJtLR6KBbJNlssmuVgRyFyRxcgxSPVkN3Gsm7npSzrUh+gWlBxrNb5g4Q6Nnb1gczPBNcwtUpng==
+"@iconify/react@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/@iconify/react/-/react-4.1.1.tgz"
+  integrity sha512-jed14EjvKjee8mc0eoscGxlg7mSQRkwQG3iX3cPBCO7UlOjz0DtlvTqxqEcHUJGh+z1VJ31Yhu5B9PxfO0zbdg==
   dependencies:
     "@iconify/types" "^2.0.0"
 
@@ -994,7 +994,7 @@
   dependencies:
     "@babel/runtime" "^7.23.6"
 
-"@mui/lab@5.0.0-alpha.105":
+"@mui/lab@^5.0.0-alpha.105":
   version "5.0.0-alpha.105"
   resolved "https://registry.npmjs.org/@mui/lab/-/lab-5.0.0-alpha.105.tgz"
   integrity sha512-W4AUf8juwPfOomOGHL1Jasr6LW1mlcZUMlad/uf8AKYFOILX1Toonvdqi00iP+xMRndX88/RmLbJy0+nDZiKsg==
@@ -1095,10 +1095,10 @@
     prop-types "^15.8.1"
     reselect "^4.1.6"
 
-"@mui/x-date-pickers@^6.18.6":
-  version "6.18.6"
-  resolved "https://registry.npmjs.org/@mui/x-date-pickers/-/x-date-pickers-6.18.6.tgz"
-  integrity sha512-pqOrGPUDVY/1xXrM1hofqwgquno/SB9aG9CVS1m2Rs8hKF1VWRC+jYlEa1Qk08xKmvkia5g7NsdV/BBb+tHUZw==
+"@mui/x-date-pickers@^6.18.7":
+  version "6.18.7"
+  resolved "https://registry.npmjs.org/@mui/x-date-pickers/-/x-date-pickers-6.18.7.tgz"
+  integrity sha512-4NoapaCT3jvEk2cuAUjG0ReZvTEk1i4dGDz94Gt1Oc08GuC1AuzYRwCR1/1tdmbDynwkR8ilkKL6AyS3NL1H4A==
   dependencies:
     "@babel/runtime" "^7.23.2"
     "@mui/base" "^5.0.0-beta.22"
@@ -4767,12 +4767,28 @@ react@^16.0.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
+react@^16.8.6:
+  version "16.14.0"
+  resolved "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
+  integrity sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+
 react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
   dependencies:
     loose-envify "^1.1.0"
+
+reactn@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/reactn/-/reactn-1.0.0.tgz"
+  integrity sha512-6i0KHxHZsIz3XNOHZe9LErrYMXMrADfAGzgNS3+Hd+BFTocJJb4f8myIZOvXCkrDGW0ALpqPnLjrFFwBUdmimA==
+  dependencies:
+    use-force-update "^1.0.0"
 
 readable-stream@^2.0.2:
   version "2.3.8"
@@ -5524,6 +5540,19 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-force-update@^1.0.0:
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/use-force-update/-/use-force-update-1.0.11.tgz"
+  integrity sha512-h4SICYgTJHon8w9dFIqdqR1Vrzdgl4YaRfRwhmAh01kBGljzTICanyfaFU8C4etuEfRdYpE+04XX2ZrEhOWKXQ==
+
+use-history@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/use-history/-/use-history-1.4.1.tgz"
+  integrity sha512-uY12M/GI4c2AW/YR/1SLrveP407kLJnsvH42787QeT5PvVB5/TI1SJrPmTreC2dPMjeEywSAeqsXTqRMHl7F9Q==
+  dependencies:
+    react "^16.8.6"
+    reactn "^1.0.0"
 
 use-sync-external-store@^1.0.0, use-sync-external-store@1.2.0:
   version "1.2.0"
