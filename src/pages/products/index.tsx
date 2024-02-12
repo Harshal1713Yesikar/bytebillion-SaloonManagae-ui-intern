@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardHeader, Dialog, FormControl, Grid, IconButton, InputAdornment, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputAdornment, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { updateProductApi } from 'src/store/APIs/Api';
 import { ListAllProductListApi } from 'src/store/APIs/Api';
 import { debounce } from 'lodash'
@@ -75,6 +76,20 @@ const Index = () => {
   const [retail, setRetail] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    // Perform delete action here using rowData
+    setOpen(false);
+  };
+
+  const handleCancelDelete = () => {
+    setOpen(false);
+  };
 
   const [defaultProductValues, setDefaultProductValues] = useState<any>({
     "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
@@ -95,14 +110,14 @@ const Index = () => {
     }
   })
 
-  const [productName, setProductName] = useState('');
-  const [fullPrice, setFullPrice] = useState('');
-  const [sellPrice, setSellPrice] = useState('');
-  const [costPrice, setCostPrice] = useState('');
-  const [productDescription, setDescription] = useState('');
-  const [inStockQuantity, setInStockQuantity] = useState('');
-  const [quantityAlert, setQuantityAlert] = useState('');
-  const [productUsage, setProductUsage] = useState('');
+  // const [productName, setProductName] = useState('');
+  // const [fullPrice, setFullPrice] = useState('');
+  // const [sellPrice, setSellPrice] = useState('');
+  // const [costPrice, setCostPrice] = useState('');
+  // const [productDescription, setDescription] = useState('');
+  // const [inStockQuantity, setInStockQuantity] = useState('');
+  // const [quantityAlert, setQuantityAlert] = useState('');
+  // const [productUsage, setProductUsage] = useState('');
   const [errorName, setErrorName] = useState('');
   const [errorBarcode, setErrorBarcode] = useState('');
   const [errorCostPrice, setErrorCostPrice] = useState('');
@@ -298,6 +313,17 @@ const Index = () => {
           <EditIcon />
         </IconButton>
       )
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'delete',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="delete" onClick={handleDeleteClick}>
+          <DeleteIcon />
+        </IconButton>
+      )
     }
   ]
 
@@ -423,7 +449,7 @@ const Index = () => {
           <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 
             {showAdvancedFilters && (
-              <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }} >
+              <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center', mb: 5 }} >
                 <FormControl sx={{ width: '300px', ml: 2 }} size='small'>
                   <InputLabel id='demo-simple-select-outlined-label'>Select Brand</InputLabel>
                   <Select
@@ -560,7 +586,7 @@ const Index = () => {
           <Grid sx={{ borderBottom: '2px solid lightGray' }}>
             <Grid sx={{ p: 3 }}>
               <Grid sx={{ display: 'flex' }}>
-                <Box sx={{ m: 2, cursor: 'pointer' }} onClick={handleClose}  ><CloseIcon /></Box>
+                <Box sx={{ m: 2, cursor: 'pointer' }}   ><CloseIcon onClick={handleCloseDialogUpdate} /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Update Product</Typography>
               </Grid>
               <Grid item sx={{ display: 'flex' }} >
@@ -575,7 +601,6 @@ const Index = () => {
                   helperText={errorName}
                   name="productName"
                 />
-
                 <TextField
                   sx={{ width: '25ch', m: 1 }}
                   fullWidth
@@ -588,8 +613,8 @@ const Index = () => {
                   error={!!errorBarcode}
                   helperText={errorBarcode}
                   name="Barcode"
-
-                />              </Grid>
+                />
+              </Grid>
               <Grid item sx={{ display: 'flex', width: '100%', maxWidth: '100%' }} xs={12}>
                 <Grid>
                   <TextField
@@ -665,6 +690,21 @@ const Index = () => {
         </Card >
 
       </Dialog >
+      <Dialog open={open} onClose={handleCancelDelete}>
+        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this item?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </>
   )
 }
