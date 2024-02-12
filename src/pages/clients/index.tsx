@@ -17,6 +17,7 @@ import QuickSearchToolbar from 'src/views/table/TableFilter'
 import { ThemeColor } from 'src/@core/layouts/types'
 import { DataGridRowType } from 'src/@fake-db/types'
 import EditIcon from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete'
 
 
 // ** Utils Import
@@ -48,11 +49,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { ListAllClientsApi} from 'src/store/APIs/Api'
-import { CreateClientApi } from 'src/store/APIs/Api'
-import { UpdateClientApi } from 'src/store/APIs/Api'
-import { getSingleClient } from 'src/store/APIs/Api'
+import { ListAllClientsApi,CreateClientApi,getSingleClient,UpdateClientApi,deleteClientApi, updateEmployeeApi, listAllEmployeeApi} from 'src/store/APIs/Api'
+
 import { update } from 'lodash'
+import axios from 'axios'
+import { colorToString } from '@iconify/utils'
 
 
 
@@ -78,6 +79,8 @@ interface defaultValues {
   clientStatus:''
 
 }
+
+
 
 interface defaultClientsValues {
   customerId: ''
@@ -108,8 +111,6 @@ const AddClientSchema = yup.object().shape({
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-
-
 })
 
 
@@ -132,6 +133,9 @@ const AddClientReSchema = yup.object().shape({
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
+    clientGender: yup.string().required(),
+    clientStatus: yup.string().required("")
+
 
 
 })
@@ -189,34 +193,36 @@ const Index = () => {
   const [clientData,setClientData] =useState<any[]>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
   const [isDialogOpenUpdate, setDialogOpenUpdate] = useState(false);
+  const [isDialogOpenDalete,setDialogOpenDelete]=useState(false)
   const [singleClient,setSingleClient] =useState<any[]>([])
-
+  const [deleteClient,setDeleteClient] =useState<boolean>(false)
+  const [deleteClientFunc,setDeleteClientFunc]=useState({})
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
+  const [updateClientId,setUpdateClientId]=useState('')
+ const [clientId,setClientId]=useState<any>('')
   const [defaultClientValues,setDefaultClientValues] =useState<any>({
 
     customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId:'6GZr2',
-    clientId:'',
+    salonId:'dqXUs',
     clientName:'',
     clientPhoneNumber:'',
     clientEmail:'',
     clientGender:'',
     clientStatus:''
-
   })
 
   const [defaultClientReValues,setDefaultClientReValues] =useState<any>({
 
     customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId:'6GZr2',
-    clientId:'',
+    salonId:'dqXUs',
+    clientId:updateClientId,
     clientName:'',
     clientPhoneNumber:'',
     clientEmail:'',
     clientGender:'',
-    clientStatus:''
-
+    clientStatus:'inactive'
   })
+  
 
 
   const columns: GridColDef[] = [
@@ -279,6 +285,22 @@ const Index = () => {
         </Typography>
       )
     },
+    // {
+    //   flex: 0.175,
+    //   minWidth: 150,
+    //   field: 'clientStatus',
+    //   headerName: 'Status',
+    //   renderCell: (params: GridRenderCellParams) => (
+    //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
+    //       {params.row.clientStatus == 'active' ? (
+    //         <CustomChip rounded size='small' skin='light' color='success' label={params.row.clientStatus} />
+    //       ) : (
+    //         <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.clientStatus  } />
+    //       )}
+    //     </Typography>
+    //   )
+    // },
+
     {
       flex: 0.175,
       minWidth: 150,
@@ -286,15 +308,16 @@ const Index = () => {
       headerName: 'Status',
       renderCell: (params: GridRenderCellParams) => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.clientStatus == 'active' ? (
-            <CustomChip rounded size='small' skin='light' color='success' label={params.row.clientStatus} />
-          ) : (
-            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.clientStatus  } />
-          )}
+          <CustomChip
+            rounded
+            size='small'
+            skin='light'
+            color={params.row.clientStatus === 'active' ? 'success' : 'error'}
+            label={params.row.clientStatus}
+          />
         </Typography>
       )
     },
-
     {
       flex: 0.1,
       minWidth: 100,
@@ -305,35 +328,80 @@ const Index = () => {
           <EditIcon />
         </IconButton>
       )
-    }
+    },
 
-  
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'Delete',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="Delete" onClick={()=>handleOpenDialogDelete(params.row)}>
+          <Delete/>
+        </IconButton>
+      )
+    }
   ]
 
   const handleOpenDialogUpdate = (data:any) => {
+    console.log("data",data)
+    setUpdateClientId(data.clientId)
     singleClientDetailsFunc(data)
     setDialogOpenUpdate(true);
   };
-  
+
   const handleCloseDialogUpdate = () => {
     setDialogOpenUpdate(false);
   };
 
 
+
+  const handleDeleteClient = async ()=>{
+    console.log(deleteClientFunc,"deleteClient")
+    try{
+      await deleteClientApi(deleteClientFunc)
+    }catch(err)
+    {
+      console.log(err)
+    }
+   
+  }
+
+
+  const handleOpenDialogDelete = (data:any)=>{
+
+    
+    const deleteClientData={
+      customerId:data.customerId,
+      salonId:data.salonId,
+      clientId:data.clientId,
+      clientStatus:"Inactive"
+    }
+    setDeleteClientFunc(deleteClientData)
+    setDialogOpenDelete(true)
+  }
+
+
+ const handleCloseDialogDelete =(data:any)=>{
+    setDialogOpenDelete(false)
+  }
+
+
+
+
+
   
  const singleClientDetailsFunc = async (data:any) => {
   try {
-    const res: any = await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs', data.clientId)
+    const res: any = await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs',clientId)
     console.log("ress",res.data.data)
-    setSingleClient(res?.data?.data)
+    setSingleClient(res?.data?.clientId)
 
   } catch (error: any) {
     console.log(error)
   }
 }
-// useEffect(() => {
-//   singleClientDetailsFunc()
-// }, [])
+
 
 
 
@@ -342,6 +410,7 @@ const Index = () => {
     const res:any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde','dqXUs') 
     console.log("fatchData",res?.data.data)
     setClientData(res?.data?.data)
+  
   }
   catch(err){
     return err 
@@ -351,6 +420,21 @@ const Index = () => {
   FatchData()
  },[])
 
+
+
+
+ const onUpdateData = async ()=>{
+  try{
+     await updateEmployeeApi(defaultClientReValues)
+     await  FatchData()
+  }
+  catch(err){
+    return(err)
+  }
+ }
+
+
+ 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
     const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
@@ -366,6 +450,8 @@ const Index = () => {
       setFilteredData([])
     }
   }
+
+
 
   const [client, setClient] = useState('')
 
@@ -400,6 +486,11 @@ const Index = () => {
     // Handle saving data or any other logic here
     closeModal()
   }
+
+  const handleClose = ()=>{
+    
+  }
+
 
   const router = useRouter()
   const handleCustomer = () => {
@@ -461,15 +552,14 @@ const Index = () => {
 
 console.log(clientsValues(),"clientsValues")
 
-//  const onSubmit = ((data:any)=>{
-//   console.log("abs",data)
-//   CreateClientApi(data)
-//  })
+
+
 
  const onSubmit = async () => {
     try {
       await CreateClientApi(studentValues())
-      console.log(studentValues(), "defaultClientValues")
+      console.log(studentValues(),"defaultClientValues")
+      await FatchData()
     }
     catch (err) {
       console.log("error", err)
@@ -479,21 +569,20 @@ console.log(clientsValues(),"clientsValues")
 
 
 
-
-//  const ClientSubmit = ((data:any)=>{
-//   console.log("AAAAA",data)
-//   updateEmployeeApi(data)
-//  })
-
- const ClientSubmit = async () => {
+ const updateClientSubmit = async () => {
+  console.log(clientsValues(),"fsdjfklsjd")
+  
     try {
-      await UpdateClientApi(clientsValues())
-      console.log(clientsValues(), "ADC")
+      await UpdateClientApi({...clientsValues(),clientId:updateClientId})
+      console.log(clientsValues(), "DDSS")
+      // singleClientDetailsFunc()
     }
     catch (err) {
       console.log("error", err)
     }
+    
   }
+
 
 
 
@@ -638,7 +727,11 @@ const handleChange=(e:any)=>{
                       </FormControl>
                     </Grid>
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleSave}>
+                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}
+                    onClick={() => {
+                     handleClose()
+                  
+                    }}>
                     Submit
                   </Button>
                 
@@ -679,8 +772,9 @@ const handleChange=(e:any)=>{
     <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
     {isOpen &&
         <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
+        <DialogTitle>Edit Client</DialogTitle>  
           <CardContent>
-            <form onSubmit={handleClientReSubmit(ClientSubmit)}>
+            <form onSubmit={handleClientReSubmit(updateClientSubmit)}>
               <Grid container spacing={5}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
@@ -690,8 +784,9 @@ const handleChange=(e:any)=>{
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <TextField
-                          value={value ? value : singleClient.clientName}
+                          // value={value ? value : singleClient.clientName}
                           // value={singleClient.clientName}
+                          value={value}
                           label='First Name'
                           onChange={onChange}
                           placeholder='First Name'
@@ -717,8 +812,8 @@ const handleChange=(e:any)=>{
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           type='Email'
-                          // value={value}
-                      value={value ?value:singleClient.clientEmail}
+                          value={value}
+                          //  value={value ?value:singleClient.clientEmail}
 
                           onChange={onChange}
                           label='Email '
@@ -745,7 +840,8 @@ const handleChange=(e:any)=>{
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           type='number'
-                          value={value ?value:singleClient?.clientPhoneNumber}
+                          // value={value ?value:singleClient?.clientPhoneNumber}
+                          value = {value}
                           onChange={onChange}
                           label='MobileNumber'
                           placeholder='Type Here'
@@ -759,11 +855,12 @@ const handleChange=(e:any)=>{
                   </FormControl>
                 </Grid>
 
+                
                 <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel
                           id='validation-basic-select'
-                          error={Boolean(ClientErrors.clientGender)}
+                          error={Boolean(ClientReErrors.clientGender)}
                           htmlFor='validation-basic-select'
                         >
                           Gender*
@@ -775,15 +872,18 @@ const handleChange=(e:any)=>{
                           render={({ field: { value, onChange } }) => (
                             <Select
                               value={value}
-                              label='Country'
+                              label='Gender'
+                              
                               onChange={onChange}
                               error={Boolean(ClientReErrors.clientGender)}
                               labelId='validation-basic-select'
                               aria-describedby='validation-basic-select'
                             >
-                              {/* <MenuItem value=''>Select</MenuItem> */}
+                              <MenuItem value=''>Select</MenuItem>
                               <MenuItem value='Male'>Male</MenuItem>
-                              <MenuItem value='Canada'>Female</MenuItem>
+                              <MenuItem value='Female'>Female</MenuItem>
+                              <MenuItem value='Female'>Other</MenuItem>
+
                               
                             </Select>
                           )}
@@ -794,9 +894,9 @@ const handleChange=(e:any)=>{
                           </FormHelperText>
                         )}
                       </FormControl>
-                    </Grid>
+                </Grid>
                     
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel
                           id='validation-basic-select'
@@ -812,14 +912,13 @@ const handleChange=(e:any)=>{
                           render={({ field: { value, onChange } }) => (
                             <Select
                               value={value}
-                              label='clientStatus'
-                              
+                              label='Status'
                               onChange={onChange}
                               error={Boolean(ClientReErrors.clientStatus)}
                               labelId='validation-basic-select'
                               aria-describedby='validation-basic-select'
                             >
-                              {/* <MenuItem value=''>Select</MenuItem> */}
+                              <MenuItem value=''>Select</MenuItem>
                               <MenuItem value='Active'>Active</MenuItem>
                               <MenuItem value='In Active'>In Active</MenuItem>
                               
@@ -832,10 +931,12 @@ const handleChange=(e:any)=>{
                           </FormHelperText>
                         )}
                       </FormControl>
-                    </Grid>
+                </Grid> */}
+
+
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={ClientSubmit} onClick={handleSave}>
-                    Submit
+                  <Button size='large' type='submit' variant='contained' onSubmit={updateClientSubmit} onClick={handleSave}>
+                    Update 
                   </Button>
                 
                 </Grid>
@@ -848,6 +949,40 @@ const handleChange=(e:any)=>{
         </Card >
       }
       </Dialog >
+
+
+      <Dialog maxWidth="md" sx={{overflow:'auto'}} open={isDialogOpenDalete} onClose={handleCloseDialogDelete}>
+       <Grid>
+
+       <DialogContent sx={{ pb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
+              {/* <Icon icon='bx:error-circle' fontSize='5.5rem' style={{ marginTop: '-30px' }} /> */}
+              <Typography variant='h4' sx={{ color: 'text.secondary' }}>
+                Are you sure?
+              </Typography>
+            </Box>
+            <Typography sx={{ fontSize: '1.125rem', mb: 6 }}>Are you sure you want to delete this Client!</Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'right' }}>
+          <Button variant='outlined' color='secondary'  onClick={() => handleClose()}>
+            Cancel
+          </Button>
+          <Button
+            variant='contained'
+            sx={{ mr: 1.5 }}
+            onClick={() => {
+              handleDeleteClient();
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+       </Grid>
+
+        
+      </Dialog>
     </>  
   )
 }
