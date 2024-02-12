@@ -9,7 +9,7 @@ import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { DataGrid, GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { updateProductApi } from 'src/store/APIs/Api';
+import { deleteProductApi, updateProductApi } from 'src/store/APIs/Api';
 import { ListAllProductListApi } from 'src/store/APIs/Api';
 import { debounce } from 'lodash'
 import * as yup from 'yup';
@@ -76,39 +76,11 @@ const Index = () => {
   const [retail, setRetail] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
-  const handleDeleteClick = () => {
-    setOpen(true);
-  };
 
-  const handleConfirmDelete = () => {
-    // Perform delete action here using rowData
-    setOpen(false);
-  };
 
-  const handleCancelDelete = () => {
-    setOpen(false);
-  };
 
-  const [defaultProductValues, setDefaultProductValues] = useState<any>({
-    "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    "salonId": "NRImf",
-    "productId": "",
-    "stockId": "",
-    "brandId": "",
-    "productName": "",
-    "productStatus": "",
-    "Barcode": "",
-    "costPrice": "",
-    "fullPrice": "",
-    "sellPrice": "",
-    "productDescription": "",
-    "vendorName": [],
-    "availableStock": {
-      "retailStock": ""
-    }
-  })
 
   // const [productName, setProductName] = useState('');
   // const [fullPrice, setFullPrice] = useState('');
@@ -123,15 +95,34 @@ const Index = () => {
   const [errorCostPrice, setErrorCostPrice] = useState('');
   const [errorFullPrice, setErrorFullPrice] = useState('');
   const [errorSellPrice, setErrorSellPrice] = useState('');
-  const [updateSingleData, setUpdateSingleData] = useState<any>({});
+  const [updateSingleData, setUpdateSingleData] = useState<any>({
 
+    "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    "salonId": "NRImf",
+    "productId": "",
+    "stockId": "",
+    "brandId": "",
+    "productName": " ",
+    "productStatus": "",
+    "Barcode": "",
+    "costPrice": "",
+    "fullPrice": "",
+    "sellPrice": "",
+    "productDescription": " ",
+    "vendorName": [],
+    "availableStock": {
+      "retailStock": ""
+    }
+
+  });
+  const [deleteClientFunc, setDeleteClientFunc] = useState({})
   const handleCommon = (e: any) => {
-    setDefaultProductValues({ ...defaultProductValues, [e.target.name]: e.target.value });
+    setUpdateSingleData({ ...updateSingleData, [e.target.name]: e.target.value });
     // Clear the error message for the corresponding field
     switch (e.target.name) {
       case 'productName':
         setErrorName('');
-        break;
+        break
       case 'Barcode':
         setErrorBarcode('');
         break;
@@ -149,8 +140,6 @@ const Index = () => {
         break;
     }
   }
-
-
 
 
   const handleClose = () => {
@@ -219,6 +208,36 @@ const Index = () => {
     });
     setDialogOpenUpdate(true);
   };
+
+
+  const handleDeleteProduct = async () => {
+    console.log(deleteClientFunc, "deleteClient")
+    try {
+      await deleteProductApi(deleteClientFunc)
+    } catch (err) {
+      console.log(err)
+    }
+
+  }
+
+
+  const handleOpenDialogDelete = (data: any) => {
+
+
+    const deleteProductData = {
+      customerId: data.customerId,
+      salonId: data.salonId,
+      clientId: data.clientId,
+      clientStatus: "Inactive"
+    }
+    setDeleteClientFunc(deleteProductData)
+    setOpenDialogDelete(true)
+  }
+
+  const handleCloseDialogDelete = (data: any) => {
+    setOpenDialogDelete(false)
+  }
+
 
   const handleCloseDialogUpdate = () => {
     setDialogOpenUpdate(false);
@@ -294,15 +313,26 @@ const Index = () => {
         </Typography>
       )
     },
+
     {
-      flex: 0.2,
-      minWidth: 140,
-      field: 'empty',
-      headerName: 'empty',
+      flex: 0.175,
+      minWidth: 150,
+      field: 'productStatus',
+      headerName: 'Status',
       renderCell: (params: GridRenderCellParams) => (
-        <CustomChip rounded size='small' skin='light' color="primary" label="Current" />
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          <CustomChip
+            rounded
+            size='small'
+            skin='light'
+            color={params.row.productStatus === 'active' ? 'success' : 'error'}
+            label={params.row.productStatus}
+          />
+        </Typography>
       )
     },
+
+
     {
       flex: 0.1,
       minWidth: 100,
@@ -320,7 +350,7 @@ const Index = () => {
       field: 'delete',
       headerName: 'Delete',
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton aria-label="delete" onClick={handleDeleteClick}>
+        <IconButton aria-label="delete" onClick={() => handleOpenDialogDelete(params.row)}>
           <DeleteIcon />
         </IconButton>
       )
@@ -360,11 +390,11 @@ const Index = () => {
 
   const handleSubmit = async () => {
     try {
-      await validationSchema.validate(defaultProductValues, { abortEarly: false });
-      console.log("defaultProductValues", defaultProductValues)
-      await updateProductApi(defaultProductValues);
-      ProductAllListData()
-      setIsOpen(false);
+      await validationSchema.validate(updateSingleData, { abortEarly: false });
+      console.log("defaultProductValues", updateSingleData)
+      await updateProductApi(updateSingleData);
+      await ProductAllListData()
+      handleCloseDialogUpdate()
 
     } catch (error) {
       error.inner.forEach(err => {
@@ -390,8 +420,6 @@ const Index = () => {
       });
     }
   };
-
-
 
   return (
     <>
@@ -678,11 +706,9 @@ const Index = () => {
           <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
             {/* <Button variant="contained" onClick={{debouncedSubmit}>Save</Button> */}
             <Button variant="contained" onClick={() => {
-
+              handleClose
               debouncedSubmit()
               ProductAllListData()
-
-
 
             }}>Save</Button>
 
@@ -690,16 +716,16 @@ const Index = () => {
         </Card >
 
       </Dialog >
-      <Dialog open={open} onClose={handleCancelDelete}>
+      <Dialog open={openDialogDelete} onClose={handleCloseDialogDelete}>
         <DialogTitle>Delete Confirmation</DialogTitle>
         <DialogContent>
           Are you sure you want to delete this item?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">
+          <Button onClick={handleCloseDialogDelete} color="primary">
             No
           </Button>
-          <Button onClick={handleConfirmDelete} color="primary">
+          <Button onClick={handleDeleteProduct} color="primary">
             Yes
           </Button>
         </DialogActions>

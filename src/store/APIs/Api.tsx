@@ -458,3 +458,17 @@ export const updateProductApi = async (productDetailsforApi: any) => {
     return err;
   }
 }
+
+export const deleteProductApi = async (productDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/deleteProduct`,
+      productDetailforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
