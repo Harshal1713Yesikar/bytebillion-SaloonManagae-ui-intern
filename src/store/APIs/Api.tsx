@@ -472,3 +472,19 @@ export const deleteProductApi = async (productDetailforApi: any) => {
     return err;
   }
 }
+
+
+export const VendorCreateApi = async (vendorDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_VENDOR_API}`,
+      vendorDetailsforApi,
+      { headers }
+    );
+
+    console.log("success vendor", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}

@@ -163,17 +163,13 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0])
     if (order !== 0) return order
-
     return a[1] - b[1]
   })
-
   return stabilizedThis.map(el => el[0])
 }
 
@@ -206,13 +202,12 @@ const columns: GridColDef[] = [
     // hide: hideNameColumn,
     renderCell: (params: GridRenderCellParams) => {
       const { row } = params
-
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(params)}
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.serviceName.charAt(0).toUpperCase() + row.serviceName.slice(1)}
+              {row.serviceName.toUpperCase() + row.serviceName.slice(1)}
             </Typography>
           </Box>
         </Box>
@@ -237,7 +232,7 @@ const columns: GridColDef[] = [
     headerName: 'Staff Name',
     renderCell: (params: GridRenderCellParams) => (
       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        {params.selectStaff.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
       </Typography>
     )
   },
@@ -726,7 +721,7 @@ const Service = () => {
                             <DialogContent>
                               <TextField
                                 id='name'
-                                autoFocus 
+                                autoFocus
                                 fullWidth
                                 type='Name'
                                 label='Name'

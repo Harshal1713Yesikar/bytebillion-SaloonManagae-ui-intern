@@ -139,75 +139,6 @@ const escapeRegExp = (value: string) => {
 
 
 
-// const columns: GridColumns = [
-//   {
-//     flex: 0.275,
-//     minWidth: 290,
-//     field: 'clientName',
-//     headerName: 'Name',
-//     renderCell: (params: GridRenderCellParams) => {
-//       const { row } = params
-
-//       return (
-//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//           {renderClient(params)}
-//           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-//             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-//               {row.clientName}
-//             </Typography>
-//             <Typography noWrap variant='caption'>
-//               {row.clientEmail}
-//             </Typography>
-//           </Box>
-//         </Box>
-//       )
-//     }
-//   },
-//   // {
-//   //   flex: 0.2,
-//   //   minWidth: 120,
-//   //   headerName: 'Date',
-//   //   field: 'start_date',
-//   //   renderCell: (params: GridRenderCellParams) => (
-//   //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//   //       {params.row.start_date}
-//   //     </Typography>
-//   //   )
-//   // },
-//   {
-//     flex: 0.2,
-//     minWidth: 110,
-//     field: 'clientPhoneNumber',
-//     headerName: 'Phone Number',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.clientPhoneNumber}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.125,
-//     field: 'clientId',
-//     minWidth: 80,
-//     headerName: 'Client id',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.clientId}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.2,
-//     minWidth: 140,
-//     field: 'clientStatus',
-//     headerName: 'Status',
-//     renderCell: (params: GridRenderCellParams) => {
-//       const status = statusObj[params.row.clientStatus]
-
-//       return <CustomChip rounded size='small' skin='light' color={status.color} label={status.title} />
-//     }
-//   }
-// ]
 
 const Index = () => {
   // ** States
@@ -389,9 +320,6 @@ const Index = () => {
   }
 
   const handleImportSubmit = () => {
-    // Handle import logic here using the selected file
-    // You can dispatch an action or call a function to handle the import
-    // Remember to close the dialog after import is done
     handleDialogClose()
   }
 

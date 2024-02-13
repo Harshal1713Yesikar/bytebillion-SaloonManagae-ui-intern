@@ -54,7 +54,6 @@ const renderClient = (params: GridRenderCellParams) => {
   )
 }
 
-
 const Index = () => {
   // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
@@ -70,17 +69,8 @@ const Index = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
   const [productList, setProductList] = useState<DataGridRowType[]>([])
-  const [selectedRowId, setSelectedRowId] = useState(null);
-  const [Brand, setBrand] = useState('');
-  const [productType, setProductType] = useState('');
-  const [retail, setRetail] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
-
-
-
-
 
   // const [productName, setProductName] = useState('');
   // const [fullPrice, setFullPrice] = useState('');
@@ -96,7 +86,6 @@ const Index = () => {
   const [errorFullPrice, setErrorFullPrice] = useState('');
   const [errorSellPrice, setErrorSellPrice] = useState('');
   const [updateSingleData, setUpdateSingleData] = useState<any>({
-
     "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
     "salonId": "NRImf",
     "productId": "",
@@ -113,7 +102,6 @@ const Index = () => {
     "availableStock": {
       "retailStock": ""
     }
-
   });
   const [deleteClientFunc, setDeleteClientFunc] = useState({})
   const handleCommon = (e: any) => {
@@ -148,7 +136,6 @@ const Index = () => {
 
   const debouncedSubmit = debounce(() => {
     handleSubmit()
-
   }, 1000)
 
   const handleCheckboxChange = (checkboxId: string) => {
@@ -199,7 +186,6 @@ const Index = () => {
     setDialogOpen(false);
   };
 
-
   const handleEditProduct = (rowData: DataGridRowType) => {
     console.log(rowData, "rowData");
     setUpdateSingleData({
@@ -209,21 +195,17 @@ const Index = () => {
     setDialogOpenUpdate(true);
   };
 
-
   const handleDeleteProduct = async () => {
-    console.log(deleteClientFunc, "deleteClient")
+    console.log(deleteClientFunc, "deleteClient");
     try {
-      await deleteProductApi(deleteClientFunc)
+      await deleteProductApi(deleteClientFunc);
+      handleCloseDialogDelete();
     } catch (err) {
-      console.log(err)
+      console.error("Error deleting product:", err);
     }
-
-  }
-
+  };
 
   const handleOpenDialogDelete = (data: any) => {
-
-
     const deleteProductData = {
       customerId: data.customerId,
       salonId: data.salonId,
@@ -234,10 +216,9 @@ const Index = () => {
     setOpenDialogDelete(true)
   }
 
-  const handleCloseDialogDelete = (data: any) => {
+  const handleCloseDialogDelete = () => {
     setOpenDialogDelete(false)
   }
-
 
   const handleCloseDialogUpdate = () => {
     setDialogOpenUpdate(false);
@@ -247,18 +228,22 @@ const Index = () => {
   const handleInventory = () => {
     inventory.push('../products/inventoryReturn');
   }
+
   const returnOrder = useRouter();
   const handleReturnOrder = () => {
     returnOrder.push('../products/returnOrder');
   }
+
   const productOrder = useRouter();
   const handleProductOrder = () => {
     productOrder.push('../products/productOrder');
   }
+
   const vendor = useRouter();
   const handlevendor = () => {
-    vendor.push('../service/service');
+    vendor.push('../vendor/vendor');
   }
+
   const columns: GridColumns = [
     {
       flex: 0.275,
@@ -313,7 +298,6 @@ const Index = () => {
         </Typography>
       )
     },
-
     {
       flex: 0.175,
       minWidth: 150,
@@ -331,8 +315,6 @@ const Index = () => {
         </Typography>
       )
     },
-
-
     {
       flex: 0.1,
       minWidth: 100,
@@ -356,7 +338,6 @@ const Index = () => {
       )
     }
   ]
-
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
     const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
@@ -372,7 +353,6 @@ const Index = () => {
       setFilteredData([])
     }
   }
-
   const ProductAllListData = async () => {
     try {
       const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
@@ -387,7 +367,6 @@ const Index = () => {
     ProductAllListData()
   }, [])
 
-
   const handleSubmit = async () => {
     try {
       await validationSchema.validate(updateSingleData, { abortEarly: false });
@@ -395,7 +374,6 @@ const Index = () => {
       await updateProductApi(updateSingleData);
       await ProductAllListData()
       handleCloseDialogUpdate()
-
     } catch (error) {
       error.inner.forEach(err => {
         switch (err.path) {
