@@ -176,6 +176,7 @@ function MyTabs() {
   const currentTab = routeMatch?.pattern?.path
 }
 
+
 const AddCategory = () => {
   const [defaultStudentValues, setDefaultStudentValues] = useState({
     dob: null,
@@ -309,9 +310,7 @@ const AddCategory = () => {
         </Card>
 
       </Grid>
-      <Card>
-        <CardContent sx={{ fontWeight: "bold" }} >Add Group</CardContent>
-      </Card>
+    
       <Button variant='contained' onClick={handleSubmit}>Add</Button>
     </Grid>
   )

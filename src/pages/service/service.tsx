@@ -18,7 +18,7 @@ import {
 import React, { Fragment, useEffect, useState } from 'react'
 import { MouseEvent } from 'react'
 import Dashboard from '../dashboard'
-import { ArrowDropDownIcon } from '@mui/x-date-pickers'
+import { ArrowDropDownIcon, DatePicker, DateTimePicker } from '@mui/x-date-pickers'
 import SearchIcon from '@mui/icons-material/Search'
 import { getInitials } from 'src/@core/utils/get-initials'
 import CustomChip from 'src/@core/components/mui/chip'
@@ -32,6 +32,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import { visuallyHidden } from '@mui/utils'
 import { alpha } from '@mui/material/styles'
+import toast from 'react-hot-toast'
 
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
@@ -48,7 +49,7 @@ import Select from '@mui/material/Select'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import TimePicker from '@mui/lab/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import {
   AddServicesApi,
@@ -68,6 +69,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { Router } from 'react-router-dom'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
 type Order = 'asc' | 'desc'
 
@@ -336,7 +338,7 @@ const orgSelected = (organization: any) => {
 }
 
 const CategorySelected = async (organization: any) => {
- await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
+  await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
     // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
     // setLoading(false)
   })
@@ -376,9 +378,7 @@ const Service = () => {
       console.log('ABC', err)
     }
   }
-  useEffect(() => {
-    data()
-  }, [])
+  useEffect(() => {}, [])
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -565,6 +565,10 @@ const Service = () => {
   const onSubmit = (data: any) => {
     AddServicesApi(data)
     setDefaultStudentValues(data)
+    toast.success('New Service created successfully',{
+      position: "bottom-right"
+  });
+    
 
     console.log('kvjvb', data)
   }
@@ -578,6 +582,8 @@ const Service = () => {
       console.log('error', err)
     }
   }
+
+  
   const handleInputChange = (key: any, value: any) => {
     setCategoryData({ ...categoryData, [key]: value })
   }
@@ -722,17 +728,6 @@ const Service = () => {
                             +
                           </Button>
                           <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                            {/* <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
-                            <DialogContent>
-                              <TextField
-                                id='name'
-                                autoFocus 
-                                fullWidth
-                                type='Name'
-                                label='Name'
-                              />
-                            </DialogContent> */}
-
                             <Grid>
                               <Card>
                                 <CardHeader title='Add Category' />
@@ -778,8 +773,6 @@ const Service = () => {
                                 </CardContent>
                               </Card>
                             </Grid>
-
-                            {/* <Button variant='outlined' color='secondary' type='submit' onSubmit={handleSubmit}> */}
                             <Button variant='outlined' color='secondary' type='submit' onClick={handleSubmit}>
                               Submit
                             </Button>
@@ -863,6 +856,11 @@ const Service = () => {
                               )}
                             </FormControl>
                           </Grid>
+                          
+
+                         
+
+                        
 
                           <Grid item xs={12} sm={6}>
                             <FormControl fullWidth>

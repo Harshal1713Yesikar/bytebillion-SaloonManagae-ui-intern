@@ -22,7 +22,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
-
+import { staffRegistrationApi } from 'src/store/APIs/Api'
 // ** Third Party Imports
 import toast from 'react-hot-toast'
 import DatePicker from 'react-datepicker'
@@ -42,37 +42,34 @@ import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react
 import { StaticRouter } from 'react-router-dom/server'
 import { Box, Typography } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-import { staffRegistrationApi } from 'src/store/APIs/Api'
-import { position } from 'stylis'
+import { createNewCategory } from 'src/store/APIs/Api'
 interface State {
   password: string
   showPassword: boolean
 }
 
 interface FormInputs {
-  userCustomerId: '',
-  customerId: '',
-  salonId: '',
-  employeeName: '',
+  userCustomerId: ''
+  customerId: ''
+  salonId: ''
+  employeeName: ''
   // "employeeId": "",
-  employeeEmail: '',
+  employeeEmail: ''
   // employeeGender: '',
-  employeePhone: '',
-  employeeAddress: '',
+  employeePhone: ''
+  employeeAddress: ''
   // employeeDOB: null,
-  employeeDesignation: '',
-  employeeJoiningDate: null,
-  employeeworkingHours: '',
-  employeeStatus: '',
+  employeeDesignation: ''
+  employeeJoiningDate: null
+  employeeworkingHours: ''
+  employeeStatus: ''
   // employeeBankName: '',
   // employeeAccountNo: '',
   // employeeIfsceCode: ''
-  employeeFixedSalary: '',
-  emoloyeeHourlySalary: '',
+  employeeFixedSalary: ''
+  emoloyeeHourlySalary: ''
   employeeShiftHourly: ''
-
 }
-
 
 const AddStaffSchema = yup.object().shape({
   employeeName: yup
@@ -80,51 +77,47 @@ const AddStaffSchema = yup.object().shape({
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-  employeeEmail: yup
+  lastName: yup
     .string()
-    .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
+    .matches(/^[A-Z a-z]+$/)
+    .max(25)
+    .required(),
+  // email: yup.string().email().required(),
+  email: yup
+    .string()
+    .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
     .email()
     .required(),
   // password: yup.string().min(8).required(),
-  // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
-
-  employeeJoiningDate: yup.date().required(),
-
-  employeePhone: yup
+  password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+  dob: yup.date().required(),
+  doJ: yup.date().required(),
+  mobileNo: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-
-  emoloyeeHourlySalary: yup
+  hourlyRate: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Required,must contain only numbers')
+    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
     .required('Fixed salary is required'),
-  employeeFixedSalary: yup
+  fixedSalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Required,must contain only numbers'),
-
-  employeeworkingHours: yup
+    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .required('Fixed salary is required'),
+  workingDay: yup
     .string()
-    .max(2, 'Required, must be at most 2 characters')
+    .max(2, 'Fixed Day must be at most 2 characters')
     .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
-
-  employeeShiftHourly: yup
-    .string()
-    .max(2, 'Required must be at most 2 characters')
-    .matches(/^\d+$/, 'This field is required')
-    .required('Fixed salary is required'),
-
-  // staffpermission: yup.string(),
-  employeeDesignation: yup.string().required().max(100),
-  employeeAddress: yup.string().required().max(100),
-
+  staffpermission: yup.string(),
+  designation: yup.string().required().max(100),
+  gender: yup.string().required('Gender Permission is required'),
+  staffPermission: yup.string().required('Staff Permission is required')
 })
-
 
 interface CustomInputProps {
   value: DateType
@@ -134,25 +127,25 @@ interface CustomInputProps {
 }
 
 const defaultValues = {
-  customerId: "",
-  salonId: "",
-  employeeName: '',
-  employeeEmail: '',
-  // employeeGender: '',
-  employeePhone: '',
-  employeeAddress: '',
-  // employeeDOB: null,
-  employeeDesignation: '',
-  employeeJoiningDate: null,
-  employeeworkingHours: '',
-  employeeStatus: '',
-  // employeeBankName: '',
-  // employeeAccountNo: '',
-  // employeeIfsceCode: '',
-  employeeFixedSalary: '',
-  emoloyeeHourlySalary: '',
-  employeeShiftHourly: ''
-}
+    customerId: "",
+    salonId: "",
+    employeeName: '',
+    employeeEmail: '',
+    // employeeGender: '',
+    employeePhone: '',
+    employeeAddress: '',
+    // employeeDOB: null,
+    employeeDesignation: '',
+    employeeJoiningDate: null,
+    employeeworkingHours: '',
+    employeeStatus: '',
+    // employeeBankName: '',
+    // employeeAccountNo: '',
+    // employeeIfsceCode: '',
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
+  }
 
 const CustomInput = forwardRef(({ ...props }: CustomInputProps, ref) => {
   return <TextField inputRef={ref} {...props} sx={{ width: '100%' }} />
@@ -190,13 +183,13 @@ function MyTabs() {
   const currentTab = routeMatch?.pattern?.path
 }
 
-const CreateStaff = () => {
-  const [open, setOpen] = useState(false)
-  const [defaultEmployeeValues, setDefaultStudentValues] = useState<any>({
-
-    customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+const AddEmployeePage = () => {
+  const [checked, setChecked] = useState(true)
+  const [defaultEmployeeValues, setDefaultEmployeeValues] = useState({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'E7uqn',
     employeeName: '',
+    // "employeeId": "",
     employeeEmail: '',
     // employeeGender: '',
     employeePhone: '',
@@ -208,7 +201,7 @@ const CreateStaff = () => {
     employeeStatus: '',
     // employeeBankName: '',
     // employeeAccountNo: '',
-    // employeeIfsceCode: '',
+    // employeeIfsceCode: ''
     employeeFixedSalary: '',
     emoloyeeHourlySalary: '',
     employeeShiftHourly: ''
@@ -219,10 +212,6 @@ const CreateStaff = () => {
     jason: false,
     antoine: false
   })
-
-  const handleClose=()=>{
-    setOpen(true)
-  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -240,30 +229,45 @@ const CreateStaff = () => {
     showPassword: false
   })
 
-
   const handleClickShowPassword = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
   // const onSubmit = () => toast.success('Form Submitted')
   const onSubmit = (data: any) => {
-    console.log('Data', data);
-      toast.success('New employee created successfully',{
-        position: "bottom-right"
-    });
-    
-    console.log(data)
-    staffRegistrationApi(data)
+    console.log('Form Data', data)
+    toast.success('Form Submitted')
   }
 
 
 
-  const [checked, setChecked] = useState(true)
+  const [categoryData, setCategoryData] = useState({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    serviceCategoryName: '',
+    employeeName: '',
+    // "employeeId": "",
+    employeeEmail: '',
+    // employeeGender: '',
+    employeePhone: '',
+    employeeAddress: '',
+    // employeeDOB: null,
+    employeeDesignation: '',
+    employeeJoiningDate: null,
+    employeeworkingHours: '',
+    employeeStatus: '',
+    // employeeBankName: '',
+    // employeeAccountNo: '',
+    // employeeIfsceCode: ''
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
+  })
 
   const {
-    reset: studentReset,
+    reset: EmployeeReset,
     control,
-    getValues: studentValues,
+    getValues: EmployeeValues,
     handleSubmit: handleStaffSubmit,
     setValue,
     formState: { errors: StaffErrors }
@@ -273,11 +277,23 @@ const CreateStaff = () => {
   })
 
 
+  const handleSubmit = async () => {
+    try {
+      await staffRegistrationApi(EmployeeValues())
+      console.log(EmployeeValues(), 'emData')
+    } catch (err) {
+      console.log('error', err)
+    }
+  }
+
+  const handleInputChange = (key: any, value: any) => {
+    setCategoryData({ ...categoryData, [key]: value })
+  }
   return (
     <Grid>
       <Grid>
         <Card>
-          <CardHeader title='Add Employee' sx={{ fontWeight: '700', fontSize: "20" }} />
+          <CardHeader title='Add Employee' />
           <Router>
             <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
           </Router>
@@ -293,9 +309,15 @@ const CreateStaff = () => {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           value={value}
-                          label='First Name'
-                          onChange={onChange}
-                          placeholder='First Name'
+                          label='employeeName'
+                          onChange={e => {
+                            onChange(e)
+                            setCategoryData(prevData => ({
+                              ...prevData,
+                              employeeName: e.target.value
+                            }))
+                          }}
+                          placeholder='Type Here'
                           error={Boolean(StaffErrors.employeeName)}
                           aria-describedby='validation-basic-first-name'
                         />
@@ -307,7 +329,8 @@ const CreateStaff = () => {
                       </FormHelperText>
                     )}
                   </FormControl>
-                </Grid> 
+                </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
@@ -399,7 +422,6 @@ const CreateStaff = () => {
                         <TextField
                           type='number'
                           value={value}
-
                           onChange={onChange}
                           label='MobileNumber'
                           placeholder='Type Here'
@@ -434,9 +456,7 @@ const CreateStaff = () => {
                       )}
                     />
                     {StaffErrors.emoloyeeHourlySalary && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-
-                      </FormHelperText>
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'></FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -462,9 +482,7 @@ const CreateStaff = () => {
                       )}
                     />
                     {StaffErrors.employeeFixedSalary && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-
-                      </FormHelperText>
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'></FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -492,7 +510,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <Controller
                       name='employeeShiftHourly'
@@ -513,9 +531,7 @@ const CreateStaff = () => {
                       )}
                     />
                   </FormControl>
-                </Grid>
-
-
+                </Grid> */}
 
                 <Grid item xs={12}>
                   <FormControl fullWidth>
@@ -542,17 +558,15 @@ const CreateStaff = () => {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleClose}>
-                    Submit
-                  </Button>
-                </Grid>
               </Grid>
             </form>
           </CardContent>
         </Card>
       </Grid>
+      <Button variant='contained' onClick={handleSubmit}>
+        Submit
+      </Button>
     </Grid>
   )
 }
-export default CreateStaff
+export default AddEmployeePage
