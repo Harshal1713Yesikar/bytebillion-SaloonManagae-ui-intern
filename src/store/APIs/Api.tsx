@@ -1,13 +1,6 @@
-import React from 'react'
 import axios from 'axios'
 import headers from './Headers'
-import { createAsyncThunk } from '@reduxjs/toolkit'
 
-const Api = () => {
-  return <div>Api</div>
-}
-
-export default Api
 
 export async function acceptInvitation(params: any) {
   try {
@@ -481,8 +474,35 @@ export const VendorCreateApi = async (vendorDetailsforApi: any) => {
       vendorDetailsforApi,
       { headers }
     );
-
     console.log("success vendor", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export async function ListAllVendorListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/getAllVendor?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
+    console.log("vendor Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
+
+export const updateVendorApi = async (vendorDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/updateVendor`,
+      vendorDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
     return res.data;
   } catch (err) {
     return err;

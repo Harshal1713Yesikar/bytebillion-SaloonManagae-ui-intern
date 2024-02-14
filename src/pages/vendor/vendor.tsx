@@ -1,5 +1,5 @@
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Menu, MenuItem, TextField, Typography } from '@mui/material'
-import React, { useState, MouseEvent, ChangeEvent } from 'react'
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import React, { useState, MouseEvent, ChangeEvent, useEffect } from 'react'
 import Dashboard from '../dashboard'
 import { ArrowDropDownIcon } from '@mui/x-date-pickers'
 import CloseIcon from '@mui/icons-material/Close';
@@ -10,14 +10,36 @@ import { ThemeColor } from 'src/context/types';
 import { getInitials } from 'src/@core/utils/get-initials'
 import { DataGridRowType } from 'src/@fake-db/types';
 import QuickSearchToolbar from 'src/views/table/TableFilter';
-import { VendorCreateApi } from 'src/store/APIs/Api';
-
+import { ListAllVendorListApi, VendorCreateApi, updateVendorApi } from 'src/store/APIs/Api';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 interface StatusObj {
   [key: number]: {
     title: string
     color: ThemeColor
   }
 }
+
+interface FormInputs {
+  customerId: string
+  salonId: string
+
+  clientName: string
+  clientPhoneNumber: string
+  clientEmail: string
+  clientGender: string
+  clientStatus: string
+  vendorName: string,
+  phoneNumber:string,
+  address:string,
+  email : string,
+  vendorCertificate:[{
+      certificateName:string,
+      certificateImage:string
+  }]
+
+}
+
 
 const renderClient = (params: GridRenderCellParams) => {
   const { row } = params
@@ -61,8 +83,42 @@ const Vendor = () => {
   const [data] = useState<DataGridRowType[]>([])
   const [pageSize, setPageSize] = useState<number>(7)
   const [searchText, setSearchText] = useState<string>('')
-  const [clientData, setClientData] = useState<any[]>([])
+  const [vendorData, setVendorData] = useState<any[]>([])
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
+  const [formData, setFormData] = useState({
+    "customerId":"099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    "salonId":"NRImf",
+    "vendorName": "",
+    "phoneNumber":"",
+    "address":"",
+    "email" : "",
+    "vendorCertificate":[{
+        "certificateName":"",
+        "certificateImage":""
+    }]
+  });
+
+  const handleChange = (e:any) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+    }));
+  };
+
+  const onSubmitVendor = async () => {
+    try {
+      const res = await VendorCreateApi(formData);
+      console.log("success vendor", res);
+    } catch (err) {
+      console.error("Error creating vendor", err);
+      // Optionally, you can handle the error here
+    }
+  };
+
+
+
+
+
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -99,9 +155,19 @@ const Vendor = () => {
     setOpenAddVendorDialog(true)
   }
 
-  const handleVendorSubmit = () => {
-    handleDialogCloseVendor()
+  const FatchData = async () => {
+    try {
+      const res: any = await ListAllVendorListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
+      console.log("fatchData", res?.data.data)
+      setVendorData(res?.data?.data)
+    }
+    catch (err) {
+      return err
+    }
   }
+  useEffect(() => {
+    FatchData()
+  }, [])
 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
@@ -119,12 +185,32 @@ const Vendor = () => {
     }
   }
 
+  const handleChangeVendor = (rowData: DataGridRowType) => {
+    setFormData(prevState => ({
+      ...prevState,
+
+    }));
+    setOpenAddVendorDialog(true);
+  };
+
+  const onSubmitVendorUpdate = async () => {
+    try {
+      const res = await updateVendorApi(formData);
+      console.log("success data", res);
+      await ListAllVendorListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
+      // Optionally, you can handle the success response here
+    } catch (err) {
+      console.error("Error updating vendor", err);
+      // Optionally, you can handle the error here
+    }
+  };
+
   const columns: GridColDef[] = [
     {
       flex: 0.25,
       minWidth: 290,
-      field: 'clientName',
-      headerName: 'Name',
+      field: 'vendorName',
+      headerName: 'vendorName',
       hide: hideNameColumn,
       renderCell: (params: GridRenderCellParams) => {
         const { row } = params
@@ -134,10 +220,7 @@ const Vendor = () => {
             {renderClient(params)}
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-                {row.clientName}
-              </Typography>
-              <Typography noWrap variant='caption'>
-                {row.email}
+                {row.vendorName}
               </Typography>
             </Box>
           </Box>
@@ -147,38 +230,45 @@ const Vendor = () => {
     {
       flex: 0.15,
       minWidth: 110,
-      field: 'clientPhoneNumber ',
-      headerName: 'Phone Number',
+      field: 'vendorPhoneNumber ',
+      headerName: 'phoneNumber',
       renderCell: (params: GridRenderCellParams) => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.clientPhoneNumber}
+          {params.row.vendorPhoneNumber}
         </Typography>
       )
     },
     {
       flex: 0.1,
-      field: 'clientId',
+      field: 'vendorEmail',
       minWidth: 80,
-      headerName: 'client ID',
+      headerName: 'Email',
       renderCell: (params: GridRenderCellParams) => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.clientId}
+          {params.row.vendorEmail}
         </Typography>
       )
     },
     {
-      flex: 0.175,
-      minWidth: 150,
-      field: 'clientStatus',
-      headerName: 'Status',
+      flex: 0.1,
+      minWidth: 100,
+      field: 'edit',
+      headerName: 'Edit',
       renderCell: (params: GridRenderCellParams) => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.clientStatus == 'active' ? (
-            <CustomChip rounded size='small' skin='light' color='success' label={params.row.clientStatus} />
-          ) : (
-            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.clientStatus} />
-          )}
-        </Typography>
+        <IconButton aria-label="edit" onClick={() => handleChangeVendor(params.row)}>
+          <EditIcon />
+        </IconButton>
+      )
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'delete',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="delete" onClick={() => handleChangeVendor(params.row)}>
+          <DeleteIcon />
+        </IconButton>
       )
     }
   ]
@@ -225,22 +315,76 @@ const Vendor = () => {
                 </DialogActions>
               </Dialog>
               <Dialog open={openAddVendorDialog} onClose={handleDialogCloseVendor} fullWidth>
-                <DialogTitle ><CloseIcon sx={{ cursor: 'pointer' }} onClick={handleDialogCloseVendor} />Add Vendor</DialogTitle>
-                <DialogContent>
-                  <Grid sx={{ display: 'flex' }}>
-                    <TextField sx={{ p: 2 }} size='small' id="outlined-basic" placeholder='Name' variant="outlined" />
-                    <TextField sx={{ p: 2 }} size='small' id="outlined-basic" placeholder='Contact' variant="outlined" />
-                    <TextField sx={{ p: 2 }} size='small' id="outlined-basic" placeholder='Email' variant="outlined" />
-                  </Grid>
-                  <TextField sx={{ p: 2, width: '79vh' }} size='small' id="outlined-basic" placeholder='Address' variant="outlined" />
-                  <TextField sx={{ p: 2, width: '26vh' }} size='small' id="outlined-basic" placeholder='GST' variant="outlined" />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleVendorSubmit} color='primary' variant='contained'>
-                    Save
-                  </Button>
-                </DialogActions>
-              </Dialog>
+      <DialogTitle><CloseIcon sx={{ cursor: 'pointer' }} onClick={handleDialogCloseVendor} />Add Vendor</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <TextField
+              name="vendorName"
+              value={formData.vendorName}
+              onChange={handleChange}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Name'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Contact'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Email'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Address'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="gst"
+              onChange={handleChange}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='GST'
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onSubmitVendor} color='primary' variant='contained'>
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
             </Box>
           </Grid>
           <DataGrid
@@ -250,7 +394,7 @@ const Vendor = () => {
             pageSize={pageSize}
             rowsPerPageOptions={[7, 10, 25, 50]}
             components={{ Toolbar: QuickSearchToolbar }}
-            rows={clientData}
+            rows={vendorData}
             onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             componentsProps={{
               baseButton: {
@@ -265,6 +409,77 @@ const Vendor = () => {
           />
         </Card>
       </Grid>
+      <Dialog open={openAddVendorDialog} onClose={handleDialogCloseVendor} fullWidth>
+      <DialogTitle><CloseIcon sx={{ cursor: 'pointer' }} onClick={handleDialogCloseVendor} />Add Vendor</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <TextField
+              name="vendorName"
+              value={formData.vendorName}
+              onChange={handleChangeVendor}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Name'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChangeVendor}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Contact'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              name="email"
+              value={formData.email}
+              onChange={handleChangeVendor}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Email'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name="address"
+              value={formData.address}
+              onChange={handleChangeVendor}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='Address'
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="gst"
+              onChange={handleChangeVendor}
+              size='small'
+              fullWidth
+              id="outlined-basic"
+              placeholder='GST'
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onSubmitVendorUpdate} color='primary' variant='contained'>
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
     </>
   )
 }
