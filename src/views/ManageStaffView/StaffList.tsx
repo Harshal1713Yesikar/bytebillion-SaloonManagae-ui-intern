@@ -11,6 +11,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Third Party Components
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
@@ -30,8 +31,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router-dom'
 import { StaticRouter } from 'react-router-dom/server'
-import { listAllEmployeeApi} from 'src/store/APIs/Api'
-
+import { listAllEmployeeApi, getSingleEmployee } from 'src/store/APIs/Api'
 
 interface StatusObj {
   [key: number]: {
@@ -39,7 +39,6 @@ interface StatusObj {
     color: ThemeColor
   }
 }
-
 
 // ** renders client column
 const renderClient = (params: GridRenderCellParams) => {
@@ -114,13 +113,10 @@ function useRouteMatch(patterns: readonly string[]) {
 function MyTabs() {
   const routeMatch = useRouteMatch(['/staffList', '/addStaff', '/staffSchedule', '/updateAttendanes', '/inactiveStaff'])
   const currentTab = routeMatch?.pattern?.path
-
 }
 
 function CurrentRoute() {
   const location = useLocation()
-
-
 }
 
 interface Props {
@@ -129,37 +125,50 @@ interface Props {
 }
 const StaffList = (props: Props) => {
   // ** States
+  const router = useRouter()
+  const [singleEmployeeData, setSingleEmployeeData] = useState([])
   const [pageSize, setPageSize] = useState<number>(7)
   const [hideNameColumn, setHideNameColumn] = useState(false)
   const { updateCollegeState, setUpdateCollegeState } = props
 
-
   // State to store fetched staff data
-  const [staffData, setStaffData] = useState<any[]>([]);
+  const [staffData, setStaffData] = useState<any[]>([])
 
   // ... (other code)
 
   // useEffect to fetch data when the component mounts
-  useEffect(() => { 
-    // Fetch staff data using listAllEmployeeApi
-    const fetchData = async () => {
+   // Fetch staff data using listAllEmployeeApi
+   const fetchData = async () => {
+    try {
+      const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn') // Pass customerId and salonId
+      // Update the component's state with the fetched data
+      setStaffData(response?.data?.data)
+      console.log('setStaffData:', response?.data?.data)
+    } catch (error) {
+      console.error('Error fetching staff data:', error)
+    }
+  }
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    const fetchData1 = async () => {
       try {
-        const response: any = await listAllEmployeeApi("99f9bf2-8ac2-4f84-8286-83bb46595fde", "E7uqn"); // Pass customerId and salonId
+        const response: any = await getSingleEmployee('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', 'XiqXU')
+
+        // Pass customerId and salonId
         // Update the component's state with the fetched data
-        setStaffData(response?.data?.data);
-        console.log('setStaffData:', response?.data?.data);
-
+        console.log('AAA', response.data.data)
+        setSingleEmployeeData(response?.data?.data)
       } catch (error) {
-        console.error('Error fetching staff data:', error);
+        console.error('Error fetching staff data:', error)
       }
-    };
-
-    // Call the fetchData function
-    fetchData();
-  }, []);
-
+    }
+    fetchData1()
+  }, [])
+  // }
   const columns: GridColDef[] = [
-    
     {
       flex: 0.25,
       minWidth: 290,
@@ -230,7 +239,7 @@ const StaffList = (props: Props) => {
         </Typography>
       )
     },
-    
+
     {
       flex: 0.175,
       minWidth: 150,
@@ -238,16 +247,20 @@ const StaffList = (props: Props) => {
       headerName: 'Employee Status',
       renderCell: (params: GridRenderCellParams) => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.employeeStatus == "active" ? <CustomChip rounded size='small' skin='light' color='success' label={params.row.employeeStatus} /> : <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.employeeStatus} />}
-
-
+          {params.row.employeeStatus == 'active' ? (
+            <CustomChip rounded size='small' skin='light' color='success' label={params.row.employeeStatus} />
+          ) : (
+            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.employeeStatus} />
+          )}
         </Typography>
       )
     }
-
-
   ]
 
+  const handleCellClick = (row: any) => {
+    console.log('ID', row)
+    router.push(`/managesatff/${row.row.employeeId}`)
+  }
 
   return (
     <>
@@ -256,23 +269,24 @@ const StaffList = (props: Props) => {
           <Card sx={{ width: '100%', marginRight: 50 }}>
             <CardContent>
               {/* <Typography sx={{ color: 'black', fontSize: 23, fontWeight: '600' }}>Learn How To</Typography> */}
-              <Typography sx={{fontSize: 20, fontWeight: '700' }}>Staff List</Typography>
+              <Typography sx={{ fontSize: 20, fontWeight: '700' }}>Staff List</Typography>
               <Typography>
                 Ensure the management of staff attendance, their availability, payroll, commissions, and access
                 <br /> permissions.
               </Typography>
               <Router>
-                <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}>
-                </Box>
+                <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
               </Router>
             </CardContent>
             <DataGrid
               autoHeight
               rows={staffData}
               columns={columns}
+              getRowId={row => row.employeeId}
+              onCellClick={handleCellClick}
               pageSize={pageSize}
               disableSelectionOnClick
-              rowsPerPageOptions={[7,10, 25, 50,80, 100]}
+              rowsPerPageOptions={[7, 10, 25, 50, 80, 100]}
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             />
           </Card>

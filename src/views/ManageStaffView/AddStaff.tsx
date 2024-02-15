@@ -190,7 +190,9 @@ function MyTabs() {
 }
 
 const CreateStaff = () => {
+  const [open, setOpen] = useState(false)
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+
     customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'E7uqn',
     employeeName: '',
@@ -216,6 +218,10 @@ const CreateStaff = () => {
     jason: false,
     antoine: false
   })
+
+  const handleClose=()=>{
+    setOpen(true)
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -389,8 +395,9 @@ const CreateStaff = () => {
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <TextField
-                          type='Contact'
+                          type='number'
                           value={value}
+
                           onChange={onChange}
                           label='MobileNumber'
                           placeholder='Type Here'
@@ -415,6 +422,7 @@ const CreateStaff = () => {
                           value={value}
                           label='Hourly Rate'
                           onChange={onChange}
+                          type='number'
                           placeholder='Type Here'
                           error={Boolean(StaffErrors.emoloyeeHourlySalary)}
                           helperText={StaffErrors.emoloyeeHourlySalary && StaffErrors.emoloyeeHourlySalary.message}
@@ -441,6 +449,7 @@ const CreateStaff = () => {
                         <TextField
                           value={value}
                           label='Fixed Salary'
+                          type='number'
                           onChange={onChange}
                           placeholder='Type Here'
                           error={Boolean(StaffErrors.employeeFixedSalary)}
@@ -468,6 +477,7 @@ const CreateStaff = () => {
                         <TextField
                           value={value}
                           label='Working/Hours Day'
+                          type='number'
                           onChange={onChange}
                           placeholder='Working Day'
                           error={Boolean(StaffErrors.employeeworkingHours)}
@@ -491,6 +501,7 @@ const CreateStaff = () => {
                           value={value}
                           label='ShiftHourly'
                           onChange={onChange}
+                          type='number'
                           placeholder='type Here'
                           error={Boolean(StaffErrors.employeeShiftHourly)}
                           helperText={StaffErrors.employeeShiftHourly && StaffErrors.employeeShiftHourly.message}
@@ -530,7 +541,7 @@ const CreateStaff = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}>
+                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleClose}>
                     Submit
                   </Button>
                 </Grid>

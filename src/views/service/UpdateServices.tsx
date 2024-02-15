@@ -1,11 +1,6 @@
+// ** MUI Imports
+
 import React, { Fragment, useEffect, useState } from 'react'
-import Dashboard from 'src/pages/dashboard'
-import { useForm, Controller } from 'react-hook-form';
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import InputLabel from '@mui/material/InputLabel'
-import * as yup from 'yup'
-import { updateServicesApi, listAllEmployeeApi } from 'src/store/APIs/Api';
 import {
   Box,
   Button,
@@ -15,384 +10,425 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   Menu,
   MenuItem,
   SelectChangeEvent,
   TextField,
-  Typography
+  Typography,
+  CardHeader
 } from '@mui/material'
-import FormHelperText from '@mui/material/FormHelperText'
+import Grid, { GridProps } from '@mui/material/Grid'
+import CustomInput from './PickersCustomInput/PickersCustomInput'
 
-import serviceId from 'src/pages/service/serviceDetails/[serviceId]';
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { customDateFormat, customTimeFormat, convertToISODate } from 'src/@core/utils/format'
+import Dashboard from 'src/pages/dashboard'
+import { updateServicesApi, listAllEmployeeApi, getSingleServiceApi, createNewCategory, getAllCategoryList } from 'src/store/APIs/Api';
+// import serviceId from 'src/pages/service/serviceDetails/[serviceId]';
+import { useRouter } from 'next/router';
+import { styled, useTheme } from '@mui/material/styles'
+import { set } from 'nprogress'
 
 
-interface FormInputs {
-  customerId: ''
-  salonId: ''
-  serviceCategoryId: ''
-  serviceName: ''
-  serviceDescription: ''
-  serviceTime: ''
-  selectEmployee: ''
-  amountHistory: {
-    serviceAmount: ''
+const UpdateService = (props: any) => {
+
+
+
+  const [formUpdateButton, setFormUpdateButton] = useState<boolean>(false)
+  const [maintainState, setMaintainState] = useState<any>()
+  const [openAlert, setOpenAlert] = useState<any>({ open: false, mssg: '' })
+  const [snackbarColor, setSnackbarColor] = useState<any>(true)
+  const [openEdit, setOpenEdit] = useState<any>(false)
+  const [inData, setInData] = useState<any>()
+  const router = useRouter();
+  const serviceId = router.query.serviceId;
+  const [categoryData, setCategoryData] = useState<any>('')
+  const [open, setOpen] = useState<boolean>(false)
+  const [listServiceCategoryData, setServiceExpenseCategoryData] = useState<any>([])
+  const handleClickOpen = () => setOpen(true)
+  const [categoryList, setCategoryList] = useState([])
+  const [serviceTime, setServiceTime] = useState<any>(null)
+  const [updateServiceTime, setUpdateServiceTime] = useState<any>(null)
+
+  const handleClose = () => setOpen(false)
+  const handleUpdate = () => {
+    router.push('/service/service/')
   }
-}
+  const [singleServiceData, setSingleServiceData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: serviceId,
+    serviceAmountId: "",
+    serviceCategoryId: "",
+    serviceName: "",
+    serviceTime: "",
+    serviceDescription: "",
+    selectStaff: [
+      {
+        employeeId: ""
+      }
+    ],
+    amountHistory: [
+      {
+        serviceAmount: 9980
+      }
+    ]
+  })
+  const theme = useTheme()
 
-const createData = (
-  serviceName: string,
-  serviceId: number,
-  serviceStatus: number,
-  currentServiceAmount: number
-): Data => {
-  return { serviceName, serviceId, serviceStatus, currentServiceAmount }
-}
-
-interface Data {
-  serviceId: number
-  serviceName: string
-  serviceStatus: number
-  currentServiceAmount: number
-}
-
-interface HeadCell {
-  disablePadding: boolean
-  id: keyof Data
-  label: string
-  numeric: boolean
-}
-const ServiceSchema = yup.object().shape({
-  serviceName: yup
-    .string()
-    .matches(/^[A-Z a-z]+$/)
-    .max(25)
-    .required(),
-
-  serviceTime: yup
-    .string()
-    .matches(/^[A-Z a-z]+$/)
-    .max(50)
-    .required(),
-  amountHistory: yup.string().min(30).max(30).required(),
-  serviceDescription: yup.string().required().max(100),
-  selectEmployee: yup.string().required()
-})
-const UpdateServices = () => {
-
-  const [addServiceDialogOpen, setAddServiceDialogOpen] = useState(false)
-  const [categoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
-  const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
-    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId: 'E7uqn',
-    serviceCategoryId: 'HFm4p',
-    serviceName: '',
-    serviceDescription: '',
-    serviceTime: '',
-    selectStaff: '',
-    amountHistory: {
-      serviceAmount: ''
+  const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+      order: 1,
+      display: 'flex',
+      justifyContent: 'center'
     }
-  })
-  const [employeeList, setEmployeeList] = useState([])
+  }))
 
-  const {
-    reset: serviceReset,
-    control,
-    getValues: serviceValues,
-    handleSubmit: handleServiceSubmit,
-    setValue,
-    formState: { errors: ServiceErrors }
-  } = useForm<FormInputs>({
-    defaultValues: defaultStudentValues
+
+  const Img = styled('img')(({ theme: any }) => ({
+    left: 58,
+    bottom: 0,
+    height: 173,
+    position: 'absolute',
+    [theme.breakpoints.down('sm')]: {
+      position: 'static'
+    }
+  }))
+
+  const [serviceCategoryData, setServiceCategoryData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceCategoryId: "",
+    serviceCategoryName: "",
+    serviceCategoryStatus: ""
   })
-  const [open, setOpen] = useState<boolean>(false);
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const orgSelected = (organization: any) => {
-    listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli').then((res: any) => {
-      // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
-      // setLoading(false)
+  const { direction } = theme
+  const popperPlacement: ReactDatePickerProps['popperPlacement'] = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
+
+  const [defaultServiceValues, setDefaultServiceValues] = useState<any>({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: serviceId,
+    serviceAmountId: "",
+    serviceCategoryId: "",
+    serviceName: "",
+    serviceTime: "",
+    serviceDescription: "",
+    selectStaff: [
+      {
+        employeeId: ""
+      }
+    ],
+    amountHistory: [
+      {
+        serviceAmount: 9980
+      }
+    ]
+  })
+
+  // const addServiceCategory = () => {
+  //   try {
+  //     createNewCategory(serviceCategoryData)
+  //   } catch (error) {
+  //     return error
+  //   }
+  // }
+  // useEffect(() => {
+
+  //   if (serviceTime) {
+  //     defaultServiceValues.serviceTime = customTimeFormat(serviceTime);
+  //     setDefaultServiceValues(defaultServiceValues)
+  //   }
+  // }, [])
+
+  // useEffect(() => {
+  //   if (updateServiceTime) {
+  //     defaultServiceValues.serviceTime = customTimeFormat(updateServiceTime);
+  //     setDefaultServiceValues(defaultServiceValues)
+  //   }
+  // }, [])
+
+  useEffect(() => {
+    const data = async () => {
+      try {
+        const response: any = await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli')
+        setCategoryList(response?.data.data)
+        console.log('formData', response?.data?.data)
+      } catch (err) {
+        console.log('ABC', err)
+      }
+    }
+    data();
+  }, [])
+
+  useEffect(() => {
+    const singleServiceApiData = () => {
+      if (maintainState == true) {
+        if (serviceId) {
+          getSingleServiceApi('099f9bf2-8ac2-8286-83bb46595fde', 'jkmli', serviceId).then((res: any) => {
+            setDefaultServiceValues(res?.data.data)
+            setSingleServiceData(res?.data.data)
+            // setLoading(false)
+          })
+          setMaintainState(false)
+        }
+
+      }
+    }
+    singleServiceApiData()
+  }, [maintainState, serviceId])
+
+  const handleChange = (e: any) => {
+    setDefaultServiceValues({
+      ...defaultServiceValues,
+      [e.target.name]: e.target.value
     })
   }
 
 
-  const handleCloseAddServiceDialog = () => {
-    setAddServiceDialogOpen(false)
+  let CategoryName;
+  const categoryChange = (e: any) => {
+    setFormUpdateButton(true)
+    setDefaultServiceValues({
+      ...defaultServiceValues,
+      serviceCategories: [{ serviceCategoryId: e.serviceCategoryId }],
+      CategoryName: [{ serviceCategoryName: e.serviceCategoryName }]
+    })
   }
   useEffect(() => {
-    const fatchData = async () => {
-      try {
-        const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
-        setEmployeeList(response?.data?.data)
-        console.log('aaa', response?.data?.data)
-      } catch (err) {
-        return err
-      }
+    if (listServiceCategoryData) {
+      const data = listServiceCategoryData?.find((e: any) => {
+        return (
+          defaultServiceValues?.serviceCategories &&
+          defaultServiceValues?.serviceCategories?.some((id: any) => {
+            return e?.serviceCategoryId === id?.serviceCategoryId
+          })
+        )
+      })
+      setCategoryData(data)
     }
-    fatchData()
-  }, [])
+  }, [defaultServiceValues, listServiceCategoryData])
 
-  const onSubmit = (serviceData: any) => {
-    updateServicesApi(serviceData)
-    // setDefaultStudentValues(data)
+
+  let serviceCategoryName
+  let serviceCategoryStatus
+  if (defaultServiceValues?.serviceCategoryId) {
+    const firstElement = defaultServiceValues.serviceCategoryid[0]
+    try {
+      const categoryInfo = JSON.parse(firstElement)
+      serviceCategoryName = categoryInfo.serviceCategoryName
+      serviceCategoryStatus = categoryInfo.serviceCategoryStatus
+    } catch (error) {
+      console.error('Error parsing JSON:', error)
+    }
   }
-  const renderedOrganizations = employeeList?.map((organization: any, index: number) => {
-    return (
-      <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.employeeName}>
-        <Typography> {organization.employeeName}</Typography>
-      </MenuItem>
-    )
-  })
+
+  useEffect(() => {
+    if (inData) {
+      console.log(inData, "121")
+      const jsonString = JSON.stringify(inData)
+      const resultArrayString = `${JSON.stringify(jsonString)}`
+      setDefaultServiceValues({
+        ...defaultServiceValues,
+        serviceCategory: inData
+      })
+    }
+  }, [inData])
+
+  const handleUpdateTimeChange = (date: any) => {
+    setUpdateServiceTime(date)
+  }
+
+  const updateServiceApiFunc = async () => {
+    try {
+      await updateServicesApi(defaultServiceValues)
+      // setDefaultServiceValues(res?.data.data)
+    } catch (error: any) {
+
+    }
+  }
 
   return (
-    <Grid sx={{ display: 'flex', width: '100%' }}>
-      <Grid sx={{ width: '25%', mr: 3 }}>
-        <Dashboard />
-      </Grid>
+    <>
 
-      <Card>
+      <Grid sx={{ display: 'flex', width: '100%' }}>
+        <Grid sx={{ width: '25%', mr: 3 }}>
+          <Dashboard />
+        </Grid>
+        <Grid>
 
-        <DialogTitle> Add Service</DialogTitle>
-
-        <CardContent sx={{ width: '100%', height: '1000px' }}>
-          <form onSubmit={handleServiceSubmit(onSubmit)} >
-            <Grid item xs={12} sm={6} sx={{ margin: 1, display: 'flex', justifyContent: 'end', gap: 3 }}>
-              <FormControl fullWidth>
-                <InputLabel
-                  id='validation-basic-select'
-                  error={Boolean(ServiceErrors.selectEmployee)}
-                  htmlFor='validation-basic-select'
-                >
-                  Select Category
-                </InputLabel>
-                <Controller
-                  name='selectEmployee'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <Select
-                      value={value}
-                      label='Select Categary '
-                      onChange={onChange}
-                      error={Boolean(ServiceErrors.selectEmployee)}
-                      labelId='validation-basic-select'
-                      aria-describedby='validation-basic-select'
-                    ></Select>
-                  )}
-                />
-                {ServiceErrors.selectEmployee && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                    {ServiceErrors.selectEmployee.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <Fragment>
-                <Button variant='outlined' onClick={handleClickOpen} sx={{ borderRadius: 100, backgroundColor: "blue", color: "white" }}>
-                  +
-                </Button>
-                <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                  <DialogTitle id='form-dialog-title'> Add Category</DialogTitle>
-                  <DialogContent>
-                    <TextField
-                      id='name'
-                      autoFocus
-                      fullWidth
-                      type='Name'
-                      label='Name'
-                    />
-                  </DialogContent>
-                  {/* <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth>
-                              <Controller
-                                name='serviceName'
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field: { value, onChange } }) => (
-                                  <TextField
-                                    value={value}
-                                    label='Service Name'
-                                    onChange={onChange}
-                                    placeholder='Type Here'
-                                    error={Boolean(ServiceErrors.serviceName)}
-                                    aria-describedby='validation-basic-first-name'
-                                  />
-                                )}
-                              />
-                              {ServiceErrors.serviceName && (
-                                <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                                  This field is required
-                                </FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid> */}
-                  <DialogActions>
-                    <Button variant='outlined' color='secondary' onClick={handleClose}>
-                      Submit
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Fragment>
-            </Grid>
-            <Grid>
+        </Grid>
+        <Card>
+          <DialogTitle id='user-view-edit' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
+            Edit Service
+          </DialogTitle>
+          <DialogContent>
+            <form style={{ padding: '15px 0' }}>
               <Grid container spacing={5}>
+
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='serviceName'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          value={value}
-                          label='Service Name'
-                          onChange={onChange}
-                          placeholder='Type Here'
-                          error={Boolean(ServiceErrors.serviceName)}
-                          aria-describedby='validation-basic-first-name'
-                        />
-                      )}
-                    />
-                    {ServiceErrors.serviceName && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
+                  <TextField
+                    fullWidth
+                    label='Service Name'
+                    name='serviceName'
+                    onChange={event => {
+                      handleChange(event)
+                      setFormUpdateButton(true)
+                    }}
+                    value={defaultServiceValues ? defaultServiceValues.serviceName : singleServiceData.serviceName}
+                  />
+                </Grid>
+                <Grid item style={{ display: 'flex', alignItems: 'center', gap: '10px' }} xs={12} sm={6}>
+                  <Grid item xs={12} sm={100}>
+                    <FormControl fullWidth>
+                      <InputLabel id='user-view-status-label'>Category</InputLabel>
+                      <Select
+                        label='Category'
+                        // defaultValue={data.status}
+                        id='user-view-status'
+                        labelId='user-view-status-label'
+                        value={inData ? inData.serviceCategoryName : categoryData && categoryData.serviceCategoryName}
+                        name='categoryName'
+                      >
+                        {categoryList && categoryList.length > 0 ? (
+                          categoryList.map((e: any, index: any) => (
+                            <MenuItem
+                              key={index}
+                              value={e.serviceCategoryName}
+                              onClick={() => {
+                                categoryChange(e)
+                              }}
+                            >
+                              {e.serviceCategoryName}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>No data found</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <AddCircleIcon style={{ cursor: 'pointer' }} onClick={handleClickOpen} />
+                  </Grid>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      control={control}
-                      name='amountHistory.serviceAmount'
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          type='amountHistory'
-                          value={value}
-                          onChange={onChange}
-                          label='Amount'
-                          placeholder='Type Here '
-                          error={Boolean(ServiceErrors.amountHistory)}
-                        />
-                      )}
-                    />
-                    {ServiceErrors.amountHistory && (
-                      <FormHelperText sx={{ color: 'error.main' }}>
-                        required,10-digit phone number
-                      </FormHelperText>
-                    )}
-                  </FormControl>
+                  <TextField
+                    fullWidth
+                    label='Service Amount'
+                    name='serviceAmount'
+                    onChange={event => {
+                      handleChange(event)
+                      setFormUpdateButton(true)
+                    }}
+                    value={defaultServiceValues ? defaultServiceValues.serviceAmount : singleServiceData.serviceAmountId}
+                  />
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
+                  <TextField
+                    fullWidth
+                    label='Description'
+                    name='serviceDescription'
+                    value={defaultServiceValues ? defaultServiceValues.serviceDescription : ""}
+                    onChange={event => {
+                      handleChange(event)
+                      setFormUpdateButton(true)
+                    }}
+                  />
+                </Grid>
+                {/* <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Service Amount'
+                    type='number'
+                    name='serviceAmount'
+                    onChange={event => {
+                      handleChange(event)
+                      setFormUpdateButton(true)
+                    }}
+                    value={defaultServiceValues ? defaultServiceValues.serviceAmount : ""}
+                  />
+                </Grid> */}
+
+
+
+                {/* <Grid item xs={12} sm={6}>
+                  <DatePickerWrapper>
+
+                    <DatePicker
+                      showTimeSelect
+                      selected={updateServiceTime}
+                      timeIntervals={30}
+                      showTimeSelectOnly
+                      required={defaultServiceValues?.serviceTime ? true : false}
+                      popperPlacement={popperPlacement}
+                      value={defaultServiceValues ? defaultServiceValues?.serviceTime : ''}
                       name='serviceTime'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          value={value}
-                          label='Service Time'
-                          onChange={onChange}
-                          placeholder='Service Time'
-                          error={Boolean(ServiceErrors.serviceTime)}
-                          aria-describedby='validation-basic-last-name'
-                        />
-                      )}
+                      placeholderText='4:00 PM'
+                      dateFormat='h:mm aa'
+                      id='time-only-picker'
+                      onChange={(date: Date) => {
+                        handleUpdateTimeChange(date);
+                        // setFormUpdatedButton(true);
+                      }}
+
+                      customInput={<CustomInput label='Service Time' />}
                     />
-                    {ServiceErrors.serviceTime && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
+                  </DatePickerWrapper>
+                </Grid> */}
 
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel
-                      id='validation-basic-select'
-                      error={Boolean(ServiceErrors.selectEmployee)}
-                      htmlFor='validation-basic-select'
-                    >
-                      Select Employee*
-                    </InputLabel>
-                    <Controller
-                      name='selectEmployee'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <Select
-                          value={value}
-                          label='Select Employee '
-                          onChange={onChange}
-                          error={Boolean(ServiceErrors.selectEmployee)}
-                          labelId='validation-basic-select'
-                          aria-describedby='validation-basic-select'
-                        >
-                          {renderedOrganizations}
-                        </Select>
-                      )}
-                    />
-                    {ServiceErrors.selectEmployee && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {ServiceErrors.selectEmployee.message}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={16}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='serviceDescription'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field }) => (
-                        <TextField
-                          rows={4}
-                          multiline
-                          {...field}
-                          label='Designation'
-                          placeholder='Type Here'
-                          error={Boolean(ServiceErrors.serviceDescription)}
-                          aria-describedby='validation-basic-textarea'
-                        />
-                      )}
-                    />
-                    {ServiceErrors.serviceDescription && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
+                  <TextField
+                    fullWidth
+                    label='Service Time'
+                    name='serviceTime'
+                    value={defaultServiceValues ? defaultServiceValues.serviceTime : ""}
+                    onChange={event => {
+                      handleChange(event)
+                      setFormUpdateButton(true)
+                    }}
+                  />
                 </Grid>
               </Grid>
-            </Grid>
-            <Button onClick={handleCloseAddServiceDialog}
-              size='large'
-              type='submit'
-              color='primary'>
-              Cancel
+            </form >
+          </DialogContent >
+          < DialogActions sx={{ justifyContent: 'right', width: '100%', display: 'flex', justifyItems: 'center' }}>
+            <Button
+              variant='outlined'
+              color='secondary'
+              onClick={() => router.push('/service/service/')}
+            >
+              Back
             </Button>
             <Button
-              onClick={handleCloseAddServiceDialog}
-              size='large'
-              type='submit'
               variant='contained'
-              color='primary'
-              onSubmit={onSubmit}
+              sx={{ mr: 2 }}
+              onClick={() => {
+                updateServiceApiFunc()
+                handleUpdate()
+                setFormUpdateButton(false)
+              }}
+              disabled={!formUpdateButton}
             >
               Update
             </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </Grid>
+          </ DialogActions>
+
+
+          {/* </Dialog> */}
+        </Card >
+      </Grid >
+
+    </>
   )
 }
+export default UpdateService;
 
-export default UpdateServices
+

@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardHeader,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,7 +24,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { ThemeColor } from 'src/@core/layouts/types'
-// import debounce from 'lodash.debounce'
+
 
 // ** MUI Imports
 import Table from '@mui/material/Table'
@@ -50,10 +51,18 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { AddServicesApi, ListAllServiceApi, listAllEmployeeApi, deleteServicesApi, updateServicesApi, getSingleServiceApi } from 'src/store/APIs/Api'
+import {
+  AddServicesApi,
+  ListAllServiceApi,
+  getAllCategoryList,
+  listAllEmployeeApi,
+  createNewCategory,
+  getSingleServiceApi,
+  deleteServiceApi
+
+} from 'src/store/APIs/Api'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
-import { useRouter } from 'next/router'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 // import { rows } from 'src/@fake-db/table/static-data'
@@ -62,8 +71,8 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { AnyAbility } from '@casl/ability'
-
+import { Router } from 'react-router-dom'
+import { useRouter } from 'next/router';
 type Order = 'asc' | 'desc'
 
 interface FormInputs {
@@ -78,6 +87,12 @@ interface FormInputs {
     serviceAmount: ''
   }
 }
+interface FormInput {
+  customerId: string
+  salonId: string
+  serviceCategoryName: string
+}
+
 interface Data {
   serviceId: number
   serviceName: string
@@ -152,6 +167,8 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
+// This method is created for cross-browser compatibility, if you don't
+// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
   stabilizedThis.sort((a, b) => {
@@ -185,404 +202,9 @@ const renderClient = (params: GridRenderCellParams) => {
   }
 }
 
-const EditServiceButton = ({ props }: any) => {
-
-  console.log("props", props)
-  const { control, handleSubmit, formState: { errors } } = useForm();
-
-  const [singleServiceData, setSingleServiceData] = useState({})
-  const [formUpdateButton, setFormUpdateButton] = useState<boolean>(false)
-  const [submit, setSubmit] = useState<boolean>(false)
-
-  const [serviceData, setServiceData] = useState({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
-    serviceId: '',
-    serviceCategoryId: "",
-    serviceName: "",
-    serviceDescription: "",
-    serviceTime: "",
-    selectStaff: [
-      {
-        employeeId: ""
-      }
-    ],
-    amountHistory: {
-      serviceAmount: ''
-    }
-  })
-  const [updateServiceData, setUpdateServiceData] = useState({
-
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
-    serviceId: "GKhlc",
-    serviceCategoryId: "",
-    serviceName: "",
-    serviceDescription: "",
-    serviceTime: "",
-    selectStaff: [
-      {
-        employeeId: ""
-      }
-    ],
-    amountHistory: {
-      serviceAmount: ''
-    }
-
-  })
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleOpenDialog = async () => {
-    const serviceId =
-      setOpenDialog(true);
-    listAllServicesApiFunc();
-    // try {
-    //   const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
-    //   setSingleServiceData(res?.data?.data[0]);
-    //   console.log(res, "myRes")
-    // } catch (error: any) {
-    //   console.log(error);
-    // }
-  };
-
-  const handleChange = (e: any) => {
-    setSingleServiceData({
-      ...singleServiceData,
-      [e.target.name]: e.target.value
-    })
-  }
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const listAllServicesApiFunc = async () => {
-    try {
-      const service: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli') // Pass customerId and salonId
-      // Update the component's state with the fetched data
-      console.log("serviceId", service)
-      setServiceData(service?.data?.data)
-      const serviceId = service?.data?.data?.serviceId
-      if (serviceId) {
-        try {
-          const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', serviceId)
-          console.log("singleservice", res?.data[0])
-          setSingleServiceData(res?.data[0]);
-        } catch (error: any) {
-          console.log(error);
-        }
-      }
-      console.log('ListAllServiceApiData', service?.data?.data)
-    } catch (error) {
-      console.error('Error fetching Service data:', error)
-    }
-  }
-  // const getSingleServiceApiFunc = async () => {
-  //   try {
-  //     const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'Hxk5r')
-  //     console.log("singleservice", res?.data[0])
-  //     setSingleServiceData(res?.data[0]);
-  //   } catch (error: any) {
-  //     console.log(error);
-  //   }
-  // }
-  const updateServiceApiFunc = async () => {
-    try {
-
-      const response = await updateServicesApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
-      setUpdateServiceData(response?.data[0])
-      setOpenDialog(false);
-
-    } catch (error: any) {
-      console.log(error);
-
-    }
-  }
-
-  useEffect(() => {
-    setSingleServiceData({
-      ...singleServiceData
-    })
-  }, [])
-
-  return (
-    <Typography variant='body2' sx={{ color: 'text.primary' }}>
-      <Button onClick={handleOpenDialog}>
-        <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
-      </Button>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Service</DialogTitle>
-        <DialogContent sx={{ '& > *': { mb: 4 }, textAlign: 'center' }}>
-          <Controller
-            name="serviceCount"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Service Count"
-                fullWidth
-                onChange={event => {
-                  handleChange(event)
-                  setFormUpdateButton(true)
-                }}
-                style={{ width: '40%', marginRight: '20px' }}
-                error={!!errors.serviceName}
-                value={singleServiceData ? singleServiceData?.serviceCount : ''}
-              // helperText={errors.serviceName ? errors.serviceName.message : ''}
-              />
-            )}
-            rules={{ required: 'Service Name is required' }}
-          />
-          <Controller
-            name="serviceTime"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Service Time"
-                fullWidth
-                style={{ width: '40%' }}
-                error={!!errors.serviceName}
-                onChange={event => {
-                  handleChange(event)
-                  setFormUpdateButton(true)
-                }}
-                value={singleServiceData ? singleServiceData?.serviceTime : ''}
-
-              // helperText={errors.serviceName ? errors.serviceName.message : ''}
-              />
-            )}
-            rules={{ required: 'Service time is required' }}
-          />
-          <Controller
-            name="staffName"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Staff Name"
-                fullWidth
-                style={{ width: '40%', marginRight: '20px' }}
-                error={!!errors.serviceName}
-                onChange={event => {
-                  handleChange(event)
-                  setFormUpdateButton(true)
-                }}
-                value={singleServiceData ? singleServiceData?.selectStaff : ''}
-
-              // helperText={errors.serviceName ? errors.serviceName.message : ''}
-              />
-            )}
-            rules={{ required: 'Staff Name is required' }}
-          />
-          <Controller
-            name="serviceDescription"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Service Description"
-                fullWidth
-                style={{ width: '40%', marginRight: '20px' }}
-                error={!!errors.serviceName}
-                onChange={event => {
-                  handleChange(event)
-                  setFormUpdateButton(true)
-                }}
-                value={singleServiceData && singleServiceData?.serviceDescription}
-
-              // helperText={errors.serviceName ? errors.serviceName.message : ''}
-              />
-            )}
-            rules={{ required: 'Staff Name is required' }}
-          />
-          <Controller
-            name="amountHistory"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Service Amount"
-                fullWidth
-                style={{ width: '40%', marginRight: '20px' }}
-                error={!!errors.serviceAmount}
-                onChange={event => {
-                  handleChange(event)
-                  setFormUpdateButton(true)
-                }}
-                value={(singleServiceData?.amountHistory || []).map((e: any) => e.serviceAmount).join(', ') || ''}
-              />
-            )}
-            rules={{ required: 'Staff Name is required' }}
-          />
-
-          {/* Add more fields as needed */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button
-            onClick={() => {
-              updateServiceApiFunc()
-              setSubmit(true)
-            }}
-            variant='contained' autoFocus>
-            Update
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Typography>
-  );
-};
-const DeleteServiceButton = () => {
-
-  const { control, handleSubmit, formState: { errors } } = useForm();
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-  const onSubmit = (data: any) => {
-    console.log(data);
-    // Handle form submission here, e.g., save data, close dialog, etc.
-    // onclose();
-  };
-
-  return (
-    <Typography variant='body2' sx={{ color: 'text.primary' }}>
-      <Button onClick={handleOpenDialog}>
-        <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
-      </Button>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogContent sx={{ pb: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <Box sx={{ mb: 9, maxWidth: '95%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
-              <Icon icon='bx:error-circle' fontSize='4.2rem' style={{ marginTop: '20px' }} />
-              <Typography variant='h4' sx={{ color: 'text.secondary' }}>
-                Are you sure?
-              </Typography>
-            </Box>
-            <Typography sx={{ fontSize: '1.125rem', mb: 5 }}>You won't be able to revert Expense!</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleCloseDialog} variant='contained' autoFocus>
-            Yes, I am Sure!
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Typography>
-  );
-};
-// const columns: GridColDef[] = [
 
 
-//   {
-//     flex: 0.55,
-//     minWidth: 120,
-//     field: 'serviceName',
-//     headerName: 'Service Name',
-//     // hide: hideNameColumn,
-//     renderCell: (params: GridRenderCellParams) => {
-//       const { row } = params
 
-//       return (
-//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//           {renderClient(params)}
-//           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-//             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-//               {row?.serviceName ? (row?.serviceName?.charAt(0).toUpperCase() + row.serviceName.slice(1)) : ''}
-//             </Typography>
-//           </Box>
-//         </Box>
-//       )
-//     }
-//   },
-//   {
-//     flex: 0.175,
-//     minWidth: 120,
-//     headerName: 'Service Time',
-//     field: 'serviceTime',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.serviceTime}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.175,
-//     minWidth: 110,
-//     field: 'selectStaff ',
-//     headerName: 'Staff Name',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.selectStaff}
-//         {/* {params.row.selectStaff ? (params?.row?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)) : ""} */}
-//       </Typography>
-//     )
-//   },
-
-//   {
-//     flex: 0.175,
-//     field: 'employeeId',
-//     minWidth: 120,
-//     headerName: 'Staff ID',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.serviceCategoryId}
-//       </Typography>
-//     )
-//   },
-
-//   {
-//     flex: 0.175,
-//     minWidth: 150,
-//     field: 'serviceStatus',
-//     headerName: 'Service Status',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-//         {params.row.serviceStatus == 'active' ? (
-//           <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
-//         ) : (
-//           <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
-//         )}
-//       </Typography>
-//     )
-//   },
-//   {
-//     flex: 0.175,
-//     minWidth: 150,
-//     field: 'updateService',
-//     headerName: 'Edit Service',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Button onClick={() => handleButtonClick(params.row.serviceId)}>
-//         <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
-//       </Button>
-//     )
-//     // renderCell: () => <EditServiceButton />,
-//   },
-//   {
-//     flex: 0.175,
-//     minWidth: 150,
-//     field: 'deleteService',
-//     headerName: 'Delete Service',
-//     renderCell: (params: GridRenderCellParams) => (
-//       <Button >
-//         <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
-//       </Button>
-//     )
-//     // renderCell: () => <DeleteServiceButton />,
-//   }
-
-// ]
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   // ** Props
@@ -636,47 +258,129 @@ const orgSelected = (organization: any) => {
   })
 }
 
-const Service = () => {
+const CategorySelected = async (organization: any) => {
+  await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
+    // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+    // setLoading(false)
+  })
+}
 
+const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
   const [serviceData, setServiceData] = useState<any>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
+  const [categoryList, setCategoryList] = useState([])
+  const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
+  const [serviceIdForDelete, setServiceIdForDelete] = useState('')
 
-  const [singleServiceData, setSingleServiceData] = useState({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
-    serviceId: 'GKhlc',
-    serviceCategoryId: "",
-    serviceName: "",
-    serviceDescription: "",
-    serviceTime: "",
-    selectStaff: [
-      {
-        employeeId: "123"
+  const router = useRouter();
+
+  const handleCellClick = (row: any) => {
+    console.log("row", row)
+    router.push(`/service/serviceDetails/${row}`)
+  }
+
+
+  const serviceId = router.query.serviceId;
+  const columns: GridColDef[] = [
+    {
+      flex: 0.75,
+      minWidth: 160,
+      field: 'serviceName',
+      headerName: 'Service Name',
+      // hide: hideNameColumn,
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
+
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row?.serviceName}
+              </Typography>
+            </Box>
+          </Box>
+        )
       }
-    ],
-    amountHistory: {
-      serviceAmount: ''
+    },
+    {
+      flex: 0.175,
+      minWidth: 120,
+      headerName: 'Service Time',
+      field: 'serviceTime',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceTime}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'selectStaff ',
+      headerName: 'Staff Name',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.1,
+      field: 'employeeId',
+      minWidth: 80,
+      headerName: 'Staff ID',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceCategoryId}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'serviceStatus',
+      headerName: 'Service Status',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceStatus == 'active' ? (
+            <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
+          ) : (
+            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
+          )}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'editService ',
+      headerName: 'Edit',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button onClick={() => handleCellClick(params.row.serviceId)}>
+          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+        </Button>
+      )
+    },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'deleteService ',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button onClick={() => {
+          setSuspendDialogOpen(true);
+          setServiceIdForDelete(params.row.serviceId);
+        }}>          <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+        </Button>
+      )
     }
-  })
+  ]
 
-  const [updateServiceData, setUpdateServiceData] = useState({
-    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId: 'E7uqn',
-    serviceCategoryId: 'HFm4p',
-    serviceName: '',
-    serviceDescription: '',
-    serviceTime: '',
-    selectStaff: '',
-    amountHistory: {
-      serviceAmount: ''
-    }
-  })
 
-  const router = useRouter()
-
-  useEffect(() => {
     // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {
@@ -688,33 +392,24 @@ const Service = () => {
         console.error('Error fetching Service data:', error)
       }
     }
+    useEffect(() => {
+    // Call the fetchData function
     fetchData()
   }, [])
 
-  // useEffect(() => {
-  //   const GetSingleServiceApiFunc = async () => {
-  //     try {
-  //       const res = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', 'GKhlc')
-  //       console.log("singleservice", res)
-  //       setSingleServiceData(res?.data);
-  //     } catch (error: any) {
-  //       console.log(error);
-  //     }
-  //   }
-  //   GetSingleServiceApiFunc();
-  // }, [])
-  // const updateServiceApiFunc = async () => {
-  //   try {
-
-  //     const response = await updateServicesApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli')
-  //     setUpdateServiceData(response?.data.data)
-  //     // setOpenDialog(true);
-
-  //   } catch (error: any) {
-  //     console.log(error);
-
-  //   }
-  // }
+  // Fetch staff data using listAllCategoryList
+  const data = async () => {
+    try {
+      const response: any = await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs')
+      setCategoryList(response?.data.data)
+      console.log('formData', response?.data?.data)
+    } catch (err) {
+      console.log('ABC', err)
+    }
+  }
+  useEffect(() => {
+    data()
+  }, [])
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -750,19 +445,18 @@ const Service = () => {
   const [orderBy, setOrderBy] = useState<keyof Data>('serviceId')
   const [selected, setSelected] = useState<readonly string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [pageSize, setPageSize] = useState<number>(10)
+  const [pageSize, setPageSize] = useState<number>(7)
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
   }
 
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false)
 
-  const handleClickOpen = () => setOpen(true);
+  // const handleClickOpen = () => setOpen(true)
 
-  const handleClose = () => setOpen(false);
-
+  const handleClose = () => setOpen(false)
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -815,7 +509,6 @@ const Service = () => {
 
   const [openImportDialog, setOpenImportDialog] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
-
   const [employeeList, setEmployeeList] = useState([])
 
   useEffect(() => {
@@ -830,6 +523,11 @@ const Service = () => {
     }
     fatchData()
   }, [])
+
+  const handleDelete = () => {
+    router.push('/service/service/')
+  }
+
 
   const handleImportClick = () => {
     handleCloseOption()
@@ -855,10 +553,27 @@ const Service = () => {
   const [selectGroup, setSelectGroup] = useState('')
   const [addServiceDialogOpen, setAddServiceDialogOpen] = useState(false)
   const [categoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
-
+  const [status, setStatus] = useState<any>('')
+  const [singleServiceData, setSingleServiceData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: serviceIdForDelete,
+    serviceStatus: 'inActive'
+  })
   const handleSelectGroup = (event: SelectChangeEvent) => {
     setSelectGroup(event.target.value)
   }
+  useEffect(() => {
+    const singleServiceApiData = () => {
+      if (serviceId) {
+        getSingleServiceApi('099f9bf2-8ac2-8286-83bb46595fde', 'jkmli', serviceId).then((res: any) => {
+          setSingleServiceData(res?.data.data)
+          // setLoading(false)
+        })
+      }
+    }
+    singleServiceApiData()
+  }, [serviceId])
 
   const handleAdded = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAddServiceDialogOpen(true)
@@ -871,16 +586,22 @@ const Service = () => {
   const [personName, setPersonName] = React.useState<string[]>([])
 
   const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    // const {
-    //   target: { value }
-    // } = event
-    // setPersonName(
-    //   // On autofill we get a stringified value.
-    //   typeof value === 'string' ? value.split(',') : value
-    // )
     console.log(event.target.value)
   }
+  const deleteData = {
+    "customerId": singleServiceData?.customerId,
+    "salonId": singleServiceData?.salonId,
+    "serviceId": serviceIdForDelete,
+    "serviceStatus": "inActive"
+  }
 
+  const handleDeleteApi = async () => {
+    const res =await deleteServiceApi({ ...deleteData })
+    if (res?.statuscode == 204) {
+
+      router.push('/service/service/')
+    }
+  }
   const renderedOrganizations = employeeList.map((organization: any, index: number) => {
     return (
       <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.employeeName}>
@@ -888,11 +609,53 @@ const Service = () => {
       </MenuItem>
     )
   })
+
+  const renderedCategory = categoryList.map((organization: any, index: number) => {
+    return (
+      <MenuItem onClick={() => CategorySelected(organization)} key={index} value={organization.serviceCategoryName}>
+        <Typography> {organization.serviceCategoryName}</Typography>
+      </MenuItem>
+    )
+  })
+
+  const [categoryData, setCategoryData] = useState({
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'dqXUs',
+    serviceCategoryName: ''
+  })
+
+  const handleClickOpen = () => {
+    setOpen(true)
+    // setStatus(singleServiceData.serviceStatus)
+  }
+  const handleDeleteClose = () => {
+    // setStatus(singleServiceData.serviceStatus)
+    setOpen(false)
+  }
+
+
+  const onSubmitButtom = () => {
+    console.log(categoryData)
+  }
+
   const onSubmit = (data: any) => {
     AddServicesApi(data)
     setDefaultStudentValues(data)
 
     console.log('kvjvb', data)
+  }
+
+  const handleSubmit = async () => {
+    try {
+      await createNewCategory(categoryData)
+      await data()
+      console.log(categoryData, 'categoryData')
+    } catch (err) {
+      console.log('error', err)
+    }
+  }
+  const handleInputChange = (key: any, value: any) => {
+    setCategoryData({ ...categoryData, [key]: value })
   }
   const {
     reset: serviceReset,
@@ -905,112 +668,15 @@ const Service = () => {
     defaultValues: defaultStudentValues
   })
 
-
-  const handleCellClick = (row: any) => {
-    console.log("row", row)
-    router.push(`/service/serviceDetails/${row}`)
-  }
-  const columns: GridColDef[] = [
-
-
-    {
-      flex: 0.55,
-      minWidth: 120,
-      field: 'serviceName',
-      headerName: 'Service Name',
-      // hide: hideNameColumn,
-      renderCell: (params: GridRenderCellParams) => {
-        const { row } = params
-
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {renderClient(params)}
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-                {row?.serviceName ? (row?.serviceName?.charAt(0).toUpperCase() + row.serviceName.slice(1)) : ''}
-              </Typography>
-            </Box>
-          </Box>
-        )
-      }
-    },
-    {
-      flex: 0.175,
-      minWidth: 120,
-      headerName: 'Service Time',
-      field: 'serviceTime',
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.serviceTime}
-        </Typography>
-      )
-    },
-    {
-      flex: 0.175,
-      minWidth: 110,
-      field: 'selectStaff ',
-      headerName: 'Staff Name',
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.selectStaff}
-          {/* {params.row.selectStaff ? (params?.row?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)) : ""} */}
-        </Typography>
-      )
-    },
-
-    {
-      flex: 0.175,
-      field: 'employeeId',
-      minWidth: 120,
-      headerName: 'Staff ID',
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.serviceCategoryId}
-        </Typography>
-      )
-    },
-
-    {
-      flex: 0.175,
-      minWidth: 150,
-      field: 'serviceStatus',
-      headerName: 'Service Status',
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.serviceStatus == 'active' ? (
-            <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
-          ) : (
-            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
-          )}
-        </Typography>
-      )
-    },
-    {
-      flex: 0.175,
-      minWidth: 150,
-      field: 'updateService',
-      headerName: 'Edit Service',
-      renderCell: (params: GridRenderCellParams) => (
-        <Button onClick={() => handleCellClick(params.row.serviceId)}>
-          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
-        </Button>
-      )
-      // renderCell: () => <EditServiceButton />,
-    },
-    {
-      flex: 0.175,
-      minWidth: 150,
-      field: 'deleteService',
-      headerName: 'Delete Service',
-      renderCell: (params: GridRenderCellParams) => (
-        <Button >
-          <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
-        </Button>
-      )
-      // renderCell: () => <DeleteServiceButton />,
-    }
-
-  ]
+  const {
+    reset: CategoryReset,
+    control: Category,
+    getValues: serviceValue,
+    handleSubmit: handleCategorySubmit,
+    formState: { errors: CategroyErrors }
+  } = useForm<FormInput>({
+    defaultValues: categoryData
+  })
 
   return (
     <>
@@ -1048,7 +714,6 @@ const Service = () => {
                     <MenuItem onClick={handleCloseOption}>Sample File</MenuItem>
                   </Menu>
                 </Grid>
-
               </Box>
               <Box sx={{ marginTop: '10px' }}>
                 <Button
@@ -1099,7 +764,7 @@ const Service = () => {
                             error={Boolean(ServiceErrors.selectEmployee)}
                             htmlFor='validation-basic-select'
                           >
-                            Select Category
+                            Select Categary*
                           </InputLabel>
                           <Controller
                             name='selectEmployee'
@@ -1108,12 +773,14 @@ const Service = () => {
                             render={({ field: { value, onChange } }) => (
                               <Select
                                 value={value}
-                                label='Select Categary '
+                                label='Select Category '
                                 onChange={onChange}
                                 error={Boolean(ServiceErrors.selectEmployee)}
                                 labelId='validation-basic-select'
                                 aria-describedby='validation-basic-select'
-                              ></Select>
+                              >
+                                {renderedCategory}
+                              </Select>
                             )}
                           />
                           {ServiceErrors.selectEmployee && (
@@ -1123,11 +790,15 @@ const Service = () => {
                           )}
                         </FormControl>
                         <Fragment>
-                          <Button variant='outlined' onClick={handleClickOpen} sx={{ borderRadius: 100, backgroundColor: "blue", color: "white" }}>
+                          <Button
+                            variant='outlined'
+                            onClick={handleClickOpen}
+                            sx={{ borderRadius: 100, backgroundColor: 'blue', color: 'gray' }}
+                          >
                             +
                           </Button>
                           <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                            <DialogTitle id='form-dialog-title'> Add Category</DialogTitle>
+                            {/* <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
                             <DialogContent>
                               <TextField
                                 id='name'
@@ -1136,36 +807,58 @@ const Service = () => {
                                 type='Name'
                                 label='Name'
                               />
-                            </DialogContent>
-                            {/* <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth>
-                              <Controller
-                                name='serviceName'
-                                control={control}
-                                rules={{ required: true }}
-                                render={({ field: { value, onChange } }) => (
-                                  <TextField
-                                    value={value}
-                                    label='Service Name'
-                                    onChange={onChange}
-                                    placeholder='Type Here'
-                                    error={Boolean(ServiceErrors.serviceName)}
-                                    aria-describedby='validation-basic-first-name'
-                                  />
-                                )}
-                              />
-                              {ServiceErrors.serviceName && (
-                                <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                                  This field is required
-                                </FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid> */}
-                            <DialogActions>
-                              <Button variant='outlined' color='secondary' onClick={handleClose}>
-                                Submit
-                              </Button>
-                            </DialogActions>
+                            </DialogContent> */}
+
+                            <Grid>
+                              <Card>
+                                <CardHeader title='Add Category' />
+                                <CardContent>
+                                  <form onSubmit={handleCategorySubmit(onSubmitButtom)}>
+                                    <Grid>
+                                      <Grid>
+                                        <FormControl fullWidth>
+                                          <Controller
+                                            name='serviceCategoryName'
+                                            control={Category}
+                                            rules={{ required: true }}
+                                            render={({ field: { value, onChange } }) => (
+                                              <TextField
+                                                value={value}
+                                                label='Category Name'
+                                                onChange={e => {
+                                                  onChange(e)
+                                                  setCategoryData(prevData => ({
+                                                    ...prevData,
+                                                    serviceCategoryName: e.target.value
+                                                  }))
+                                                  // {console.log(e.target.value)}
+                                                }}
+                                                placeholder='Type Here'
+                                                error={Boolean(CategroyErrors.serviceCategoryName)}
+                                                aria-describedby='validation-basic-first-name'
+                                              />
+                                            )}
+                                          />
+                                          {CategroyErrors.serviceCategoryName && (
+                                            <FormHelperText
+                                              sx={{ color: 'error.main' }}
+                                              id='validation-basic-first-name'
+                                            >
+                                              This field is required
+                                            </FormHelperText>
+                                          )}
+                                        </FormControl>
+                                      </Grid>
+                                    </Grid>
+                                  </form>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+
+                            {/* <Button variant='outlined' color='secondary' type='submit' onSubmit={handleSubmit}> */}
+                            <Button variant='outlined' color='secondary' type='submit' onClick={handleSubmit}>
+                              Submit
+                            </Button>
                           </Dialog>
                         </Fragment>
                       </Grid>
@@ -1232,6 +925,7 @@ const Service = () => {
                                     value={value}
                                     label='Service Time'
                                     onChange={onChange}
+                                    // value = "time"
                                     placeholder='Service Time'
                                     error={Boolean(ServiceErrors.serviceTime)}
                                     aria-describedby='validation-basic-last-name'
@@ -1326,9 +1020,6 @@ const Service = () => {
               </Box>
             </Grid>
           </Grid>
-
-
-
           <Grid>
             <EnhancedTableToolbar numSelected={selected.length} />
             <Grid item xs={6}>
@@ -1383,20 +1074,59 @@ const Service = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-
             <DataGrid
               autoHeight
               rows={serviceData}
               columns={columns}
               pageSize={pageSize}
               disableSelectionOnClick
-              rowsPerPageOptions={[10, 25, 50, 80, 100]}
+              rowsPerPageOptions={[7, 10, 25, 50, 80, 100]}
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}
             />
           </Grid>
-        </Card >
-      </Grid >
+        </Card>
+        <Dialog fullWidth open={suspendDialogOpen} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <Grid container justifyContent="flex-end">
+            <Icon
+              className="iconContainer"
+              onClick={() => setSuspendDialogOpen(false)}
+              style={{
+                cursor: "pointer",
+                fontSize: "30px",
+                margin: "8px",
+                transition: "background-color 0.3s",
+              }}
+              icon='bx:x'
+            /></Grid>
+          <DialogContent sx={{ pb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
+                <Icon icon='bx:error-circle' fontSize='5.5rem' style={{ marginTop: '-30px' }} />
+                <Typography variant='h4' sx={{ color: 'text.secondary' }}>
+                  Are you sure?
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '1.125rem', mb: 5 }}>You won't be able to revert Category!</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'right' }}>
+            <Button variant='outlined' color='secondary' onClick={() => setSuspendDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant='contained' sx={{ mr: 1.5 }} onClick={() => {
+              handleDeleteApi()
+              handleDelete()
+              fetchData()
+              setSuspendDialogOpen(false)
+            }
+            }>
+              Yes, I am Sure!
+            </Button>
 
+          </DialogActions>
+        </Dialog>
+      </Grid >
 
     </>
   )
