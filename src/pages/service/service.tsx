@@ -80,7 +80,7 @@ interface FormInputs {
   serviceName: ''
   serviceDescription: ''
   serviceTime: ''
-  selectEmployee: ''
+  selectStaff: ''
   amountHistory: {
     serviceAmount: ''
   }
@@ -240,6 +240,8 @@ const columns: GridColDef[] = [
     renderCell: (params: GridRenderCellParams) => (
       <Typography variant='body2' sx={{ color: 'text.primary' }}>
         {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        {/* {params.row.selectStaff} */}
+
       </Typography>
     )
   },
@@ -284,6 +286,7 @@ const columns: GridColDef[] = [
     )
   }
 ]
+
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   // ** Props
@@ -368,6 +371,9 @@ const Service = () => {
     fetchData()
   }, [])
 
+
+
+
   // Fetch staff data using listAllCategoryList
   const data = async () => {
     try {
@@ -379,6 +385,24 @@ const Service = () => {
     }
   }
   useEffect(() => {}, [])
+
+  
+
+  // Fetch staff data using listAllEmployeeList
+  useEffect(() => {
+    const fatchData = async () => {
+      try {
+        const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+        setEmployeeList(response?.data?.data)
+        console.log('aaa', response?.data?.data)
+      } catch (err) {
+        return err
+      }
+    }
+    fatchData()
+  }, [])
+
+
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -415,6 +439,9 @@ const Service = () => {
   const [selected, setSelected] = useState<readonly string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pageSize, setPageSize] = useState<number>(7)
+   const [openImportDialog, setOpenImportDialog] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [employeeList, setEmployeeList] = useState([])
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
@@ -476,22 +503,8 @@ const Service = () => {
     return row.serviceName.toLowerCase().includes(searchTermLower)
   })
 
-  const [openImportDialog, setOpenImportDialog] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [employeeList, setEmployeeList] = useState([])
+ 
 
-  useEffect(() => {
-    const fatchData = async () => {
-      try {
-        const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
-        setEmployeeList(response?.data?.data)
-        console.log('aaa', response?.data?.data)
-      } catch (err) {
-        return err
-      }
-    }
-    fatchData()
-  }, [])
 
   const handleImportClick = () => {
     handleCloseOption()
@@ -562,6 +575,7 @@ const Service = () => {
     console.log(categoryData)
   }
 
+
   const onSubmit = (data: any) => {
     AddServicesApi(data)
     setDefaultStudentValues(data)
@@ -572,6 +586,8 @@ const Service = () => {
 
     console.log('kvjvb', data)
   }
+
+
 
   const handleSubmit = async () => {
     try {
@@ -587,6 +603,7 @@ const Service = () => {
   const handleInputChange = (key: any, value: any) => {
     setCategoryData({ ...categoryData, [key]: value })
   }
+   
   const {
     reset: serviceReset,
     control,
@@ -607,6 +624,8 @@ const Service = () => {
   } = useForm<FormInput>({
     defaultValues: categoryData
   })
+
+
 
   return (
     <>
@@ -691,13 +710,13 @@ const Service = () => {
                         <FormControl fullWidth>
                           <InputLabel
                             id='validation-basic-select'
-                            error={Boolean(ServiceErrors.selectEmployee)}
+                            error={Boolean(ServiceErrors.selectStaff)}
                             htmlFor='validation-basic-select'
                           >
                             Select Categary*
                           </InputLabel>
                           <Controller
-                            name='selectEmployee'
+                            name='selectStaff'
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
@@ -705,7 +724,7 @@ const Service = () => {
                                 value={value}
                                 label='Select Categary '
                                 onChange={onChange}
-                                error={Boolean(ServiceErrors.selectEmployee)}
+                                error={Boolean(ServiceErrors.selectStaff)}
                                 labelId='validation-basic-select'
                                 aria-describedby='validation-basic-select'
                               >
@@ -713,9 +732,9 @@ const Service = () => {
                               </Select>
                             )}
                           />
-                          {ServiceErrors.selectEmployee && (
+                          {ServiceErrors.selectStaff && (
                             <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                              {ServiceErrors.selectEmployee.message}
+                              {ServiceErrors.selectStaff.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -856,23 +875,18 @@ const Service = () => {
                               )}
                             </FormControl>
                           </Grid>
-                          
-
-                         
-
-                        
 
                           <Grid item xs={12} sm={6}>
                             <FormControl fullWidth>
                               <InputLabel
                                 id='validation-basic-select'
-                                error={Boolean(ServiceErrors.selectEmployee)}
+                                error={Boolean(ServiceErrors.selectStaff)}
                                 htmlFor='validation-basic-select'
                               >
                                 Select Employee*
                               </InputLabel>
                               <Controller
-                                name='selectEmployee'
+                                name='selectStaff'
                                 control={control}
                                 rules={{ required: true }}
                                 render={({ field: { value, onChange } }) => (
@@ -880,7 +894,7 @@ const Service = () => {
                                     value={value}
                                     label='Select Employee '
                                     onChange={onChange}
-                                    error={Boolean(ServiceErrors.selectEmployee)}
+                                    error={Boolean(ServiceErrors.selectStaff)}
                                     labelId='validation-basic-select'
                                     aria-describedby='validation-basic-select'
                                   >
@@ -888,9 +902,9 @@ const Service = () => {
                                   </Select>
                                 )}
                               />
-                              {ServiceErrors.selectEmployee && (
+                              {ServiceErrors.selectStaff && (
                                 <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                                  {ServiceErrors.selectEmployee.message}
+                                  {ServiceErrors.selectStaff.message}
                                 </FormHelperText>
                               )}
                             </FormControl>

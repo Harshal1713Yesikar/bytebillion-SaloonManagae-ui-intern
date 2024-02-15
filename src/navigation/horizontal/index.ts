@@ -66,13 +66,13 @@ const navigation = (): HorizontalNavItemsType => [
     title: 'Entity',
     icon: 'bx:shield',
   },
-  {
-    path: '/settings',
-    action: 'read',
-    subject: 'acl-page',
-    title: 'Settings',
-    icon: 'bx:shield',
-  },
+  // {
+  //   path: '/settings',
+  //   action: 'read',
+  //   subject: 'acl-page',
+  //   title: 'Settings',
+  //   icon: 'bx:shield',
+  // },
   {
     path: '/dashboard',
     action: 'read',

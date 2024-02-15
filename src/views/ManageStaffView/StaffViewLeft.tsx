@@ -83,17 +83,17 @@ const ViewSingleManageStaff = () => {
     employeeName: '',
     employeePhone: '',
     employeeJoiningDate: '',
-    employeeStatus: ''
+
   })
 
-  const isFormValid  = () => {
+  const isFormValid = () => {
     // Add your form validation logic here
     // For example, you can check if all required fields are filled
     return (
       updateEmployeeData.employeeName !== '' &&
       updateEmployeeData.employeeJoiningDate !== ''&&
-      updateEmployeeData.employeePhone!==''&&
-      updateEmployeeData.employeeStatus!==''&&
+      updateEmployeeData.employeePhone!==''
+     
     );
   };
 
@@ -164,6 +164,7 @@ const ViewSingleManageStaff = () => {
       followUp: data
     }
   }
+  
 
   useEffect(() => {
     setUpdationData({
@@ -401,7 +402,6 @@ const ViewSingleManageStaff = () => {
                 value={updateEmployeeData.employeeJoiningDate}
               />
             </Grid>
-
           </Grid>
         </Box>
       </DialogContent>
@@ -486,6 +486,5 @@ const ViewSingleManageStaff = () => {
     </>
   )
 }
-
 
 export default ViewSingleManageStaff

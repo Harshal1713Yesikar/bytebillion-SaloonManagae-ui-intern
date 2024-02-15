@@ -271,7 +271,7 @@ const AddEmployeePage = () => {
     handleSubmit: handleStaffSubmit,
     setValue,
     formState: { errors: StaffErrors }
-  } = useForm<FormInputs>({
+  } = useForm<FormInputs>({ 
     defaultValues: defaultEmployeeValues,
     resolver: yupResolver(AddStaffSchema)
   })

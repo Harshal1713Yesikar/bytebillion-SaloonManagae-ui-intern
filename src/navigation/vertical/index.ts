@@ -28,11 +28,14 @@ const navigation = (): VerticalNavItemsType => {
       path: '/products',
       icon: 'material-symbols:production-quantity-limits-sharp',
     },
+    
     {
       title: 'Clients',
       path: '/clients',
       icon: 'fluent:people-team-16-regular',
     },
+
+
     // {
     //   title: 'Appointments',
     //   path: '/appointments',
@@ -44,16 +47,19 @@ const navigation = (): VerticalNavItemsType => {
     //   path: '/report',
     //   icon: 'codicon:report',
     // },
+
     // {
     //   title: 'Integration',
     //   path: '/integration',
     //   icon: 'mdi:account-payment-outline',
     // },
-    {
-      title: 'Sale Tools',
-      path: '/saletools',
-      icon: 'material-symbols:checked-bag-outline',
-    },
+
+    // {
+    //   title: 'Sale Tools',
+    //   path: '/saletools',
+    //   icon: 'material-symbols:checked-bag-outline',
+    // },
+
     {
       title: 'Expense',
       path: '/expense',
@@ -67,13 +73,13 @@ const navigation = (): VerticalNavItemsType => {
     //   title: 'Entity',
     //   icon: 'material-symbols:logo-dev-outline',
     // },
-    {
-      path: '/settings',
-      action: 'read',
-      subject: 'acl-page',
-      title: 'Settings',
-      icon: 'material-symbols:settings',
-    },
+    // {
+    //   path: '/settings',
+    //   action: 'read',
+    //   subject: 'acl-page',
+    //   title: 'Settings',
+    //   icon: 'material-symbols:settings',
+    // },
 
   ]
 }
