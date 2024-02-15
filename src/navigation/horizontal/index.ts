@@ -33,11 +33,11 @@ const navigation = (): HorizontalNavItemsType => [
     path: '/clients',
     icon: 'bx:home-circle',
   },
-  {
-    title: 'Appointments',
-    path: '/appointments',
-    icon: 'bx:home-circle',
-  },
+  // {
+  //   title: 'Appointments',
+  //   path: '/appointments',
+  //   icon: 'bx:home-circle',
+  // },
   // {
   //   title: 'Report',
   //   path: '/report',
@@ -48,24 +48,24 @@ const navigation = (): HorizontalNavItemsType => [
   //   path: '/integration',
   //   icon: 'bx:home-circle',
   // },
-  {
-    title: 'Sale Tools',
-    path: '/saletools',
-    icon: 'bx:home-circle',
-  },
+  // {
+  //   title: 'Sale Tools',
+  //   path: '/saletools',
+  //   icon: 'bx:home-circle',
+  // },
   {
     title: 'Expense',
     path: '/expense',
     icon: 'bx:home-circle',
   },
  
-  {
-    path: '/entity',
-    action: 'read',
-    subject: 'acl-page',
-    title: 'Entity',
-    icon: 'bx:shield',
-  },
+  // {
+  //   path: '/entity',
+  //   action: 'read',
+  //   subject: 'acl-page',
+  //   title: 'Entity',
+  //   icon: 'bx:shield',
+  // },
   {
     path: '/settings',
     action: 'read',

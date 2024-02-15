@@ -21,6 +21,9 @@ import MuiStep, { StepProps } from '@mui/material/Step'
 import InputAdornment from '@mui/material/InputAdornment'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import CardContent, { CardContentProps } from '@mui/material/CardContent'
+import { StaticRouter } from 'react-router-dom/server'
+
+import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router-dom'
 
 // ** Third Party Imports
 import toast from 'react-hot-toast'
@@ -56,103 +59,214 @@ import { AccordionDetails, Alert, CardHeader, FormHelperText, Snackbar } from '@
 
 import { Provider } from 'react-redux'
 import { useRouter } from 'next/router'
-import { Router } from 'react-router-dom'
+// import { Router } from 'react-router-dom'
+import { AES, enc } from 'crypto-js';
 
 import * as yup from 'yup'
+import CreateStaff from 'src/views/ManageStaffView/AddStaff'
 interface State {
   password: string
   password2: string
   showPassword: boolean
   showPassword2: boolean
 }
+// interface FormInputs {
+//   firstName: string
+//   address: string
+//   email: string
+//   password: string
+//   dob: DateType
+//   doJ: DateType
+//   mobileNo: string
+//   hourlyRate: string
+//   fixedSalary: string
+//   workingDay: string
+//   staffpermission: string
+//   designation: string
+//   gender: string
+//   shiftHours: string
+//   staffPermission: string
+// }
+
 interface FormInputs {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  dob: DateType
-  doJ: DateType
-  mobileNo: string
-  hourlyRate: string
-  fixedSalary: string
-  workingDay: string
-  staffpermission: string
-  designation: string
-  gender: string
-  shiftHours: string
-  staffPermission: string
+  userCustomerId: '',
+  customerId: '',
+  salonId: '',
+  employeeName: '',
+  // "employeeId": "",
+  employeeEmail: '',
+  // employeeGender: '',
+  employeePhone: '',
+  employeeAddress: '',
+  // employeeDOB: null,
+  employeeDesignation: '',
+  employeeJoiningDate: null,
+  employeeworkingHours: '',
+  employeeStatus: '',
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: ''
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
+
 }
 
+// const AddStaffSchema = yup.object().shape({
+//   firstName: yup
+//     .string()
+//     .matches(/^[A-Z a-z]+$/)
+//     .max(25)
+//     .required(),
+//   address: yup
+//     .string()
+//     .matches(/^[A-Z a-z]+$/)
+//     .max(25)
+//     .required(),
+//   // email: yup.string().email().required(),
+//   email: yup
+//     .string()
+//     .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
+//     .email()
+//     .required(),
+//   // password: yup.string().min(8).required(),
+//   password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+//   dob: yup.date().required(),
+//   doJ: yup.date().required(),
+//   mobileNo: yup
+//     .string()
+//     .min(10)
+//     .matches(/^[0-9]+$/)
+//     .max(10)
+//     .required(),
+//   hourlyRate: yup
+//     .string()
+//     .max(20, 'Fixed salary must be at most 20 characters')
+//     .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+//     .required('Fixed salary is required'),
+//   fixedSalary: yup
+//     .string()
+//     .max(20, 'Fixed salary must be at most 20 characters')
+//     .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+//     .required('Fixed salary is required'),
+//   workingDay: yup
+//     .string()
+//     .max(2, 'Fixed Day must be at most 2 characters')
+//     .matches(/^\d+$/, 'This field is required')
+//     .required('Fixed salary is required'),
+//   staffpermission: yup.string(),
+//   designation: yup.string().required().max(100),
+//   gender: yup.string().required('Gender Permission is required'),
+//   shiftHours: yup
+//     .string()
+//     .max(20, 'Fixed salary must be at most 20 characters')
+//     .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+//     .required('Fixed salary is required'),
+//   staffPermission: yup.string().required('Staff Permission is required')
+// })
+
+// const defaultValues = {
+//   // dob: null,
+//   firstName: '',
+//   address: '',
+//   email: '',
+//   password: '',
+//   dob: '',
+//   doJ: '',
+//   mobileNo: '',
+//   hourlyRate: '',
+//   fixedSalary: '',
+//   workingDay: '',
+//   staffpermission: '',
+//   designation: '',
+//   gender: '',
+//   shiftHours: '',
+//   staffPermission: ''
+// }
+
 const AddStaffSchema = yup.object().shape({
-  firstName: yup
+  employeeName: yup
     .string()
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-  lastName: yup
+  employeeEmail: yup
     .string()
-    .matches(/^[A-Z a-z]+$/)
-    .max(25)
-    .required(),
-  // email: yup.string().email().required(),
-  email: yup
-    .string()
-    .matches(/^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3}$/)
+    .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
   // password: yup.string().min(8).required(),
-  password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
-  dob: yup.date().required(),
-  doJ: yup.date().required(),
-  mobileNo: yup
+  // password: yup.string().min(8, 'Requied ,Minimum 8 characters').required('Password is required'),
+
+  employeeJoiningDate: yup.date().required(),
+
+  employeePhone: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-  hourlyRate: yup
+
+  emoloyeeHourlySalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .matches(/^\d+$/, 'Required,must contain only numbers')
     .required('Fixed salary is required'),
-  fixedSalary: yup
+  employeeFixedSalary: yup
     .string()
     .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
-    .required('Fixed salary is required'),
-  workingDay: yup
+    .matches(/^\d+$/, 'Required,must contain only numbers'),
+
+  employeeworkingHours: yup
     .string()
-    .max(2, 'Fixed Day must be at most 2 characters')
+    .max(2, 'Required, must be at most 2 characters')
     .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
-  staffpermission: yup.string(),
-  designation: yup.string().required().max(100),
-  gender: yup.string().required('Gender Permission is required'),
-  shiftHours: yup
+
+  employeeShiftHourly: yup
     .string()
-    .max(20, 'Fixed salary must be at most 20 characters')
-    .matches(/^\d+$/, 'Fixed salary must contain only numbers')
+    .max(2, 'Required must be at most 2 characters')
+    .matches(/^\d+$/, 'This field is required')
     .required('Fixed salary is required'),
-  staffPermission: yup.string().required('Staff Permission is required')
+
+  // staffpermission: yup.string(),
+  employeeDesignation: yup.string().required().max(100),
+  employeeAddress: yup.string().required().max(100),
+
 })
 
 const defaultValues = {
-  // dob: null,
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  dob: '',
-  doJ: '',
-  mobileNo: '',
-  hourlyRate: '',
-  fixedSalary: '',
-  workingDay: '',
-  staffpermission: '',
-  designation: '',
-  gender: '',
-  shiftHours: '',
-  staffPermission: ''
+  customerId: "",
+  salonId: "",
+  employeeName: '',
+  employeeEmail: '',
+  // employeeGender: '',
+  employeePhone: '',
+  employeeAddress: '',
+  // employeeDOB: null,
+  employeeDesignation: '',
+  employeeJoiningDate: null,
+  employeeworkingHours: '',
+  employeeStatus: '',
+  // employeeBankName: '',
+  // employeeAccountNo: '',
+  // employeeIfsceCode: '',
+  employeeFixedSalary: '',
+  emoloyeeHourlySalary: '',
+  employeeShiftHourly: ''
+}
+
+function Router(props: { children?: React.ReactNode }) {
+  const { children } = props
+  if (typeof window === 'undefined') {
+    return <StaticRouter location='/drafts'>{children}</StaticRouter>
+  }
+
+  return (
+    <MemoryRouter initialEntries={['/drafts']} initialIndex={0}>
+      {children}
+    </MemoryRouter>
+  )
 }
 
 interface CustomInputProps {
@@ -230,26 +344,34 @@ const Step = styled(MuiStep)<StepProps>(({ theme }) => ({
 }))
 
 const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
-  const [defaultStudentValues, setDefaultStudentValues] = useState({
-    dob: null,
-    email: '',
-    radio: '',
-    select: '',
-    lastName: '',
-    password: '',
-    mobileNo: '',
-    textarea: '',
-    firstName: '',
-    Gender: '',
-    hourlyRate: '',
-    fixedSalary: '',
-    workingDay: '',
-    Designation: '',
-    gender: '',
-    shiftHours: '',
-    staffPermission: ''
+  const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
+
+    customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'E7uqn',
+    employeeName: '',
+    employeeEmail: '',
+    // employeeGender: '',
+    employeePhone: '',
+    employeeAddress: '',
+    // employeeDOB: null,
+    employeeDesignation: '',
+    employeeJoiningDate: null,
+    employeeworkingHours: '',
+    employeeStatus: '',
+    // employeeBankName: '',
+    // employeeAccountNo: '',
+    // employeeIfsceCode: '',
+    employeeFixedSalary: '',
+    emoloyeeHourlySalary: '',
+    employeeShiftHourly: ''
   })
 
+  const onSubmit = (data: any) => {
+    toast.success('Form Submitted');
+    // console.log(data)
+    console.log('staffff', studentValues());
+    // staffRegistrationApi(data)
+  }
   // ** States
 
   const [activeStep, setActiveStep] = useState<number>(0)
@@ -329,6 +451,29 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     setOpen(true)
   }
   const [base64String, setBase64String] = useState<any>('')
+
+  const [formData, setFormData] = useState({
+    // Define your form fields here
+    salonName: '',
+    PhoneNumber: '',
+    email: '',
+    salonAddress: '',
+    colonyName: '',
+    landmark: '',
+    pincode: '',
+    city: '',
+    state: '',
+    inventoryImage: '',
+
+    // Add more fields as needed
+  });
+
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const formIsValid = Object.values(formData).every(value => value !== '');
+    setIsFormValid(formIsValid);
+  }, [formData]);
 
   const handleClose: any = (event: any, reason: string) => {
     if (reason === 'clickaway') {
@@ -462,33 +607,92 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     fetchData()
   }, [customerDetails, customerDetails.customerId])
 
-  const OnSubmit = () => {
-    console.log('BC', studentValues())
-    toast.success('Form Submitted')
+  // const OnSubmit = () => {
+  //   // console.log('BC', studentValues())
+  //   toast.success('Form Submitted')
 
-    staffRegistrationApi({
-      customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
-      salonId: 'E7uqn',
-      employeeName: '',
-      employeeEmail: '',
-      // employeeGender: '',
-      employeePhone: '',
-      employeeAddress: '',
-      // employeeDOB: null,
-      employeeDesignation: '',
-      employeeJoiningDate: null,
-      employeeworkingHours: '',
-      employeeStatus: '',
-      // employeeBankName: '',
-      // employeeAccountNo: '',
-      // employeeIfsceCode: '',
-      employeeFixedSalary: '',
-      emoloyeeHourlySalary: '',
-      employeeShiftHourly: ''
-    })
+  //   staffRegistrationApi({
+  //     customerId: '99f9bf2-8ac2-4f84-8286-83bb46595fde',
+  //     salonId: 'E7uqn',
+  //     employeeName: '',
+  //     employeeEmail: '',
+  //     // employeeGender: '',
+  //     employeePhone: '',
+  //     employeeAddress: '',
+  //     // employeeDOB: null,
+  //     employeeDesignation: '',
+  //     employeeJoiningDate: null,
+  //     employeeworkingHours: '',
+  //     employeeStatus: '',
+  //     // employeeBankName: '',
+  //     // employeeAccountNo: '',
+  //     // employeeIfsceCode: '',
+  //     employeeFixedSalary: '',
+  //     emoloyeeHourlySalary: '',
+  //     employeeShiftHourly: ''
+  //   })
+  // }
+
+  useEffect(() => {
+    setValidEmail(false)
+    setUserOtp("")
+    if (allValues.email.length == 0) {
+      setValidateEmail(false)
+    }
+
+    else if ((allValues.email).indexOf('@') == -1 || (allValues.email).indexOf('.') == -1) {
+      setValidateEmail(true)
+    }
+    else {
+      setValidateEmail(false)
+    }
+  }, [allValues.email])
+
+  const emailVerification = async () => {
+    const chars = '0123456789';
+    let uniqueID = '';
+
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      uniqueID += chars[randomIndex];
+    }
+
+    const cipherText = AES.encrypt(`${uniqueID}`, `test key`).toString();
+    localStorage.setItem('sneat-icon', cipherText)
+    setTimeout(() => {
+      localStorage.removeItem('sneat-icon')
+    }, 600000);
+
+    console.log(allValues.email, allValues.salonName, uniqueID, "jsdfjsldk")
+    const res = await organizationEmailVerification({ salonName: allValues.salonName, validationCode: uniqueID, salonEmail: allValues.email })
+    console.log("email verification", res)
+    // organizationEmailVerification({ organizationName: allValues.salonName, validationCode: uniqueID, organizationEmail: allValues.email })
   }
 
+  const handleVerification = () => {
+    const decrypted: any = localStorage.getItem('sneat-icon')
+    if (decrypted) {
 
+
+      const bytes = AES.decrypt(decrypted.toString(), `test key`).toString(enc.Utf8)
+      if (bytes == userOtp) {
+        setEmailValidator("OTP is valid")
+        setOpen(true)
+        setValidEmail(true)
+
+      }
+      else if (bytes != userOtp) {
+        setEmailValidator("OTP is invalid")
+        setOpen(true)
+        setValidEmail(false)
+      }
+    }
+    else {
+      setEmailValidator("OTP is invalid or expired")
+      setOpen(true)
+      setValidEmail(false)
+    }
+  }
 
   const {
     reset: studentReset,
@@ -554,7 +758,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                     fullWidth
                   />
                 </Grid>
-
+                {/*
                 <Grid item xs={12}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <TextField
@@ -574,7 +778,50 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                       }}
                     />
                   </div>
+                </Grid> */}
+
+
+                <Grid item xs={12} >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <TextField
+                      type="email"
+                      name="email"
+                      label="E-mail"
+                      required
+                      onChange={changeHandler}
+                      value={allValues.email}
+                      variant="outlined"
+                      style={{ marginBottom: "10px" }}
+                      error={validateEmail}
+                      sx={{ width: '88%' }}
+                      inputProps={{
+                        maxLength: 50,
+                      }}
+                    />
+                    <Button
+                      disabled={!allValues.email ? true : validateEmail ? true : false}
+                      variant='contained'
+                      onClick={() => {
+                        emailVerification(),
+                          setVerification(true)
+                        setEmailSend("Resend")
+                      }}>{emailSend}</Button>
+                  </div>
                 </Grid>
+                {
+                  verification && !validEmail && <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <TextField
+                      sx={{ width: '88%' }}
+                      value={userOtp}
+                      onChange={(e) => setUserOtp(e.target.value)}
+                    />
+                    <Button
+                      variant='outlined'
+                      sx={{ marginLeft: 10 }}
+                      color={validEmail ? 'success' : 'primary'}
+                      onClick={() => handleVerification()} >Verify</Button>
+                  </Grid>
+                }
 
 
                 <Grid item xs={12} sm={6}>
@@ -715,7 +962,285 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
         return (
           <Grid>
             <Grid>
-              <Card>
+              {/* <Card>
+                <CardHeader title='Add Employee' sx={{ fontWeight: '700', fontSize: "20" }} />
+                <Router>
+                  <Box sx={{ width: '100%', borderBottom: '1px solid gray' }}></Box>
+                </Router>
+                <CardContent>
+                  <form onSubmit={handleStaffSubmit(onSubmit)}>
+                    <Grid container spacing={5}>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeName'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='First Name'
+                                onChange={onChange}
+                                placeholder='First Name'
+                                error={Boolean(StaffErrors.employeeName)}
+                                aria-describedby='validation-basic-first-name'
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeeName && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeEmail'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                type='Email'
+                                value={value}
+                                onChange={onChange}
+                                label='Email '
+                                placeholder='john.doecxvvbdffdd@example.co  '
+                                error={Boolean(StaffErrors.employeeEmail)}
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeeEmail && (
+                            <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeAddress'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Address'
+                                onChange={onChange}
+                                placeholder='Text Here'
+                                error={Boolean(StaffErrors.employeeAddress)}
+                                aria-describedby='validation-basic-first-name'
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeeAddress && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <Controller
+                          name='employeeJoiningDate'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <DatePickerWrapper>
+                              <DatePicker
+                                selected={value}
+                                showYearDropdown
+                                showMonthDropdown
+                                onChange={e => onChange(e)}
+                                placeholderText='MM/DD/YYYY'
+                                customInput={
+                                  <CustomInput
+                                    value={value}
+                                    onChange={onChange}
+                                    label='Date of Joining'
+                                    error={Boolean(StaffErrors.employeeJoiningDate)}
+                                    aria-describedby='validation-basic-dob'
+                                  />
+                                }
+                              />
+                            </DatePickerWrapper>
+                          )}
+                        />
+                        {StaffErrors.employeeJoiningDate && (
+                          <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            control={control}
+                            name='employeePhone'
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                type='number'
+                                value={value}
+
+                                onChange={onChange}
+                                label='MobileNumber'
+                                placeholder='Type Here'
+                                error={Boolean(StaffErrors.employeePhone)}
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeePhone && (
+                            <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='emoloyeeHourlySalary'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Hourly Rate'
+                                onChange={onChange}
+                                type='number'
+                                placeholder='Type Here'
+                                error={Boolean(StaffErrors.emoloyeeHourlySalary)}
+                                helperText={StaffErrors.emoloyeeHourlySalary && StaffErrors.emoloyeeHourlySalary.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                          {StaffErrors.emoloyeeHourlySalary && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeFixedSalary'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Fixed Salary'
+                                type='number'
+                                onChange={onChange}
+                                placeholder='Type Here'
+                                error={Boolean(StaffErrors.employeeFixedSalary)}
+                                helperText={StaffErrors.employeeFixedSalary && StaffErrors.employeeFixedSalary.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeeFixedSalary && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeworkingHours'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Working/Hours Day'
+                                type='number'
+                                onChange={onChange}
+                                placeholder='Working Day'
+                                error={Boolean(StaffErrors.employeeworkingHours)}
+                                helperText={StaffErrors.employeeworkingHours && StaffErrors.employeeworkingHours.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeShiftHourly'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='ShiftHourly'
+                                onChange={onChange}
+                                type='number'
+                                placeholder='type Here'
+                                error={Boolean(StaffErrors.employeeShiftHourly)}
+                                helperText={StaffErrors.employeeShiftHourly && StaffErrors.employeeShiftHourly.message}
+                                aria-describedby='validation-basic-first-name'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+
+
+                      <Grid item xs={12}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='employeeDesignation'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                              <TextField
+                                rows={4}
+                                multiline
+                                {...field}
+                                label='Designation'
+                                error={Boolean(StaffErrors.employeeDesignation)}
+                                aria-describedby='validation-basic-textarea'
+                                placeholder='Type Here'
+                              />
+                            )}
+                          />
+                          {StaffErrors.employeeDesignation && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Button size='large' type='submit' variant='contained' onSubmit={onSubmit} onClick={handleClose}>
+                          Submit
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </CardContent>
+              </Card> */}
+              <CreateStaff />
+              {/* <Card>
                 <CardHeader title='Add Employee' />
                 <CardContent>
                   <form onSubmit={handleStaffSubmit(OnSubmit)}>
@@ -769,7 +1294,30 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                           )}
                         </FormControl>
                       </Grid>
-
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name='address'
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <TextField
+                                value={value}
+                                label='Address'
+                                onChange={onChange}
+                                placeholder='Address'
+                                error={Boolean(StaffErrors.address)}
+                                aria-describedby='validation-basic-last-name'
+                              />
+                            )}
+                          />
+                          {StaffErrors.address && (
+                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                              This field is required
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
                       <Grid item xs={12} sm={6}>
                         <Controller
                           name='doJ'
@@ -912,30 +1460,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                               />
                             )}
                           />
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <Controller
-                            name='lastName'
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field: { value, onChange } }) => (
-                              <TextField
-                                value={value}
-                                label='Address'
-                                onChange={onChange}
-                                placeholder='Address'
-                                error={Boolean(StaffErrors.lastName)}
-                                aria-describedby='validation-basic-last-name'
-                              />
-                            )}
-                          />
-                          {StaffErrors.lastName && (
-                            <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
-                              This field is required
-                            </FormHelperText>
-                          )}
+
                         </FormControl>
                       </Grid>
 
@@ -969,7 +1494,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                     </div>
                   </form>
                 </CardContent>
-              </Card>
+              </Card> */}
             </Grid>
           </Grid>
         )
@@ -1008,6 +1533,20 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                 </Button>
 
               </div>
+
+              {/* <div >
+                {
+                  <Button sx={{ marginRight: 6 }} disabled={validEmail && next ? false : true} size='large' variant='contained' onClick={handleNext}>
+                    {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                  </Button>
+                }
+
+              </div> */}
+              {/* <div>
+                <Button type="submit" variant='contained' disabled={!isFormValid} onClick={handleNext}>
+                  Next
+                </Button>
+              </div> */}
               {/* <div>
                 {
                   <Button sx={{ marginRight: 6 }} size='large' variant='contained' onClick={handleNext}>

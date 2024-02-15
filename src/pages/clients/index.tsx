@@ -49,7 +49,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { ListAllClientsApi,CreateClientApi,getSingleClient,UpdateClientApi,deleteClientApi, updateEmployeeApi, listAllEmployeeApi} from 'src/store/APIs/Api'
+import { ListAllClientsApi, CreateClientApi, getSingleClient, UpdateClientApi, deleteClientApi, updateEmployeeApi, listAllEmployeeApi } from 'src/store/APIs/Api'
 
 import { update } from 'lodash'
 import axios from 'axios'
@@ -60,23 +60,23 @@ import { colorToString } from '@iconify/utils'
 interface FormInputs {
   customerId: string
   salonId: string
-  clientId:string
+  clientId: string
   clientName: string
   clientPhoneNumber: string
   clientEmail: string
   clientGender: string
-  clientStatus:string
+  clientStatus: string
 }
 
 interface defaultValues {
   customerId: ''
   salonId: ''
-  clientId:''
+  clientId: ''
   clientName: ''
   clientPhoneNumber: ''
   clientEmail: ''
   clientGender: ''
-  clientStatus:''
+  clientStatus: ''
 
 }
 
@@ -85,12 +85,12 @@ interface defaultValues {
 interface defaultClientsValues {
   customerId: ''
   salonId: ''
-  clientId:''
+  clientId: ''
   clientName: ''
   clientPhoneNumber: ''
   clientEmail: ''
   clientGender: ''
-  clientStatus:''
+  clientStatus: ''
 
 }
 
@@ -100,12 +100,12 @@ const AddClientSchema = yup.object().shape({
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-    clientEmail: yup
+  clientEmail: yup
     .string()
     .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
-    clientPhoneNumber: yup
+  clientPhoneNumber: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
@@ -122,19 +122,19 @@ const AddClientReSchema = yup.object().shape({
     .matches(/^[A-Z a-z]+$/)
     .max(25)
     .required(),
-    clientEmail: yup
+  clientEmail: yup
     .string()
     .matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{3}$/)
     .email()
     .required(),
-    clientPhoneNumber: yup
+  clientPhoneNumber: yup
     .string()
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
     .required(),
-    clientGender: yup.string().required(),
-    clientStatus: yup.string().required("")
+  clientGender: yup.string().required(),
+  clientStatus: yup.string().required("")
 
 
 
@@ -180,7 +180,7 @@ const statusObj: StatusObj = {
 
 const escapeRegExp = (value: string) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-  
+
 
 }
 
@@ -190,43 +190,43 @@ const Index = () => {
   const [data] = useState<DataGridRowType[]>([])
   const [pageSize, setPageSize] = useState<number>(7)
   const [searchText, setSearchText] = useState<string>('')
-  const [clientData,setClientData] =useState<any[]>([])
+  const [clientData, setClientData] = useState<any[]>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
   const [isDialogOpenUpdate, setDialogOpenUpdate] = useState(false);
-  const [isDialogOpenDalete,setDialogOpenDelete]=useState(false)
-  const [singleClient,setSingleClient] =useState<any[]>([])
-  const [deleteClient,setDeleteClient] =useState<boolean>(false)
-  const [deleteClientFunc,setDeleteClientFunc]=useState({})
+  const [isDialogOpenDalete, setDialogOpenDelete] = useState(false)
+  const [singleClient, setSingleClient] = useState<any[]>([])
+  const [deleteClient, setDeleteClient] = useState<boolean>(false)
+  const [deleteClientFunc, setDeleteClientFunc] = useState({})
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
-  const [updateClientId,setUpdateClientId]=useState('')
- const [clientId,setClientId]=useState<any>('')
-  const [defaultClientValues,setDefaultClientValues] =useState<any>({
+  const [updateClientId, setUpdateClientId] = useState('')
+  const [clientId, setClientId] = useState<any>('')
+  const [defaultClientValues, setDefaultClientValues] = useState<any>({
 
-    customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId:'dqXUs',
-    clientName:'',
-    clientPhoneNumber:'',
-    clientEmail:'',
-    clientGender:'',
-    clientStatus:''
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'dqXUs',
+    clientName: '',
+    clientPhoneNumber: '',
+    clientEmail: '',
+    clientGender: '',
+    clientStatus: ''
   })
 
-  const [defaultClientReValues,setDefaultClientReValues] =useState<any>({
+  const [defaultClientReValues, setDefaultClientReValues] = useState<any>({
 
-    customerId:'099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId:'dqXUs',
-    clientId:updateClientId,
-    clientName:'',
-    clientPhoneNumber:'',
-    clientEmail:'',
-    clientGender:'',
-    clientStatus:'inactive'
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'dqXUs',
+    clientId: updateClientId,
+    clientName: '',
+    clientPhoneNumber: '',
+    clientEmail: '',
+    clientGender: '',
+    clientStatus: 'inactive'
   })
-  
+
 
 
   const columns: GridColDef[] = [
-    
+
     {
       flex: 0.25,
       minWidth: 290,
@@ -324,7 +324,7 @@ const Index = () => {
       field: 'edit',
       headerName: 'Edit',
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton aria-label="edit" onClick={()=>handleOpenDialogUpdate(params.row)}>
+        <IconButton aria-label="edit" onClick={() => handleOpenDialogUpdate(params.row)}>
           <EditIcon />
         </IconButton>
       )
@@ -336,15 +336,15 @@ const Index = () => {
       field: 'Delete',
       headerName: 'Delete',
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton aria-label="Delete" onClick={()=>handleOpenDialogDelete(params.row)}>
-          <Delete/>
+        <IconButton aria-label="Delete" onClick={() => handleOpenDialogDelete(params.row)}>
+          <Delete />
         </IconButton>
       )
     }
   ]
 
-  const handleOpenDialogUpdate = (data:any) => {
-    console.log("data",data)
+  const handleOpenDialogUpdate = (data: any) => {
+    console.log("data", data)
     setUpdateClientId(data.clientId)
     singleClientDetailsFunc(data)
     setDialogOpenUpdate(true);
@@ -356,33 +356,32 @@ const Index = () => {
 
 
 
-  const handleDeleteClient = async ()=>{
-    console.log(deleteClientFunc,"deleteClient")
-    try{
+  const handleDeleteClient = async () => {
+    console.log(deleteClientFunc, "deleteClient")
+    try {
       await deleteClientApi(deleteClientFunc)
-    }catch(err)
-    {
+    } catch (err) {
       console.log(err)
     }
-   
+
   }
 
 
-  const handleOpenDialogDelete = (data:any)=>{
+  const handleOpenDialogDelete = (data: any) => {
 
-    
-    const deleteClientData={
-      customerId:data.customerId,
-      salonId:data.salonId,
-      clientId:data.clientId,
-      clientStatus:"Inactive"
+
+    const deleteClientData = {
+      customerId: data.customerId,
+      salonId: data.salonId,
+      clientId: data.clientId,
+      clientStatus: "Inactive"
     }
     setDeleteClientFunc(deleteClientData)
     setDialogOpenDelete(true)
   }
 
 
- const handleCloseDialogDelete =(data:any)=>{
+  const handleCloseDialogDelete = (data: any) => {
     setDialogOpenDelete(false)
   }
 
@@ -390,51 +389,51 @@ const Index = () => {
 
 
 
-  
- const singleClientDetailsFunc = async (data:any) => {
-  try {
-    const res: any = await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs',clientId)
-    console.log("ress",res.data.data)
-    setSingleClient(res?.data?.clientId)
 
-  } catch (error: any) {
-    console.log(error)
+  const singleClientDetailsFunc = async (data: any) => {
+    try {
+      const res: any = await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs', clientId)
+      console.log("ress", res.data.data)
+      setSingleClient(res?.data?.clientId)
+
+    } catch (error: any) {
+      console.log(error)
+    }
   }
-}
 
 
 
 
- const FatchData = async ()=>{
-  try{
-    const res:any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde','dqXUs') 
-    console.log("fatchData",res?.data.data)
-    setClientData(res?.data?.data)
-  
+  const FatchData = async () => {
+    try {
+      const res: any = await ListAllClientsApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs')
+      console.log("fatchData", res?.data.data)
+      setClientData(res?.data?.data)
+
+    }
+    catch (err) {
+      return err
+    }
   }
-  catch(err){
-    return err 
+  useEffect(() => {
+    FatchData()
+  }, [])
+
+
+
+
+  const onUpdateData = async () => {
+    try {
+      await updateEmployeeApi(defaultClientReValues)
+      await FatchData()
+    }
+    catch (err) {
+      return (err)
+    }
   }
- }
- useEffect(()=>{
-  FatchData()
- },[])
 
 
 
-
- const onUpdateData = async ()=>{
-  try{
-     await updateEmployeeApi(defaultClientReValues)
-     await  FatchData()
-  }
-  catch(err){
-    return(err)
-  }
- }
-
-
- 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
     const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
@@ -487,9 +486,9 @@ const Index = () => {
     closeModal()
   }
 
-  const handleClose = ()=>{
-    
-  }
+  // const handleClose = ()=>{
+
+  // }
 
 
   const router = useRouter()
@@ -536,11 +535,11 @@ const Index = () => {
     resolver: yupResolver(AddClientSchema)
   })
 
-  
+
 
   const {
     reset: clientReset,
-    control : ABC,
+    control: ABC,
     getValues: clientsValues,
     handleSubmit: handleClientReSubmit,
     formState: { errors: ClientReErrors }
@@ -550,15 +549,15 @@ const Index = () => {
     resolver: yupResolver(AddClientReSchema)
   })
 
-console.log(clientsValues(),"clientsValues")
+  console.log(clientsValues(), "clientsValues")
 
 
 
 
- const onSubmit = async () => {
+  const onSubmit = async () => {
     try {
       await CreateClientApi(studentValues())
-      console.log(studentValues(),"defaultClientValues")
+      console.log(studentValues(), "defaultClientValues")
       await FatchData()
     }
     catch (err) {
@@ -569,334 +568,334 @@ console.log(clientsValues(),"clientsValues")
 
 
 
- const updateClientSubmit = async () => {
-  console.log(clientsValues(),"fsdjfklsjd")
-  
+  const updateClientSubmit = async () => {
+    console.log(clientsValues(), "fsdjfklsjd")
+
     try {
-      await UpdateClientApi({...clientsValues(),clientId:updateClientId})
+      await UpdateClientApi({ ...clientsValues(), clientId: updateClientId })
       console.log(clientsValues(), "DDSS")
       // singleClientDetailsFunc()
     }
     catch (err) {
       console.log("error", err)
     }
-    
+
   }
 
 
 
 
- const handleCloss = () => {
-  setIsOpen(false);
-};
+  const handleCloss = () => {
+    setIsOpen(false);
+  };
 
 
 
-const handleChange=(e:any)=>{
-  console.log(e.target.value)
-}
+  const handleChange = (e: any) => {
+    console.log(e.target.value)
+  }
 
   return (
     <>
-    <Card>
-      <Grid style={{ display: 'flex', width: '100%' }}>
-        <Grid style={{ marginLeft: '20px', padding: '10px', width: '100%' }}>
-          <CardHeader style={{ padding: '0px' }} title='Expense Transactions' />
-          <Typography>You can see which one s you have, their methods, notes and amounts</Typography>
-        </Grid>
-        <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
-          <Button onClick={openModal} variant='contained'>
-            Add Client
-          </Button>
-        </Grid>
+      <Card>
+        <Grid style={{ display: 'flex', width: '100%' }}>
+          <Grid style={{ marginLeft: '20px', padding: '10px', width: '100%' }}>
+            <CardHeader style={{ padding: '0px' }} title='Expense Transactions' />
+            <Typography>You can see which one s you have, their methods, notes and amounts</Typography>
+          </Grid>
+          <Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '20px' }}>
+            <Button onClick={openModal} variant='contained'>
+              Add Client
+            </Button>
+          </Grid>
 
-        <Dialog open={isModalOpen} onClose={closeModal}>
-          <DialogTitle>Add Client</DialogTitle>
-          
-          <CardContent>
-            <form onSubmit={handleClientSubmit(onSubmit)}>
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='clientName'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          value={value}
-                          label='First Name'
-                          onChange={onChange}
-                          placeholder='First Name'
-                          error={Boolean(ClientErrors.clientName)}
-                          aria-describedby='validation-basic-first-name'
-                        />
-                      )}
-                    />
-                    {ClientErrors.clientName && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
+          <Dialog open={isModalOpen} onClose={closeModal}>
+            <DialogTitle>Add Client</DialogTitle>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='clientEmail'
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          type='Email'
-                          value={value}
-                          onChange={onChange}
-                          label='Email '
-                          placeholder='john.doecxvvbdffdd@example.co  '
-                          error={Boolean(ClientErrors.clientEmail)}
-                        />
-                      )}
-                    />
-                    {ClientErrors.clientEmail && (
-                      <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-              
-
-                
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      control={control}
-                      name='clientPhoneNumber'
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          type='number'
-                          value={value}
-                          onChange={onChange}
-                          label='MobileNumber'
-                          placeholder='Type Here'
-                          error={Boolean(ClientErrors.clientPhoneNumber)}
-                        />
-                      )}
-                    />
-                    {ClientErrors.clientPhoneNumber && (
-                      <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id='validation-basic-select'
-                          error={Boolean(ClientErrors.clientGender)}
-                          htmlFor='validation-basic-select'
-                        >
-                          Gender*
-                        </InputLabel>
-                        <Controller
-                          name='clientGender'
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field: { value, onChange } }) => (
-                            <Select
-                              value={value}
-                              label='Country'
-                              onChange={onChange}
-                              error={Boolean(ClientErrors.clientGender)}
-                              labelId='validation-basic-select'
-                              aria-describedby='validation-basic-select'
-                            >
-                              {/* <MenuItem value=''>Select</MenuItem> */}
-                              <MenuItem value='Male'>Male</MenuItem>
-                              <MenuItem value='Canada'>Female</MenuItem>
-                              
-                            </Select>
-                          )}
-                        />
-                        {ClientErrors.clientGender && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                            {ClientErrors.clientGender.message}
-                          </FormHelperText>
+            <CardContent>
+              <form onSubmit={handleClientSubmit(onSubmit)}>
+                <Grid container spacing={5}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='clientName'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            value={value}
+                            label='First Name'
+                            onChange={onChange}
+                            placeholder='First Name'
+                            error={Boolean(ClientErrors.clientName)}
+                            aria-describedby='validation-basic-first-name'
+                          />
                         )}
-                      </FormControl>
-                    </Grid>
-                <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}
-                    onClick={() => {
-                     handleClose()
-                  
-                    }}>
-                    Submit
-                  </Button>
-                
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-
-        </Dialog>
-      </Grid>
-    
-      <DataGrid
-        autoHeight
-        columns={columns}
-        pageSize={pageSize}
-        rowsPerPageOptions={[7, 10, 25, 50]}
-        components={{ Toolbar: QuickSearchToolbar }}
-        rows={clientData}
-        onPageSizeChange={newPageSize => setPageSize(newPageSize)}
-        componentsProps={{
-          baseButton: {
-            variant: 'outlined'
-          },
-          toolbar: {
-            value: searchText,
-            clearSearch: () => handleSearch(''),
-            onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
-          }
-        }}
-      />
-     
-    </Card>
-
-
-
-
-
-    <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
-    {isOpen &&
-        <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
-        <DialogTitle>Edit Client</DialogTitle>  
-          <CardContent>
-            <form onSubmit={handleClientReSubmit(updateClientSubmit)}>
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='clientName'
-                      control={ABC}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          // value={value ? value : singleClient.clientName}
-                          // value={singleClient.clientName}
-                          value={value}
-                          label='First Name'
-                          onChange={onChange}
-                          placeholder='First Name'
-                          error={Boolean(ClientReErrors.clientName)}
-                          aria-describedby='validation-basic-first-name'
-                        />
+                      />
+                      {ClientErrors.clientName && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                          This field is required
+                        </FormHelperText>
                       )}
-                    />
-                    {ClientReErrors.clientName && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                        This field is required
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
+                    </FormControl>
+                  </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      name='clientEmail'
-                      control={ABC}
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          type='Email'
-                          value={value}
-                          //  value={value ?value:singleClient.clientEmail}
-
-                          onChange={onChange}
-                          label='Email '
-                          placeholder='john.doecxvvbdffdd@example.co  '
-                          error={Boolean(ClientReErrors.clientEmail)}
-                        />
-                      )}
-                    />
-                    {ClientReErrors.clientEmail && (
-                      <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-              
-
-                
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <Controller
-                      control={ABC}
-                      name='clientPhoneNumber'
-                      rules={{ required: true }}
-                      render={({ field: { value, onChange } }) => (
-                        <TextField
-                          type='number'
-                          // value={value ?value:singleClient?.clientPhoneNumber}
-                          value = {value}
-                          onChange={onChange}
-                          label='MobileNumber'
-                          placeholder='Type Here'
-                          error={Boolean(ClientReErrors.clientPhoneNumber)}
-                        />
-                      )}
-                    />
-                    {ClientReErrors.clientPhoneNumber && (
-                      <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-                
-                <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id='validation-basic-select'
-                          error={Boolean(ClientReErrors.clientGender)}
-                          htmlFor='validation-basic-select'
-                        >
-                          Gender*
-                        </InputLabel>
-                        <Controller
-                          name='clientGender'
-                          control={ABC}
-                          rules={{ required: true }}
-                          render={({ field: { value, onChange } }) => (
-                            <Select
-                              value={value}
-                              label='Gender'
-                              
-                              onChange={onChange}
-                              error={Boolean(ClientReErrors.clientGender)}
-                              labelId='validation-basic-select'
-                              aria-describedby='validation-basic-select'
-                            >
-                              <MenuItem value=''>Select</MenuItem>
-                              <MenuItem value='Male'>Male</MenuItem>
-                              <MenuItem value='Female'>Female</MenuItem>
-                              <MenuItem value='Female'>Other</MenuItem>
-
-                              
-                            </Select>
-                          )}
-                        />
-                        {ClientReErrors.clientGender && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                            {ClientReErrors.clientGender.message}
-                          </FormHelperText>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='clientEmail'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            type='Email'
+                            value={value}
+                            onChange={onChange}
+                            label='Email '
+                            placeholder='john.doecxvvbdffdd@example.co  '
+                            error={Boolean(ClientErrors.clientEmail)}
+                          />
                         )}
-                      </FormControl>
+                      />
+                      {ClientErrors.clientEmail && (
+                        <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+
+
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        control={control}
+                        name='clientPhoneNumber'
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            type='number'
+                            value={value}
+                            onChange={onChange}
+                            label='MobileNumber'
+                            placeholder='Type Here'
+                            error={Boolean(ClientErrors.clientPhoneNumber)}
+                          />
+                        )}
+                      />
+                      {ClientErrors.clientPhoneNumber && (
+                        <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel
+                        id='validation-basic-select'
+                        error={Boolean(ClientErrors.clientGender)}
+                        htmlFor='validation-basic-select'
+                      >
+                        Gender*
+                      </InputLabel>
+                      <Controller
+                        name='clientGender'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <Select
+                            value={value}
+                            label='Country'
+                            onChange={onChange}
+                            error={Boolean(ClientErrors.clientGender)}
+                            labelId='validation-basic-select'
+                            aria-describedby='validation-basic-select'
+                          >
+                            {/* <MenuItem value=''>Select</MenuItem> */}
+                            <MenuItem value='Male'>Male</MenuItem>
+                            <MenuItem value='Canada'>Female</MenuItem>
+
+                          </Select>
+                        )}
+                      />
+                      {ClientErrors.clientGender && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                          {ClientErrors.clientGender.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button size='large' type='submit' variant='contained' onSubmit={onSubmit}
+                      onClick={() => {
+                        handleClose()
+
+                      }}>
+                      Submit
+                    </Button>
+
+                  </Grid>
                 </Grid>
-                    
-                {/* <Grid item xs={12} sm={6}>
+              </form>
+            </CardContent>
+
+          </Dialog>
+        </Grid>
+
+        <DataGrid
+          autoHeight
+          columns={columns}
+          pageSize={pageSize}
+          rowsPerPageOptions={[7, 10, 25, 50]}
+          components={{ Toolbar: QuickSearchToolbar }}
+          rows={clientData}
+          onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+          componentsProps={{
+            baseButton: {
+              variant: 'outlined'
+            },
+            toolbar: {
+              value: searchText,
+              clearSearch: () => handleSearch(''),
+              onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+            }
+          }}
+        />
+
+      </Card>
+
+
+
+
+
+      <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
+        {isOpen &&
+          <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
+            <DialogTitle>Edit Client</DialogTitle>
+            <CardContent>
+              <form onSubmit={handleClientReSubmit(updateClientSubmit)}>
+                <Grid container spacing={5}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='clientName'
+                        control={ABC}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            // value={value ? value : singleClient.clientName}
+                            // value={singleClient.clientName}
+                            value={value}
+                            label='First Name'
+                            onChange={onChange}
+                            placeholder='First Name'
+                            error={Boolean(ClientReErrors.clientName)}
+                            aria-describedby='validation-basic-first-name'
+                          />
+                        )}
+                      />
+                      {ClientReErrors.clientName && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                          This field is required
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='clientEmail'
+                        control={ABC}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            type='Email'
+                            value={value}
+                            //  value={value ?value:singleClient.clientEmail}
+
+                            onChange={onChange}
+                            label='Email '
+                            placeholder='john.doecxvvbdffdd@example.co  '
+                            error={Boolean(ClientReErrors.clientEmail)}
+                          />
+                        )}
+                      />
+                      {ClientReErrors.clientEmail && (
+                        <FormHelperText sx={{ color: 'error.main' }}>Required, a vaild email address</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+
+
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        control={ABC}
+                        name='clientPhoneNumber'
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            type='number'
+                            // value={value ?value:singleClient?.clientPhoneNumber}
+                            value={value}
+                            onChange={onChange}
+                            label='MobileNumber'
+                            placeholder='Type Here'
+                            error={Boolean(ClientReErrors.clientPhoneNumber)}
+                          />
+                        )}
+                      />
+                      {ClientReErrors.clientPhoneNumber && (
+                        <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel
+                        id='validation-basic-select'
+                        error={Boolean(ClientReErrors.clientGender)}
+                        htmlFor='validation-basic-select'
+                      >
+                        Gender*
+                      </InputLabel>
+                      <Controller
+                        name='clientGender'
+                        control={ABC}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <Select
+                            value={value}
+                            label='Gender'
+
+                            onChange={onChange}
+                            error={Boolean(ClientReErrors.clientGender)}
+                            labelId='validation-basic-select'
+                            aria-describedby='validation-basic-select'
+                          >
+                            <MenuItem value=''>Select</MenuItem>
+                            <MenuItem value='Male'>Male</MenuItem>
+                            <MenuItem value='Female'>Female</MenuItem>
+                            <MenuItem value='Female'>Other</MenuItem>
+
+
+                          </Select>
+                        )}
+                      />
+                      {ClientReErrors.clientGender && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                          {ClientReErrors.clientGender.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  {/* <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel
                           id='validation-basic-select'
@@ -921,7 +920,7 @@ const handleChange=(e:any)=>{
                               <MenuItem value=''>Select</MenuItem>
                               <MenuItem value='Active'>Active</MenuItem>
                               <MenuItem value='In Active'>In Active</MenuItem>
-                              
+
                             </Select>
                           )}
                         />
@@ -934,56 +933,56 @@ const handleChange=(e:any)=>{
                 </Grid> */}
 
 
-                <Grid item xs={12}>
-                  <Button size='large' type='submit' variant='contained' onSubmit={updateClientSubmit} onClick={handleSave}>
-                    Update 
-                  </Button>
-                
+                  <Grid item xs={12}>
+                    <Button size='large' type='submit' variant='contained' onSubmit={updateClientSubmit} onClick={handleSave}>
+                      Update
+                    </Button>
+
+                  </Grid>
                 </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-          <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
-            {/* <Button variant="contained" onClick={debouncedSubmit}>Save</Button> */}
-          </Grid>
-        </Card >
-      }
+              </form>
+            </CardContent>
+            <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
+              {/* <Button variant="contained" onClick={debouncedSubmit}>Save</Button> */}
+            </Grid>
+          </Card >
+        }
       </Dialog >
 
 
-      <Dialog maxWidth="md" sx={{overflow:'auto'}} open={isDialogOpenDalete} onClose={handleCloseDialogDelete}>
-       <Grid>
+      <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenDalete} onClose={handleCloseDialogDelete}>
+        <Grid>
 
-       <DialogContent sx={{ pb: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
-              {/* <Icon icon='bx:error-circle' fontSize='5.5rem' style={{ marginTop: '-30px' }} /> */}
-              <Typography variant='h4' sx={{ color: 'text.secondary' }}>
-                Are you sure?
-              </Typography>
+          <DialogContent sx={{ pb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
+                {/* <Icon icon='bx:error-circle' fontSize='5.5rem' style={{ marginTop: '-30px' }} /> */}
+                <Typography variant='h4' sx={{ color: 'text.secondary' }}>
+                  Are you sure?
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '1.125rem', mb: 6 }}>Are you sure you want to delete this Client!</Typography>
             </Box>
-            <Typography sx={{ fontSize: '1.125rem', mb: 6 }}>Are you sure you want to delete this Client!</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'right' }}>
-          <Button variant='outlined' color='secondary'  onClick={() => handleClose()}>
-            Cancel
-          </Button>
-          <Button
-            variant='contained'
-            sx={{ mr: 1.5 }}
-            onClick={() => {
-              handleDeleteClient();
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-       </Grid>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'right' }}>
+            <Button variant='outlined' color='secondary' onClick={() => handleClose()}>
+              Cancel
+            </Button>
+            <Button
+              variant='contained'
+              sx={{ mr: 1.5 }}
+              onClick={() => {
+                handleDeleteClient();
+              }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Grid>
 
-        
+
       </Dialog>
-    </>  
+    </>
   )
 }
 

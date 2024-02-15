@@ -33,17 +33,17 @@ const navigation = (): VerticalNavItemsType => {
       path: '/clients',
       icon: 'fluent:people-team-16-regular',
     },
-    {
-      title: 'Appointments',
-      path: '/appointments',
-      icon: 'teenyicons:appointments-outline',
-    },
+    // {
+    //   title: 'Appointments',
+    //   path: '/appointments',
+    //   icon: 'teenyicons:appointments-outline',
+    // },
 
-    {
-      title: 'Report',
-      path: '/report',
-      icon: 'codicon:report',
-    },
+    // {
+    //   title: 'Report',
+    //   path: '/report',
+    //   icon: 'codicon:report',
+    // },
     // {
     //   title: 'Integration',
     //   path: '/integration',

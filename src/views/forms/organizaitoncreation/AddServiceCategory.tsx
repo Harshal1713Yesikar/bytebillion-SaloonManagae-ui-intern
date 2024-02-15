@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import Dashboard from 'src/pages/dashboard';
 import { useSettings } from 'src/@core/hooks/useSettings';
 import AddCategory from './AddCategory';
-import AddService from './AddService';
+import { AddService } from './AddService';
 
 
 

@@ -219,7 +219,7 @@ const CreateStaff = () => {
     antoine: false
   })
 
-  const handleClose=()=>{
+  const handleClose = () => {
     setOpen(true)
   }
 

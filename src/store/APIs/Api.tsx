@@ -1,57 +1,54 @@
 import React from 'react'
 import axios from 'axios'
-import headers from './Headers'
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import headers from "./Headers";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const Api = () => {
-  return <div>Api</div>
+  return (
+    <div>Api</div>
+  )
 }
 
 export default Api
 
 export async function acceptInvitation(params: any) {
   try {
-    const res = axios.get(
-      `${process.env.NEXT_PUBLIC_ACCEPT_INVITATION}?parentCustomerId=${params.customerId}&organizationId=${params.organizationId}&customerId=${params.userId}&userId=${params.temporaryId}`,
-      {
-        headers
-      }
-    )
+    const res = axios.get(`${process.env.NEXT_PUBLIC_ACCEPT_INVITATION}?parentCustomerId=${params.customerId}&organizationId=${params.organizationId}&customerId=${params.userId}&userId=${params.temporaryId}`, {
+      headers
+    })
 
-    return res
-  } catch (err: any) {
-    return err
+    return res;
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
 export async function addUser(params: any) {
   try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_ADD_USER_API}`,
-      {
-        ...params
-      },
-      {
-        headers
-      }
-    )
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_ADD_USER_API}`, {
+      ...params
+    }, {
+      headers
+    })
 
-    return res
-  } catch (err: any) {
-    return err
+
+    return res;
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
 export async function listAllRoles(params: any) {
   try {
-    const res = axios.get(
-      `${process.env.NEXT_PUBLIC_LIST_ALL_ROLES}?customerId=${params.customerId}&organizationId=${params.organizationId}`,
-      { headers }
-    )
+    const res = axios.get(`${process.env.NEXT_PUBLIC_LIST_ALL_ROLES}?customerId=${params.customerId}&organizationId=${params.organizationId}`, { headers })
+
 
     return res
-  } catch (err: any) {
-    return err
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
@@ -70,7 +67,7 @@ export const organizationRegistration = async ({ newOrganizationDetails, id, cou
           organizationPhoneNumber: newOrganizationDetails.organizationPhoneNumber,
           organizationEmail: newOrganizationDetails.organizationEmail,
           organizationAddress: newOrganizationDetails.organizationAddress,
-          organizationLogo: newOrganizationDetails.organizationLogo ? newOrganizationDetails.organizationLogo : '',
+          organizationLogo: newOrganizationDetails.organizationLogo ? newOrganizationDetails.organizationLogo : "",
           courses: [
             {
               courseName: courseDetails.courseName,
@@ -83,9 +80,9 @@ export const organizationRegistration = async ({ newOrganizationDetails, id, cou
           ]
         },
         { headers }
-      )
+      );
 
-      return res.data // Assuming you want to return the data from the response
+      return res.data; // Assuming you want to return the data from the response
     } else {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_API}`,
@@ -99,25 +96,26 @@ export const organizationRegistration = async ({ newOrganizationDetails, id, cou
           organizationPhoneNumber: newOrganizationDetails.organizationPhoneNumber,
           organizationEmail: newOrganizationDetails.organizationEmail,
           organizationAddress: newOrganizationDetails.organizationAddress,
-          organizationLogo: newOrganizationDetails.organizationLogo ? newOrganizationDetails.organizationLogo : '',
+          organizationLogo: newOrganizationDetails.organizationLogo ? newOrganizationDetails.organizationLogo : "",
           courses: []
         },
         { headers }
-      )
+      );
 
-      return res.data // Assuming you want to return the data from the response
+      return res.data; // Assuming you want to return the data from the response
     }
   } catch (err) {
-    throw err // Rethrow the error to be caught by the caller
+    throw err; // Rethrow the error to be caught by the caller
   }
-}
+};
 
 export const salonRegistration = async ({ newOrganizationDetails }: any) => {
   try {
     // console.log(newOrganizationDetails);
 
+
     const res = await axios.post(
-      'https://karo-scan-dev-api.azure-api.net/st-salonRegistration-fnp/createSalon',
+      "https://karo-scan-dev-api.azure-api.net/st-salonRegistration-fnp/createSalon",
       {
         customerId: newOrganizationDetails.customerId,
         salonName: newOrganizationDetails.salonName,
@@ -129,58 +127,64 @@ export const salonRegistration = async ({ newOrganizationDetails }: any) => {
         pincode: newOrganizationDetails.pincode,
         city: newOrganizationDetails.city,
         state: newOrganizationDetails.state,
-        Logo: newOrganizationDetails.Logo
+        Logo: newOrganizationDetails.Logo,
       },
       { headers }
-    )
-    console.log('response', res.data)
+    );
+    console.log("response", res.data)
 
-    return res.data // Assuming you want to return the data from the response
+    return res.data; // Assuming you want to return the data from the response
+
   } catch (err) {
-    throw err // Rethrow the error to be caught by the caller
+    throw err; // Rethrow the error to be caught by the caller
   }
-}
+};
 
 export const organizationDetails = async (id: string) => {
   try {
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`, { headers })
-    console.log('AAAAA')
-    return res.data
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
+      { headers }
+    );
+    console.log("AAAAA")
+    return res.data;
+
   } catch (err) {
-    console.error(err)
-    throw err // Rethrow the error to be caught by the caller
+    console.error(err);
+    throw err; // Rethrow the error to be caught by the caller
   }
-}
+};
+
+
 
 export async function organizationEmailVerification(params: any) {
   try {
-    const res = axios.post(
-      `${process.env.NEXT_PUBLIC_ORGANIZATION_EMAIL_VERIFICATION_MAIL}`,
-      {
-        organizationName: params.organizationName,
-        validationCode: params.validationCode,
-        organizationEmail: params.organizationEmail
-      },
-      {
-        headers
-      }
-    )
+    const res = axios.post(`${process.env.NEXT_PUBLIC_VERIFICATION_MAIL_API}`, params, {
+      headers
+    })
 
-    return res
-  } catch (err: any) {
-    return err
+    return res;
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
 export const customerRegistration = async (id: any) => {
-  console.log(id, 'ABCsd')
+  console.log(id, "ABCsd")
   try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}`, { id_token: id }, { headers })
-    return res.data
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}`,
+      { id_token: id },
+      { headers }
+    );
+    console.log(res, "ABCsd")
+    return res.data;
   } catch (err) {
-    throw err // Rethrow the error to be caught by the caller
+    throw err; // Rethrow the error to be caught by the caller
   }
-}
+};
+
 
 export async function getCustomerDetails(params: any) {
   try {
@@ -188,202 +192,145 @@ export async function getCustomerDetails(params: any) {
       headers
     })
 
-    return res
-  } catch (err: any) {
+    return res;
+  }
+  catch (err: any) {
     return err
   }
 }
 
+
 // Chart Data Api
+
+export const staffRegistrationApi = async (staffDetailsforApi: any) => {
+  console.log(staffDetailsforApi, "kkjghcvgf");
+
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`,
+      staffDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res.data)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
 
 export async function updateOrganization(organization: any) {
   try {
-    const res = await axios.post(
-      `https://karomanage-dev-apim.azure-api.net/organizationDetails/updateOrganization`,
+    const res = await axios.post(`https://karomanage-dev-apim.azure-api.net/organizationDetails/updateOrganization`,
       {
-        customerId: organization.customerId,
-        organizationId: organization.organizationId,
-        organizationName: organization.organizationName,
-        organizationDetails: organization.organizationDetails,
-        organizationPhoneNumber: organization.organizationPhoneNumber,
-        organizationEmail: organization.organizationEmail,
-        organizationAddress: organization.organizationAddress,
-        organizationLogo: organization.organizationLogo
-      },
-      { headers }
+        "customerId": organization.customerId,
+        "organizationId": organization.organizationId,
+        "organizationName": organization.organizationName,
+        "organizationDetails": organization.organizationDetails,
+        "organizationPhoneNumber": organization.organizationPhoneNumber,
+        "organizationEmail": organization.organizationEmail,
+        "organizationAddress": organization.organizationAddress,
+        "organizationLogo": organization.organizationLogo
+      }, { headers }
     )
 
-    return res
-  } catch (err) {
+    return res;
+  }
+  catch (err) {
     console.log(err)
   }
 }
 
+
 // organization mails
+
+
+
 export async function karomanageWelcomeMail(organizationName: any, organizationEmail: any) {
   try {
-    const res = axios.post(
-      `${process.env.NEXT_PUBLIC_KAROMANAGE_WELCOME_MAIL}`,
-      {
-        organizationName: organizationName,
-        userEmail: organizationEmail
-      },
-      { headers }
-    )
+    const res = axios.post(`${process.env.NEXT_PUBLIC_KAROMANAGE_WELCOME_MAIL}`, {
+      "organizationName": organizationName,
+      "userEmail": organizationEmail
+    }, { headers })
 
     return res
-  } catch (err: any) {
-    return err
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
 export async function getSingleOrganization(customerId: any, organizationId: any) {
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GETSINGLE_ORGANIZATION}?customerId=${customerId}&organizationId=${organizationId}`,
-      { headers }
-    )
 
-    return res
-  } catch (err: any) {
-    return err
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GETSINGLE_ORGANIZATION}?customerId=${customerId}&organizationId=${organizationId}`, { headers })
+
+    return res;
+  }
+  catch (err: any) {
+    return err;
   }
 }
 
 export async function getAllOrganizationList(customerId: any) {
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_ALL_SALON_LIST}?customerId=${customerId}`,
-      { headers }
-    )
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_ORGANIZATION_REGISTRATION_ALL_SALON_LIST}?customerId=${customerId}`, { headers })
 
-    return res
-  } catch (err: any) {
-    return err
+    return res;
+  }
+
+  catch (err: any) {
+
+    return err;
   }
 }
 
-
-
-
-
-// --------------------CATEGORY API-----------------------
+// CATEGORY API
 
 export async function createNewCategory(categoryData: any) {
   try {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_CATEGORY_API}`, categoryData, { headers })
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_CATEGORY_API}`, categoryData, { headers, },);
     // console.l""og((await response).data)
-    console.log('category data service', response)
+    console.log("category data service", response)
     return response
-  } catch (err: any) {
+  }
+  catch (err: any) {
     // console.log(err, "errrr")
-    return err
+    return err;
   }
 }
 
 export async function getAllCategoryList(customerId: any, salonId: any) {
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GET_ALL_CATEGORY_LIST_API}?customerId=${customerId}&salonId=${salonId}`,
-      { headers }
-    )
-    return res
-  } catch (err: any) {
-    return err
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_CATEGORY_LIST_API}?customerId=${customerId}&salonId=${salonId}`, { headers })
+    // console.log(res, "resssssss")
+    return res;
   }
-}
 
+  catch (err: any) {
 
-
-
-
-
-// -----------// #ServicesAPI-----------------------
-
-export async function AddServicesApi(serviceFormData: any) {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_SERVICE_API}`, serviceFormData, { headers })
-
-    console.log('success data', res)
-    return res.data
-  } catch (err) {
-    return err
-  }
-}
-
-export async function ListAllServiceApi(customerId: any, salonId: any) {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GET_ALL_SERVICE_LIST_API}customerId=${customerId}&salonId=${salonId}`,
-      { headers }
-    )
-    return res
-  } catch (err) {
-    return err
-  }
-}
-
-
-
-
-
-// -------------------employee API--------------------
-
-export async function getSingleEmployee(customerId: any, salonId: any, employeeId: any) {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GET_SINGLE_EMPLOYEE_DETAILS}?customerId=${customerId}&salonId=${salonId}&employeeId=${employeeId}`,
-      { headers }
-    )
-    return res
-  } catch (err) {
-    return err
-  }
-}
-
-export async function updateEmployeeApi(updateEmployeeData: any) {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_EMPLOYEE_DETAIILS}`, updateEmployeeData, { headers })
-
-    console.log('success data', res) 
-    return res.data
-  } catch (err) {
-    return err
+    return err;
   }
 }
 
 export async function listAllEmployeeApi(customerId: any, salonId: any) {
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`,
-      { headers }
-    )
-    console.log('staff Data', res.data)
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_EMPLOYEE_LIST}customerId=${customerId}&salonId=${salonId}`, { headers })
+    console.log("staff Data", res.data)
     return res
-  } catch (err) {
-    return err
   }
-}
-
-export const staffRegistrationApi = async (staffDetailsforApi: any) => {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_STAFF_REGISTRATION_API}`, staffDetailsforApi, { headers })
-
-    console.log('success data', res)
-    return res.data
-  } catch (err) {
-    return err
+  catch (err) {
+    return err;
   }
 }
 
 
-// ---------------------Product Api------------------------
-
-export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
+// #ServicesAPI
+export async function AddServicesApi(serviceFormData: any) {
   try {
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_PRODUCT_CREATE_API}`,
-      productDetailsforApi,
+      `${process.env.NEXT_PUBLIC_CREATE_SERVICE_API}`,
+      serviceFormData,
       { headers }
     );
 
@@ -394,11 +341,9 @@ export const ProductCreateRegistrationApi = async (productDetailsforApi: any) =>
   }
 }
 
-
-export async function ListAllProductListApi(customerId: any, salonId: any) {
+export async function ListAllServiceApi(customerId: any, salonId: any) {
   try {
-    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/getAllProduct?customerId=${customerId}&salonId=${salonId}`, { headers })
-    console.log("product Data", res.data)
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_SERVICE_LIST_API}customerId=${customerId}&salonId=${salonId}`, { headers })
     return res
   }
 
@@ -407,89 +352,6 @@ export async function ListAllProductListApi(customerId: any, salonId: any) {
   }
 
 }
-
-
-
-export const updateProductApi = async (productDetailsforApi: any) => {
-  try {
-    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/updateProduct`,
-      productDetailsforApi,
-      { headers }
-    );
-
-    console.log("success data", res)
-    return res.data;
-  } catch (err) {
-    return err;
-  }
-}
-
-
-
-
-// ---------------------Client APi---------------------------
-
-
-export async function CreateClientApi(updateClientData: any) {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_CILENT_REGISTRATION_API}`, updateClientData, { headers })
-
-    console.log('success data', res) 
-    return res.data
-  } catch (err) {
-    return err
-  }
-}
-
-export async function ListAllClientsApi(customerId:any,salonId:any) {
-  try{
-    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-client-fnp/readClient?customerId=${customerId}&salonId=${salonId}`,{headers})
-    console.log("data",res)
-    return res
-  }
-  catch(err){
-    return err
-  }
-  
-}
-
-export async function UpdateClientApi(updateClient: any) {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
-
-    console.log('success data', res) 
-    return res.data
-  } catch (err) {
-    return err
-  }
-}
-
-export async function getSingleClient(customerId: any, salonId: any, clientId: any) {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_SINGLE_CLIENT_API}?customerId=${customerId}&salonId=${salonId}&clientId=${clientId}`,
-      { headers }
-    )
-    return res
-  } catch (err) {
-    return err
-  }
-}
-
-export async function deleteClientApi(ClientData:any) {
-  try{
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_DELETE_CLIENT_API}`,ClientData,{headers});
-    return res
-  }
-  catch(err)
-  {
-    return err
-  }
-  
-}
-
-
-
 
 
 

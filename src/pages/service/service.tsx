@@ -75,10 +75,15 @@ interface FormInputs {
   customerId: ''
   salonId: ''
   serviceCategoryId: ''
+  selectCategory: '',
   serviceName: ''
   serviceDescription: ''
   serviceTime: ''
-  selectEmployee: ''
+  selectStaff: [
+    {
+      employeeId: ''
+    }
+  ]
   amountHistory: {
     serviceAmount: ''
   }
@@ -116,7 +121,8 @@ const ServiceSchema = yup.object().shape({
     .required(),
   amountHistory: yup.string().min(30).max(30).required(),
   serviceDescription: yup.string().required().max(100),
-  selectEmployee: yup.string().required()
+  selectStaff: yup.string().required(),
+  selectCategory: yup.string().required()
 })
 
 interface EnhancedTableProps {
@@ -237,7 +243,8 @@ const columns: GridColDef[] = [
     headerName: 'Staff Name',
     renderCell: (params: GridRenderCellParams) => (
       <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        {/* {params.selectStaff.employeeId} */}
+        {params?.row?.selectStaff.slice()}
       </Typography>
     )
   },
@@ -336,7 +343,7 @@ const orgSelected = (organization: any) => {
 }
 
 const CategorySelected = async (organization: any) => {
- await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
+  await getAllCategoryList('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs').then((res: any) => {
     // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
     // setLoading(false)
   })
@@ -353,7 +360,7 @@ const Service = () => {
     // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {
-        const response: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli') // Pass customerId and salonId
+        const response: any = await ListAllServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn') // Pass customerId and salonId
         // Update the component's state with the fetched data
         setServiceData(response?.data?.data)
         console.log('ListAllServiceApiData', response?.data?.data)
@@ -387,7 +394,11 @@ const Service = () => {
     serviceName: '',
     serviceDescription: '',
     serviceTime: '',
-    selectStaff: '',
+    selectStaff: [
+      {
+        employeeId: ''
+      }
+    ],
     amountHistory: {
       serviceAmount: ''
     }
@@ -554,7 +565,7 @@ const Service = () => {
 
   const [categoryData, setCategoryData] = useState({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId: 'dqXUs',
+    salonId: 'E7uqn',
     serviceCategoryName: ''
   })
 
@@ -685,13 +696,13 @@ const Service = () => {
                         <FormControl fullWidth>
                           <InputLabel
                             id='validation-basic-select'
-                            error={Boolean(ServiceErrors.selectEmployee)}
+                            error={Boolean(ServiceErrors.selectCategory)}
                             htmlFor='validation-basic-select'
                           >
                             Select Categary*
                           </InputLabel>
                           <Controller
-                            name='selectEmployee'
+                            name='selectCategory'
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
@@ -699,7 +710,7 @@ const Service = () => {
                                 value={value}
                                 label='Select Categary '
                                 onChange={onChange}
-                                error={Boolean(ServiceErrors.selectEmployee)}
+                                error={Boolean(ServiceErrors.selectCategory)}
                                 labelId='validation-basic-select'
                                 aria-describedby='validation-basic-select'
                               >
@@ -707,9 +718,9 @@ const Service = () => {
                               </Select>
                             )}
                           />
-                          {ServiceErrors.selectEmployee && (
+                          {ServiceErrors.selectCategory && (
                             <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                              {ServiceErrors.selectEmployee.message}
+                              {ServiceErrors.selectCategory.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -726,7 +737,7 @@ const Service = () => {
                             <DialogContent>
                               <TextField
                                 id='name'
-                                autoFocus 
+                                autoFocus
                                 fullWidth
                                 type='Name'
                                 label='Name'
@@ -868,21 +879,21 @@ const Service = () => {
                             <FormControl fullWidth>
                               <InputLabel
                                 id='validation-basic-select'
-                                error={Boolean(ServiceErrors.selectEmployee)}
+                                error={Boolean(ServiceErrors.selectStaff)}
                                 htmlFor='validation-basic-select'
                               >
                                 Select Employee*
                               </InputLabel>
                               <Controller
-                                name='selectEmployee'
+                                name='selectStaff'
                                 control={control}
                                 rules={{ required: true }}
                                 render={({ field: { value, onChange } }) => (
                                   <Select
                                     value={value}
-                                    label='Select Employee '
+                                    label='Select Staff '
                                     onChange={onChange}
-                                    error={Boolean(ServiceErrors.selectEmployee)}
+                                    error={Boolean(ServiceErrors.selectStaff)}
                                     labelId='validation-basic-select'
                                     aria-describedby='validation-basic-select'
                                   >
@@ -890,9 +901,9 @@ const Service = () => {
                                   </Select>
                                 )}
                               />
-                              {ServiceErrors.selectEmployee && (
+                              {ServiceErrors.selectStaff && (
                                 <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                                  {ServiceErrors.selectEmployee.message}
+                                  {ServiceErrors.selectStaff.message}
                                 </FormHelperText>
                               )}
                             </FormControl>
@@ -958,48 +969,7 @@ const Service = () => {
                 }}
               />
             </Grid>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle'>
-                <TableBody>
-                  {/* if you don't need to support IE11, you can replace the `stableSort` call with: rows.slice().sort(getComparator(order, orderBy)) */}
-                  {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const isItemSelected = selected.includes(row.serviceName)
-                    const labelId = `enhanced-table-checkbox-${index}`
 
-                    return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.serviceName}
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                        onClick={event => handleClick(event, row.serviceName)}
-                      >
-                        <TableCell>
-                          {/* <Checkbox checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} /> */}
-                        </TableCell>
-                        <TableCell component='th' id={labelId} scope='row' padding='none'>
-                          {row.serviceName}
-                        </TableCell>
-                        <TableCell align='right'>{row.serviceId}</TableCell>
-                        {/* <TableCell align='right'>{row.serviceId}</TableCell> */}
-                        <TableCell align='right'>{row.currentServiceAmount}</TableCell>
-                        <TableCell align='right'>{row.serviceStatus}</TableCell>
-                      </TableRow>
-                    )
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow
-                      sx={{
-                        height: 53 * emptyRows
-                      }}
-                    >
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
             {/* <TablePagination
               page={page}
               component='div'
