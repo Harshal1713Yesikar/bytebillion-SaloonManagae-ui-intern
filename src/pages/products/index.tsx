@@ -103,7 +103,7 @@ const Index = () => {
       "retailStock": ""
     }
   });
-  const [deleteClientFunc, setDeleteClientFunc] = useState({})
+  const [deleteProductFunc, setDeleteProductFunc] = useState({})
   const handleCommon = (e: any) => {
     setUpdateSingleData({ ...updateSingleData, [e.target.name]: e.target.value });
     // Clear the error message for the corresponding field
@@ -196,9 +196,9 @@ const Index = () => {
   };
 
   const handleDeleteProduct = async () => {
-    console.log(deleteClientFunc, "deleteClient");
+    console.log(deleteProductFunc, "deleteClient gfhgf");
     try {
-      await deleteProductApi(deleteClientFunc);
+      await deleteProductApi(deleteProductFunc);
       handleCloseDialogDelete();
     } catch (err) {
       console.error("Error deleting product:", err);
@@ -209,10 +209,11 @@ const Index = () => {
     const deleteProductData = {
       customerId: data.customerId,
       salonId: data.salonId,
-      clientId: data.clientId,
-      clientStatus: "Inactive"
+      productId: data.productId,
+      productStatus: "inActive"
     }
-    setDeleteClientFunc(deleteProductData)
+    console.log(data,"hjfhgdfgdfd")
+    setDeleteProductFunc(deleteProductData)
     setOpenDialogDelete(true)
   }
 
@@ -242,6 +243,11 @@ const Index = () => {
   const vendor = useRouter();
   const handlevendor = () => {
     vendor.push('../vendor/vendor');
+  }
+
+  const Brand = useRouter();
+  const handleBrand = () => {
+    Brand.push('../brand/brand');
   }
 
   const columns: GridColumns = [
@@ -530,7 +536,7 @@ const Index = () => {
           <Grid>
             <Menu keepMounted id='simple-menu' anchorEl={anchorDl} onClose={handleCloseAssign} open={Boolean(anchorDl)}>
               <MenuItem onClick={handlevendor}>Vendors List</MenuItem>
-              <MenuItem onClick={handleCloseAssign}>Brand View</MenuItem>
+              <MenuItem onClick={handleBrand}>Brand View</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Product Types</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Print Barcode/label</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Sample File</MenuItem>

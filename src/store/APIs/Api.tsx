@@ -508,3 +508,45 @@ export const updateVendorApi = async (vendorDetailsforApi: any) => {
     return err;
   }
 }
+
+export const deleteVendorApi = async (productDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/deleteVendor`,
+      productDetailforApi,
+      { headers }
+    );
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export const BrandCreateApi = async (brandDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_BRAND_API}`,
+      brandDetailsforApi,
+      { headers }
+    );
+    console.log("success Brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export async function ListAllBrandListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/getAllVendor?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
+    console.log("brand Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
