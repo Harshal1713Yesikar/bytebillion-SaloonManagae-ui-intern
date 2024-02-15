@@ -540,7 +540,7 @@ export const BrandCreateApi = async (brandDetailsforApi: any) => {
 
 export async function ListAllBrandListApi(customerId: any, salonId: any) {
   try {
-    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/getAllVendor?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/getAllBrand?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
     console.log("brand Data", res.data)
     return res
   }
@@ -549,4 +549,31 @@ export async function ListAllBrandListApi(customerId: any, salonId: any) {
     return err;
   }
 
+}
+
+export const updateBrandApi = async (BrandDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/updateBrand`,
+    BrandDetailsforApi,
+      { headers }
+    );
+
+    console.log("success update brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+export const deleteBrandApi = async (BrandDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/deleteBrand`,
+    BrandDetailforApi,
+      { headers }
+    );
+    console.log("success delete brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
 }

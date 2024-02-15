@@ -1,10 +1,11 @@
 import AddCircle from '@mui/icons-material/AddCircle'
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, TextField, Typography } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { GridColumns, GridRenderCellParams } from '@mui/x-data-grid'
 import CloseIcon from '@mui/icons-material/Close';
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
@@ -13,7 +14,7 @@ import QuickSearchToolbar from 'src/views/table/TableFilter'
 import { DataGridRowType } from 'src/@fake-db/types'
 import { ThemeColor } from 'src/context/types'
 import { getInitials } from 'src/@core/utils/get-initials'
-import { BrandCreateApi } from 'src/store/APIs/Api'
+import { BrandCreateApi, ListAllBrandListApi, deleteBrandApi, deleteVendorApi, updateBrandApi } from 'src/store/APIs/Api'
 
 interface StatusObj {
   [key: number]: {
@@ -29,8 +30,8 @@ const renderClient = (params: GridRenderCellParams) => {
   const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
   const color = states[stateNum]
 
-  if (row.avatar.length) {
-    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+  if (row?.avatar?.length) {
+    return <CustomAvatar src={`/images/avatars/${row?.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
   } else {
     return (
       <CustomAvatar
@@ -38,7 +39,7 @@ const renderClient = (params: GridRenderCellParams) => {
         color={color as ThemeColor}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+        {getInitials(row.brandName ? row.brandName : '')}
       </CustomAvatar>
     )
   }
@@ -62,7 +63,11 @@ const Brand = () => {
   const [pageSize, setPageSize] = useState<number>(7)
   const [searchText, setSearchText] = useState<string>('')
   const [filteredData, setFilteredData] = useState<DataGridRowType[]>([])
+const [brandlist,setBrandList]= useState<any[]>([])
   const [openAddBrandDialog, setOpenAddBrandDialog] = useState(false)
+  const [openUpdateBrandDialog, setOpenUpdateBrandDialog] = useState(false)
+  const [deleteBrandFunc, setDeleteBrandFunc] = useState({})
+  const [openDialogDeleteBrand, setOpenDialogDeleteBrand] = useState(false);
   const [brandData, setBrandData] = useState<any>({
     "customerId": "099f9bf2-8ac2-4f84-8286-83bb46595fde",
 
@@ -87,9 +92,7 @@ const Brand = () => {
               <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
                 {row.brandName}
               </Typography>
-              <Typography noWrap variant='caption'>
-                {row.email}
-              </Typography>
+
             </Box>
           </Box>
         )
@@ -112,6 +115,28 @@ const Brand = () => {
         </Typography>
       )
     },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'edit',
+      headerName: 'Edit',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="edit" onClick={() => handleChangeBrand(params.row)}>
+          <EditIcon />
+        </IconButton>
+      )
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: 'delete',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton aria-label="delete" onClick={() => handleOpenDialogDeleteBrand(params.row)} >
+          <DeleteIcon />
+        </IconButton>
+      )
+    }
   ]
 
   const handleSearch = (searchValue: string) => {
@@ -129,6 +154,20 @@ const Brand = () => {
       setFilteredData([])
     }
   }
+
+  const FatchData = async () => {
+    try {
+      const res: any = await ListAllBrandListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
+      console.log("fatchData", res?.data.data)
+      setBrandList(res?.data?.data)
+    }
+    catch (err) {
+      return err
+    }
+  }
+  useEffect(() => {
+    FatchData()
+  }, [])
 
   const handleChange = (e: any) => {
     setBrandData(prevState => ({
@@ -152,8 +191,59 @@ const Brand = () => {
 
   };
 
+  const onSubmitBrandUpdate = async () => {
+    try {
+      const res = await updateBrandApi(brandData);
+      console.log("success Updatebrand", res);
+      await ListAllBrandListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
+      handleDialogCloseUpdateBrand()
+      // Optionally, you can handle the success response here
+    } catch (err) {
+      console.error("Error updating vendor", err);
+      // Optionally, you can handle the error here
+    }
+  };
+
+  const handleChangeBrand = (rowData: DataGridRowType) => {
+    console.log(rowData, "rowData");
+    setBrandData({
+      ...rowData,
+      // Populate other fields similarly
+    });
+    setOpenUpdateBrandDialog(true);
+  };
+
+  const handleDeleteBrand = async () => {
+    console.log(deleteBrandFunc, "deleteClient gfhgf");
+    try {
+      await deleteBrandApi(deleteBrandFunc);
+      handleCloseDialogDeleteBrand();
+    } catch (err) {
+      console.error("Error deleting product:", err);
+    }
+  };
+
+  const handleOpenDialogDeleteBrand = (data: any) => {
+    const deleteBrandData = {
+      customerId: data.customerId,
+      salonId: data.salonId,
+      brandId: data.brandId,
+      brandStatus: "inActive"
+    }
+    console.log(data,"hjfhgdfgdfd")
+    setDeleteBrandFunc(deleteBrandData)
+    setOpenDialogDeleteBrand(true)
+  }
+
+  const handleCloseDialogDeleteBrand = () => {
+    setOpenDialogDeleteBrand(false)
+  }
+
   const handleDialogCloseAddBrand = ()=>{
     setOpenAddBrandDialog(false)
+  }
+  const handleDialogCloseUpdateBrand = ()=>{
+    setOpenUpdateBrandDialog(false)
   }
 
   const handleVendorChange = (event: any) => {
@@ -180,7 +270,7 @@ const Brand = () => {
         rowsPerPageOptions={[7, 10, 25, 50]}
 
         components={{ Toolbar: QuickSearchToolbar }}
-        rows={}
+        rows={brandlist}
         onPageSizeChange={newPageSize => setPageSize(newPageSize)}
         componentsProps={{
           baseButton: {
@@ -201,7 +291,7 @@ const Brand = () => {
             <Grid item xs={4}>
               <TextField
                 name="brandName"
-                value={brandData.vendorName}
+                value={brandData.brandName}
                 onChange={handleChange}
                 size='small'
                 fullWidth
@@ -216,6 +306,45 @@ const Brand = () => {
         <DialogActions>
           <Button onClick={onSubmitBrand} color='primary' variant='contained'>
             Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openUpdateBrandDialog} onClose={handleDialogCloseUpdateBrand} fullWidth>
+        <DialogTitle><CloseIcon sx={{ cursor: 'pointer' }} onClick={handleDialogCloseUpdateBrand} />Add Vendor</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                name="brandName"
+                value={brandData.brandName}
+                onChange={handleChange}
+                size='small'
+                fullWidth
+                id="outlined-basic"
+                placeholder='Name'
+                variant="outlined"
+              />
+            </Grid>
+
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onSubmitBrandUpdate} color='primary' variant='contained'>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openDialogDeleteBrand} onClose={handleCloseDialogDeleteBrand}>
+        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this item?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialogDeleteBrand} color="primary">
+            No
+          </Button>
+          <Button onClick={handleDeleteBrand} color="primary">
+            Yes
           </Button>
         </DialogActions>
       </Dialog>

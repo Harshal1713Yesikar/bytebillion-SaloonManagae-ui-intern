@@ -57,7 +57,7 @@ const renderClient = (params: GridRenderCellParams) => {
         color={color as ThemeColor}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.clientName ? row.clientName : '')}
+        {getInitials(row.vendorName ? row.vendorName : '')}
       </CustomAvatar>
     )
   }
@@ -112,7 +112,6 @@ const Vendor = () => {
 
   const handleCommon = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear the error message for the corresponding field
   }
   const onSubmitVendor = async () => {
     try {
