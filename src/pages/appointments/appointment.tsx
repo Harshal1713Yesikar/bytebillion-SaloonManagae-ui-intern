@@ -1,10 +1,10 @@
 import React from 'react'
-import HomeViewPage from 'src/views/Home/HomeViewPage'
+import AppointmentViewPage from 'src/views/appointmentView/AppointmentViewPage'
 
 const index = () => {
   return (
     <div>
-      <HomeViewPage/>
+      <AppointmentViewPage/>
     </div>
   )
 }

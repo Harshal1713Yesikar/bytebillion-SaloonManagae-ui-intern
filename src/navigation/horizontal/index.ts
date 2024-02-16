@@ -33,11 +33,11 @@ const navigation = (): HorizontalNavItemsType => [
     path: '/clients',
     icon: 'bx:home-circle',
   },
-  {
-    title: 'Appointments',
-    path: '/appointments',
-    icon: 'bx:home-circle',
-  },
+  // {
+  //   title: 'Appointments',
+  //   path: '/appointments',
+  //   icon: 'bx:home-circle',
+  // },
   // {
   //   title: 'Report',
   //   path: '/report',
@@ -66,13 +66,13 @@ const navigation = (): HorizontalNavItemsType => [
     title: 'Entity',
     icon: 'bx:shield',
   },
-  {
-    path: '/settings',
-    action: 'read',
-    subject: 'acl-page',
-    title: 'Settings',
-    icon: 'bx:shield',
-  },
+  // {
+  //   path: '/settings',
+  //   action: 'read',
+  //   subject: 'acl-page',
+  //   title: 'Settings',
+  //   icon: 'bx:shield',
+  // },
   {
     path: '/dashboard',
     action: 'read',

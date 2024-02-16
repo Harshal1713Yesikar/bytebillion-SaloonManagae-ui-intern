@@ -290,6 +290,7 @@ export async function getAllCategoryList(customerId: any, salonId: any) {
 
 
 
+
 // -----------// #ServicesAPI-----------------------
 
 export async function AddServicesApi(serviceFormData: any) {
@@ -370,31 +371,6 @@ export const staffRegistrationApi = async (staffDetailsforApi: any) => {
 
 
 
-// ---------------------Client APi---------------------------
-
-export async function CreateClientApi(updateClientData: any) {
-  try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_CILENT_REGISTRATION_API}`, updateClientData, { headers })
-
-    console.log('success data', res)
-    return res.data
-  } catch (err) {
-    return err
-  }
-}
-
-export async function ListAllClientsApi(customerId: any, salonId: any) {
-  try {
-    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-client-fnp/readClient?customerId=${customerId}&salonId=${salonId}`, { headers })
-    console.log("data", res)
-    return res
-  }
-  catch (err) {
-    return err
-  }
-
-}
-
 export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
   try {
     const res = await axios.post(
@@ -410,18 +386,6 @@ export const ProductCreateRegistrationApi = async (productDetailsforApi: any) =>
   }
 }
 
-// export async function ListAllProductListApi(customerId: any, salonId: any) {
-//   try {
-//     const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_ALL_PRODUCT_LIST_API}customerId=${customerId}&salonId=${salonId}`, { headers })
-//     console.log("product Data", res.data)
-//     return res
-//   }
-
-//   catch (err) {
-//     return err;
-//   }
-
-// }
 
 export async function ListAllProductListApi(customerId: any, salonId: any) {
   try {
@@ -577,3 +541,73 @@ export const deleteBrandApi = async (BrandDetailforApi: any) => {
     return err;
   }
 }
+
+
+
+
+// ---------------------Client APi---------------------------
+
+
+export async function CreateClientApi(updateClientData: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_CILENT_REGISTRATION_API}`, updateClientData, { headers })
+
+    console.log('success data', res)
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export async function ListAllClientsApi(customerId:any,salonId:any) {
+  try{
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-client-fnp/readClient?customerId=${customerId}&salonId=${salonId}`,{headers})
+    console.log("data",res)
+    return res
+  }
+  catch(err){
+    return err
+  }
+
+}
+
+export async function UpdateClientApi(updateClient: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
+
+    console.log('success data', res)
+    return res.data
+  } catch (err) {
+    return err
+  }
+}
+
+export async function getSingleClient(customerId: any, salonId: any, clientId: any) {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_SINGLE_CLIENT_API}?customerId=${customerId}&salonId=${salonId}&clientId=${clientId}`,
+      { headers }
+    )
+    return res
+  } catch (err) {
+    return err
+  }
+}
+
+export async function deleteClientApi(ClientData:any) {
+  try{
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_DELETE_CLIENT_API}`,ClientData,{headers});
+    return res
+  }
+  catch(err)
+  {
+    return err
+  }
+
+}
+
+
+
+
+
+
