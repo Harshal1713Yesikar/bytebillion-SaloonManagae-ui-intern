@@ -32,7 +32,7 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
 import {
-  organizationDetails,
+  // organizationDetails,
   getSingleOrganization,
   updateOrganization,
   organizationEmailVerification
@@ -145,8 +145,8 @@ const connectedAccountsArr: ConnectedAccountsType[] = [
 ]
 
 const UserViewConnection = () => {
-  
-  let mainId = ''
+
+  const mainId = ''
   let userDetails: any
   const dispatch = useDispatch()
 
@@ -227,18 +227,18 @@ const UserViewConnection = () => {
 
 
 
-  useEffect(() => {
-    if (userDetails) {
-      dispatch(organizationDetails(JSON.parse(userDetails).payload.customerId)).then((res: any) => {
-        if (res?.payload?.data) {
-          setOrganizationsList(res.payload.data.organizations.organizationNames)
-          setAllOrganization(res.payload.data.organizations.organizationNames)
+  // useEffect(() => {
+  //   if (userDetails) {
+  //     dispatch(organizationDetails(JSON.parse(userDetails).payload.customerId)).then((res: any) => {
+  //       if (res?.payload?.data) {
+  //         setOrganizationsList(res.payload.data.organizations.organizationNames)
+  //         setAllOrganization(res.payload.data.organizations.organizationNames)
 
-          setLoading(false)
-        }
-      })
-    }
-  }, [])
+  //         setLoading(false)
+  //       }
+  //     })
+  //   }
+  // }, [])
 
   const handleVerification = () => {
     const decrypted: any = localStorage.getItem('sneat-icon')
@@ -359,18 +359,18 @@ const UserViewConnection = () => {
     }
   }
 
-  useEffect(() => {
-    if (userDetails) {
-      dispatch(organizationDetails(JSON.parse(userDetails).payload.customerId)).then((res: any) => {
-        if (res?.payload?.data) {
-          setCategoryList(res.payload.data.organizations.organizationCategory)
-          setOrganizationsList(res.payload.data.organizations.organizationNames)
-          setAllOrganization(res.payload.data.organizations.organizationNames)
-          setLoading(false)
-        }
-      })
-    }
-  }, [createOrg])
+  // useEffect(() => {
+  //   if (userDetails) {
+  //     dispatch(organizationDetails(JSON.parse(userDetails).payload.customerId)).then((res: any) => {
+  //       if (res?.payload?.data) {
+  //         setCategoryList(res.payload.data.organizations.organizationCategory)
+  //         setOrganizationsList(res.payload.data.organizations.organizationNames)
+  //         setAllOrganization(res.payload.data.organizations.organizationNames)
+  //         setLoading(false)
+  //       }
+  //     })
+  //   }
+  // }, [createOrg])
 
   const switchOrganization: any = (org: any) => {
     localStorage.removeItem('organization')

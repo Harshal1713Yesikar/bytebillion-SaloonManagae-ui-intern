@@ -16,7 +16,7 @@ import { Box } from '@mui/material'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useDispatch } from 'react-redux'
 import {
-  organizationDetails,
+  // organizationDetails,
   customerRegistration,
   getCustomerDetails,
   getSingleOrganization
@@ -163,19 +163,19 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
   //   })
   // }
 
-  const bringOrganizationsDetails = async (userid: any) => {
-    try {
-      const response = await organizationDetails(userid)
-      console.log(response, '123')
-      if (response && response.data) {
-        setAllOrganizationsList(response.data.organizations.organizationNames)
-        setLoading(false)
-      }
-    } catch (error) {
-      console.error(error)
-      setLoading(true)
-    }
-  }
+  // const bringOrganizationsDetails = async (userid: any) => {
+  //   try {
+  //     const response = await organizationDetails(userid)
+  //     console.log(response, '123')
+  //     if (response && response.data) {
+  //       setAllOrganizationsList(response.data.organizations.organizationNames)
+  //       setLoading(false)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //     setLoading(true)
+  //   }
+  // }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -192,7 +192,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
           setUserDetails(res.payload)
 
           // Call bringOrganizationsDetails without dispatching
-          await bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
+          // await bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
 
 
           // Call getCustomerDetails directly if it doesn't involve dispatch
@@ -221,7 +221,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
   }
 
   const reload = () => {
-    bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
+    // bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
   }
 
   useEffect(() => {
@@ -231,7 +231,7 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
 
       // bringOrganizationsDetails(JSON.parse(data).payload?.customerId)
       // getCustomerDetails({ customerId: JSON.parse(data).payload?.customerId })
-      bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
+      // bringOrganizationsDetails("099f9bf2-8ac2-4f84-8286-83bb46595fde")
       getCustomerDetails({ customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde" })
 
       setLoading(false)
@@ -314,13 +314,13 @@ const SelectionBox = ({ setSelectedOrganization }: any) => {
         <OrgCreationStepper
           categoryList={organizationCategoryList}
           customerDetails={userDetails}
-          refreshCall={bringOrganizationsDetails}
+        // refreshCall={bringOrganizationsDetails}
         />
       </Grid> : <Grid xs={12} sm={6} style={{ margin: '0 auto', display: "none" }}>
         <OrgCreationStepper
           categoryList={organizationCategoryList}
           customerDetails={userDetails}
-          refreshCall={bringOrganizationsDetails}
+        // refreshCall={bringOrganizationsDetails}
         />
       </Grid>}
     </>

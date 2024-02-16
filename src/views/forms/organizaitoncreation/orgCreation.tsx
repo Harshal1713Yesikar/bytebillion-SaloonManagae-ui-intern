@@ -9,7 +9,7 @@ import {
 import { TextField } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
-import { organizationRegistration, organizationDetails, organizationEmailVerification } from 'src/store/APIs/Api';
+import { organizationRegistration, organizationEmailVerification } from 'src/store/APIs/Api';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { Controller } from 'react-hook-form';
@@ -310,24 +310,24 @@ const OrgCreation = ({ setValue, customerDetails, refreshCall, setCreateOrg }: a
   //   });
   // }, [customerDetails, customerDetails.customerId, dispatch])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await organizationDetails(customerDetails.customerId);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await organizationDetails(customerDetails.customerId);
 
-        if (response && response.data) {
+  //       if (response && response.data) {
 
-          setCategoryList(response.data.organizations.organizationCategory);
-        }
-      } catch (error) {
-        // Handle errors
-        console.error(error);
-      }
-    };
+  //         setCategoryList(response.data.organizations.organizationCategory);
+  //       }
+  //     } catch (error) {
+  //       // Handle errors
+  //       console.error(error);
+  //     }
+  //   };
 
-    fetchData();
+  //   fetchData();
 
-  }, [customerDetails.customerId]);
+  // }, [customerDetails.customerId]);
 
 
   return (

@@ -49,7 +49,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 import {
   karomanageWelcomeMail,
-  organizationDetails,
+  // organizationDetails,
   organizationEmailVerification,
   organizationRegistration,
   salonRegistration,
@@ -524,17 +524,17 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     }
   }
 
-  useEffect(() => {
-    setValidEmail(false)
-    setUserOtp('')
-    if (allValues.email.length == 0) {
-      setValidateEmail(false)
-    } else if (allValues.email.indexOf('@') == -1 || allValues.email.indexOf('.') == -1) {
-      setValidateEmail(true)
-    } else {
-      setValidateEmail(false)
-    }
-  }, [allValues.email])
+  // useEffect(() => {
+  //   setValidEmail(false)
+  //   setUserOtp('')
+  //   if (allValues.email.length == 0) {
+  //     setValidateEmail(false)
+  //   } else if (allValues.email.indexOf('@') == -1 || (allValues.email).indexOf('.') == -1) {
+  //     setValidateEmail(true)
+  //   } else {
+  //     setValidateEmail(false)
+  //   }
+  // }, [allValues.email])
 
   const formSubmit = () => {
     const handleRegistration = async () => {
@@ -592,20 +592,20 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
     }
   }, [mainId, allValues.salonName.split('-').length])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await organizationDetails(customerDetails.customerId)
-        if (res && res.data) {
-          setCategoryList(res.data.organizations.organizationCategory)
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await organizationDetails(customerDetails.customerId)
+  //       if (res && res.data) {
+  //         setCategoryList(res.data.organizations.organizationCategory)
+  //       }
+  //     } catch (error) {
+  //       console.error(error)
+  //     }
+  //   }
 
-    fetchData()
-  }, [customerDetails, customerDetails.customerId])
+  //   fetchData()
+  // }, [customerDetails, customerDetails.customerId])
 
   // const OnSubmit = () => {
   //   // console.log('BC', studentValues())
@@ -713,6 +713,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
           <Fragment>
             <AccordionDetails>
               <Grid container spacing={5}>
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
@@ -954,6 +955,7 @@ const OrgCreationStepper = ({ customerDetails, refreshCall }: any) => {
                     fullWidth
                   />
                 </Grid>
+
               </Grid>
             </AccordionDetails>
           </Fragment>

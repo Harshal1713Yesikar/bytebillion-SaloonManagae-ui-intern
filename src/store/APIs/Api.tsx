@@ -140,20 +140,20 @@ export const salonRegistration = async ({ newOrganizationDetails }: any) => {
   }
 };
 
-export const organizationDetails = async (id: string) => {
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
-      { headers }
-    );
-    console.log("AAAAA")
-    return res.data;
+// export const organizationDetails = async (id: string) => {
+//   try {
+//     const res = await axios.get(
+//       `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
+//       { headers }
+//     );
+//     console.log("AAAAA")
+//     return res.data;
 
-  } catch (err) {
-    console.error(err);
-    throw err; // Rethrow the error to be caught by the caller
-  }
-};
+//   } catch (err) {
+//     console.error(err);
+//     throw err; // Rethrow the error to be caught by the caller
+//   }
+// };
 
 
 
