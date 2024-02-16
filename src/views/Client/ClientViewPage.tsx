@@ -210,7 +210,7 @@ const ClientViewPage = () => {
   })
 
 
-  
+
   const [defaultClientReValues, setDefaultClientReValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'dqXUs',
@@ -358,7 +358,7 @@ const ClientViewPage = () => {
   }
 
 
- 
+
 
   const handleUpdateEmployeeData = (e: { target: { name: any; value: any } }) => {
     setDefaultClientReValues({ ...defaultClientReValues, [e.target.name]: e.target.value })
@@ -463,7 +463,7 @@ const ClientViewPage = () => {
     router.push('../second-page/clientCustomerCreate')
   }
 
- 
+
 
   const handleImportClick = () => {
     handleClose()
@@ -541,7 +541,8 @@ const ClientViewPage = () => {
     try {
       await UpdateClientApi({ ...clientsValues(), clientId: updateClientId })
       console.log(clientsValues(), 'DDSS')
-      toast.success('New Client created successfully', {
+      await FatchData()
+      toast.success('Updated client successfully', {
         position: 'bottom-right'
       })
       // singleClientDetailsFunc()
@@ -554,6 +555,8 @@ const ClientViewPage = () => {
     console.log(deleteClientFunc, 'deleteClient')
     try {
       await deleteClientApi(deleteClientFunc)
+      await FatchData()
+      handleCloseDialogDelete(false)
       toast.error(' Client InActive ', {
         position: 'bottom-right'
       })
@@ -562,7 +565,7 @@ const ClientViewPage = () => {
     }
   }
 
-  
+
   const handleCloss = () => {
     setIsOpen(false)
   }
@@ -940,7 +943,7 @@ const ClientViewPage = () => {
           //       size='large'
           //       variant='contained'
           //       onClick={() => {
-              
+
           //       }}
           //       // Disable the button if the form is not valid
           //     >
