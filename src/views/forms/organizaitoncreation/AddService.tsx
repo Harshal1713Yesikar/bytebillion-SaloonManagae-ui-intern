@@ -946,7 +946,7 @@ export const AddService = () => {
   })
   return (
     <>
-      <CardContent sx={{ width: '100%', height: '1000px' }}>
+      <CardContent sx={{ width: '100%' }}>
         <form onSubmit={handleServiceSubmit(onSubmit)}>
           <Grid item xs={12} sm={6} sx={{ margin: 1, display: 'flex', justifyContent: 'end', gap: 3 }}>
             <FormControl fullWidth>
@@ -1080,9 +1080,12 @@ export const AddService = () => {
                       <Select
                         value={value}
                         label='Select Employee '
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+
                         onChange={onChange}
                         error={Boolean(ServiceErrors.selectStaff)}
-                        labelId='validation-basic-select'
+                        // labelId='validation-basic-select'
                         aria-describedby='validation-basic-select'
                       >
                         {renderedOrganizations}
@@ -1134,6 +1137,7 @@ export const AddService = () => {
           // type='submit'
           variant='contained'
           color='primary'
+
           onClick={serviceSubmit}
         >
           Submit
