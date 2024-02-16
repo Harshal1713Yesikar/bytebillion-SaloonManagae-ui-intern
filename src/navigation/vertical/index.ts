@@ -39,21 +39,21 @@ const navigation = (): VerticalNavItemsType => {
     //   icon: 'teenyicons:appointments-outline',
     // },
 
-    // {
-    //   title: 'Report',
-    //   path: '/report',
-    //   icon: 'codicon:report',
-    // },
+    {
+      title: 'Report',
+      path: '/report',
+      icon: 'codicon:report',
+    },
     // {
     //   title: 'Integration',
     //   path: '/integration',
     //   icon: 'mdi:account-payment-outline',
     // },
-    {
-      title: 'Sale Tools',
-      path: '/saletools',
-      icon: 'material-symbols:checked-bag-outline',
-    },
+    // {
+    //   title: 'Sale Tools',
+    //   path: '/saletools',
+    //   icon: 'material-symbols:checked-bag-outline',
+    // },
     {
       title: 'Expense',
       path: '/expense',

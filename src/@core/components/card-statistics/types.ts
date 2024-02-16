@@ -14,7 +14,7 @@ export type CardStatsHorizontalProps = {
   avatarIconProps?: Omit<IconProps, 'icon'>
 }
 
-export type CardStatsVerticalProps = {
+export type CardStatsProps = {
   title: string
   stats: string
   avatarSrc?: string
