@@ -209,6 +209,7 @@ const Vendor = () => {
     try {
       await deleteVendorApi(deleteVendorFunc);
       handleCloseDialogDelete();
+      await FatchData()
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -231,6 +232,7 @@ const Vendor = () => {
       console.log("success data", res);
       await ListAllVendorListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
       handleDialogCloseEditVendor()
+      await FatchData()
       // Optionally, you can handle the success response here
     } catch (err) {
       console.error("Error updating vendor", err);

@@ -197,6 +197,7 @@ const [brandlist,setBrandList]= useState<any[]>([])
       console.log("success Updatebrand", res);
       await ListAllBrandListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
       handleDialogCloseUpdateBrand()
+      await FatchData()
       // Optionally, you can handle the success response here
     } catch (err) {
       console.error("Error updating vendor", err);
@@ -218,6 +219,7 @@ const [brandlist,setBrandList]= useState<any[]>([])
     try {
       await deleteBrandApi(deleteBrandFunc);
       handleCloseDialogDeleteBrand();
+      await FatchData()
     } catch (err) {
       console.error("Error deleting product:", err);
     }
