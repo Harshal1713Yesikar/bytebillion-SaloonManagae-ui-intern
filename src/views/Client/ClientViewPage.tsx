@@ -542,7 +542,7 @@ const ClientViewPage = () => {
       await UpdateClientApi({ ...clientsValues(), clientId: updateClientId })
       console.log(clientsValues(), 'DDSS')
       await FatchData()
-      toast.success('New Client updated successfully', {
+      toast.success('Updated client successfully', {
         position: 'bottom-right'
 
       })
@@ -556,6 +556,8 @@ const ClientViewPage = () => {
     console.log(deleteClientFunc, 'deleteClient')
     try {
       await deleteClientApi(deleteClientFunc)
+      await FatchData()
+      handleCloseDialogDelete(false)
       toast.error(' Client InActive ', {
         position: 'bottom-right'
       })
