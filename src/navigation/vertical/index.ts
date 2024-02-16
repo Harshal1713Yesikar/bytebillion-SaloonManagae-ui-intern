@@ -28,6 +28,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/products',
       icon: 'material-symbols:production-quantity-limits-sharp',
     },
+    
     // demo
     {
       title: 'Clients',
