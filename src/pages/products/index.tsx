@@ -23,6 +23,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 import { DataGridRowType } from 'src/@fake-db/types'
+import toast from 'react-hot-toast';
 
 
 
@@ -200,6 +201,10 @@ const Index = () => {
     try {
       await deleteProductApi(deleteProductFunc);
       handleCloseDialogDelete();
+      ProductAllListData()
+      toast.success('Product InActive successfully', {
+        position: 'bottom-right'
+      })
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -380,6 +385,9 @@ const Index = () => {
       await updateProductApi(updateSingleData);
       await ProductAllListData()
       handleCloseDialogUpdate()
+      toast.success('Product Updated', {
+        position: 'bottom-right'
+      })
     } catch (error) {
       error.inner.forEach(err => {
         switch (err.path) {
@@ -588,7 +596,7 @@ const Index = () => {
           />
         </Card>
 
-      </Card>
+</Card>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
 
         <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
@@ -597,7 +605,8 @@ const Index = () => {
               <Grid sx={{ display: 'flex' }}>
                 <Box sx={{ m: 2, cursor: 'pointer' }}   ><CloseIcon onClick={handleCloseDialogUpdate} /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Update Product</Typography>
-              </Grid>
+
+           </Grid>
               <Grid item xs={12} md={6} sx={{ display: 'flex' }} >
                 <TextField
                   sx={{ width: '25ch', m: 1 }}
