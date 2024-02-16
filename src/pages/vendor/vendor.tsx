@@ -13,6 +13,7 @@ import { ListAllVendorListApi, VendorCreateApi, deleteVendorApi, updateVendorApi
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomChip from 'src/@core/components/mui/chip'
+import toast from 'react-hot-toast';
 
 interface StatusObj {
   [key: number]: {
@@ -118,6 +119,10 @@ const Vendor = () => {
       const res = await VendorCreateApi(formData);
       console.log("success vendor", res);
       handleDialogCloseVendor()
+      toast.success('vendor Created successfully', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error creating vendor", err);
     }
@@ -210,6 +215,10 @@ const Vendor = () => {
       await deleteVendorApi(deleteVendorFunc);
       handleCloseDialogDelete();
       await FatchData()
+      toast.success('vendor InActive successfully', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -233,10 +242,12 @@ const Vendor = () => {
       await ListAllVendorListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
       handleDialogCloseEditVendor()
       await FatchData()
-      // Optionally, you can handle the success response here
+      toast.success('vendor Updated ', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error updating vendor", err);
-      // Optionally, you can handle the error here
     }
   };
 

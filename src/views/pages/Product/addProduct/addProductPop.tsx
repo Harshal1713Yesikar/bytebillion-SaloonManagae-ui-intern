@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ListAllProductListApi, ProductCreateRegistrationApi } from 'src/store/APIs/Api';
 import { debounce } from 'lodash'
 import * as yup from 'yup';
+import toast from 'react-hot-toast';
 
 const validationSchema = yup.object().shape({
   productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
@@ -149,6 +150,9 @@ const AddProductPop = () => {
       console.log("defaultProductValues", defaultProductValues)
       await ProductCreateRegistrationApi(defaultProductValues)
       await getProductListData()
+      toast.success('Product Created successfully', {
+        position: 'bottom-right'
+      })
       setIsOpen(false);
     } catch (error) {
       error.inner.forEach(err => {

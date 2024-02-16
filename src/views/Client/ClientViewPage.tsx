@@ -544,6 +544,7 @@ const ClientViewPage = () => {
       await FatchData()
       toast.success('Updated client successfully', {
         position: 'bottom-right'
+
       })
       // singleClientDetailsFunc()
     } catch (err) {
