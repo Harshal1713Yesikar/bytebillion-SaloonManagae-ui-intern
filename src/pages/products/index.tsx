@@ -408,99 +408,103 @@ const Index = () => {
   return (
     <>
       <Card sx={{ paddingTop: '40px' }}>
-        <Box >
-          <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
-            <TextField size='small' id='outlined-basic' label='Search' sx={{ width: '400px' }} />
-            <FormControl sx={{ width: '400px', ml: 2 }} size='small'>
-              <InputLabel id='demo-simple-select-outlined-label'>Select Products</InputLabel>
-              <Select
-                label='Select Products'
-                id='demo-simple-select-outlined'
-                labelId='demo-simple-select-outlined-label'
-              >
-                <MenuItem value=''>
-                  <em>Select Products</em>
-                </MenuItem>
-                <MenuItem value={10}>Products for sale (Retail)</MenuItem>
-                <MenuItem value={20}>Products for Business use (In House)</MenuItem>
-              </Select>
-            </FormControl>
-            <Button sx={{ ml: 2 }} variant='contained'>
-              Search
-            </Button>
+      <Box sx={{ padding: '20px' }}>
+        <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+          <TextField size='small' id='outlined-basic' label='Search' sx={{ width: '40%' }} />
+          <FormControl sx={{ width: '40%',ml:5 }} size='small'>
+          <InputLabel id='demo-simple-select-outlined-label'>Select Products</InputLabel>
+            <Select
+              label='Select Products'
+              id='demo-simple-select-outlined'
+              labelId='demo-simple-select-outlined-label'
+              sx={{ width: '100%' }}
+            >
+              <MenuItem value=''>
+                <em>Select Products</em>
+              </MenuItem>
+              <MenuItem value={10}>Products for sale (Retail)</MenuItem>
+              <MenuItem value={20}>Products for Business use (In House)</MenuItem>
+            </Select>
+          </FormControl>
+          <Button sx={{ ml: 2 }} variant='contained'>
+            Search
+          </Button>
+        </Grid>
+        <Grid sx={{ display: 'flex', justifyContent: 'center', margin: "20px", alignItems: 'center' }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedCheckbox === 'checkbox1'}
+              onChange={() => handleCheckboxChange('checkbox1')}
+            />
+            Zero quantity products only
+          </label>
+          <label style={{ marginLeft: "20px", marginRight: "20px" }}>
+            <input
+              type="checkbox"
+              checked={selectedCheckbox === 'checkbox2'}
+              onChange={() => handleCheckboxChange('checkbox2')}
+            />
+            Low quantity products only
+          </label>
+          <label style={{ marginRight: '10px' }}>
+            <input
+              type="checkbox"
+              checked={selectedCheckbox === 'checkbox3'}
+              onChange={() => handleCheckboxChange('checkbox3')}
+            />
+            In Stock products only
+          </label>
+          <Grid>
+            <Button variant='contained' onClick={handleButtonClick}>Advanced Filters</Button>
           </Grid>
-          <Grid sx={{ display: 'flex', justifyContent: 'center', margin: "20px", alignItems: 'center' }} >
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedCheckbox === 'checkbox1'}
-                onChange={() => handleCheckboxChange('checkbox1')}
-              />
-              Zero quantity products only
-            </label>
-            <label style={{ marginLeft: "20px", marginRight: "20px" }}>
-              <input
-                type="checkbox"
-                checked={selectedCheckbox === 'checkbox2'}
-                onChange={() => handleCheckboxChange('checkbox2')}
-              />
-              Low quantity products only
-            </label>
-            <label style={{ marginRight: '10px' }}>
-              <input
-                type="checkbox"
-                checked={selectedCheckbox === 'checkbox3'}
-                onChange={() => handleCheckboxChange('checkbox3')}
-              />
-              In Stock products only
-            </label>
-            <Grid>
-              <Button variant='contained' onClick={handleButtonClick}>Advanced Filters</Button>
-            </Grid>
-          </Grid>
-          <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        </Grid>
+        <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 
-            {showAdvancedFilters && (
-              <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center', mb: 5 }} >
-                <FormControl sx={{ width: '300px', ml: 2 }} size='small'>
-                  <InputLabel id='demo-simple-select-outlined-label'>Select Brand</InputLabel>
-                  <Select
-                    label='Select Brand'
-                    id='demo-simple-select-outlined'
-                    labelId='demo-simple-select-outlined-label'
-                  >
-                    <MenuItem value=''>
-                      <em>Select Brand</em>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ width: '300px', ml: 2 }} size='small'>
-                  <InputLabel id='demo-simple-select-outlined-label'>Select Product Type</InputLabel>
-                  <Select
-                    label='Select Product Type'
-                    id='demo-simple-select-outlined'
-                    labelId='demo-simple-select-outlined-label'
-                  >
-                    <MenuItem value=''>
-                      <em>Select Product Type</em>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ width: '300px', ml: 2 }} size='small'>
-                  <InputLabel id='demo-simple-select-outlined-label'>Select Vendor</InputLabel>
-                  <Select
-                    label='Select Vendor'
-                    id='demo-simple-select-outlined'
-                    labelId='demo-simple-select-outlined-label'
-                  >
-                    <MenuItem value=''>
-                      <em>Select Vendor</em>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            )}
-          </Grid>
+{showAdvancedFilters && (
+  <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center', mb: 5 }} >
+    <FormControl sx={{ width: '100%', ml: 2 }} size='small'>
+      <InputLabel id='demo-simple-select-outlined-label'>Select Brand</InputLabel>
+      <Select
+        label='Select Brand'
+        id='demo-simple-select-outlined'
+        labelId='demo-simple-select-outlined-label'
+        sx={{ width: '100%' }}
+      >
+        <MenuItem value=''>
+          <em>Select Brand</em>
+        </MenuItem>
+      </Select>
+    </FormControl>
+    <FormControl sx={{ width: '100%', ml: 2 }} size='small'>
+      <InputLabel id='demo-simple-select-outlined-label'>Select Product Type</InputLabel>
+      <Select
+        label='Select Product Type'
+        id='demo-simple-select-outlined'
+        labelId='demo-simple-select-outlined-label'
+        sx={{ width: '100%' }}
+      >
+        <MenuItem value=''>
+          <em>Select Product Type</em>
+        </MenuItem>
+      </Select>
+    </FormControl>
+    <FormControl sx={{ width: '100%', ml: 2 }} size='small'>
+      <InputLabel id='demo-simple-select-outlined-label'>Select Vendor</InputLabel>
+      <Select
+        label='Select Vendor'
+        id='demo-simple-select-outlined'
+        labelId='demo-simple-select-outlined-label'
+        sx={{ width: '100%' }}
+      >
+        <MenuItem value=''>
+          <em>Select Vendor</em>
+        </MenuItem>
+      </Select>
+    </FormControl>
+  </Grid>
+)}
+</Grid>
         </Box >
       </Card>
       <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: '10px' }}>
@@ -601,7 +605,7 @@ const Index = () => {
                 <Box sx={{ m: 2, cursor: 'pointer' }}   ><CloseIcon onClick={handleCloseDialogUpdate} /></Box>
                 <Typography sx={{ fontSize: '22px', letterSpacing: '0.02em', m: 1, fontWeight: '600' }}>Update Product</Typography>
               </Grid>
-              <Grid item sx={{ display: 'flex' }} >
+              <Grid item xs={12} md={6} sx={{ display: 'flex' }} >
                 <TextField
                   sx={{ width: '25ch', m: 1 }}
                   id='outlined-basic'
@@ -628,7 +632,7 @@ const Index = () => {
                 />
               </Grid>
               <Grid item sx={{ display: 'flex', width: '100%', maxWidth: '100%' }} xs={12}>
-                <Grid>
+                <Grid item xs={12} md={6}>
                   <TextField
                     size='small'
                     placeholder="Cost Price"
@@ -645,7 +649,7 @@ const Index = () => {
                     inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
                   />
                 </Grid>
-                <Grid>
+                <Grid item xs={12} md={6}>
                   <TextField
                     size='small'
                     placeholder="Full Price"
@@ -664,7 +668,7 @@ const Index = () => {
                   />
 
                 </Grid>
-                <Grid>
+                <Grid item xs={12} md={6}>
                   <TextField
                     size='small'
                     placeholder="Sell Price"
