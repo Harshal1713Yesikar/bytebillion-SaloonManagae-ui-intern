@@ -126,7 +126,12 @@ const Index = () => {
   }
   const vendor = useRouter();
   const handlevendor = () => {
-    vendor.push('../service/service');
+    vendor.push('../vendor/vendor');
+  }
+
+  const Brand = useRouter();
+  const handleBrand=() => {
+    Brand.push('../brand/brand');
   }
   const columns: GridColumns = [
     {
@@ -365,7 +370,7 @@ const Index = () => {
           <Grid>
             <Menu keepMounted id='simple-menu' anchorEl={anchorDl} onClose={handleCloseAssign} open={Boolean(anchorDl)}>
               <MenuItem onClick={handlevendor}>Vendors List</MenuItem>
-              <MenuItem onClick={handleCloseAssign}>Brand View</MenuItem>
+              <MenuItem onClick={handleBrand}>Brand View</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Product Types</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Print Barcode/label</MenuItem>
               <MenuItem onClick={handleCloseEdit}>Sample File</MenuItem>
@@ -412,7 +417,7 @@ const Index = () => {
             }}
           />
         </Card>
-       
+
       </Card>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
         < Normaltable />
