@@ -5,9 +5,6 @@ import {
   CardContent,
   CardHeader,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   Menu,
   MenuItem,
@@ -30,18 +27,14 @@ import Table from '@mui/material/Table'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
-import { visuallyHidden } from '@mui/utils'
 import { alpha } from '@mui/material/styles'
 import toast from 'react-hot-toast'
 
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
 import IconButton from '@mui/material/IconButton'
 import TableContainer from '@mui/material/TableContainer'
-import TableSortLabel from '@mui/material/TableSortLabel'
-import TablePagination from '@mui/material/TablePagination'
 import InputLabel from '@mui/material/InputLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import FormControl from '@mui/material/FormControl'
@@ -61,9 +54,6 @@ import {
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { yupResolver } from '@hookform/resolvers/yup'
-// import { rows } from 'src/@fake-db/table/static-data'
-import ListItemText from '@mui/material/ListItemText'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Icon Imports
@@ -165,17 +155,13 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0])
     if (order !== 0) return order
-
     return a[1] - b[1]
   })
-
   return stabilizedThis.map(el => el[0])
 }
 
@@ -208,13 +194,12 @@ const columns: GridColDef[] = [
     // hide: hideNameColumn,
     renderCell: (params: GridRenderCellParams) => {
       const { row } = params
-
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(params)}
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.serviceName.charAt(0).toUpperCase() + row.serviceName.slice(1)}
+              {row.serviceName.toUpperCase() + row.serviceName.slice(1)}
             </Typography>
           </Box>
         </Box>
@@ -386,7 +371,7 @@ const Service = () => {
   }
   useEffect(() => {}, [])
 
-  
+
 
   // Fetch staff data using listAllEmployeeList
   useEffect(() => {
@@ -503,7 +488,7 @@ const Service = () => {
     return row.serviceName.toLowerCase().includes(searchTermLower)
   })
 
- 
+
 
 
   const handleImportClick = () => {
@@ -582,7 +567,7 @@ const Service = () => {
     toast.success('New Service created successfully',{
       position: "bottom-right"
   });
-    
+
 
     console.log('kvjvb', data)
   }
@@ -599,11 +584,11 @@ const Service = () => {
     }
   }
 
-  
+
   const handleInputChange = (key: any, value: any) => {
     setCategoryData({ ...categoryData, [key]: value })
   }
-   
+
   const {
     reset: serviceReset,
     control,

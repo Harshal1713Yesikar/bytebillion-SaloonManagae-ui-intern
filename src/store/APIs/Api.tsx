@@ -1,13 +1,6 @@
-import React from 'react'
 import axios from 'axios'
 import headers from './Headers'
-import { createAsyncThunk } from '@reduxjs/toolkit'
 
-const Api = () => {
-  return <div>Api</div>
-}
-
-export default Api
 
 export async function acceptInvitation(params: any) {
   try {
@@ -345,7 +338,7 @@ export async function updateEmployeeApi(updateEmployeeData: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_EMPLOYEE_DETAIILS}`, updateEmployeeData, { headers })
 
-    console.log('success data', res) 
+    console.log('success data', res)
     return res.data
   } catch (err) {
     return err
@@ -377,7 +370,6 @@ export const staffRegistrationApi = async (staffDetailsforApi: any) => {
 }
 
 
-// ---------------------Product Api------------------------
 
 export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
   try {
@@ -424,6 +416,132 @@ export const updateProductApi = async (productDetailsforApi: any) => {
   }
 }
 
+export const deleteProductApi = async (productDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/deleteProduct`,
+      productDetailforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export const VendorCreateApi = async (vendorDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_VENDOR_API}`,
+      vendorDetailsforApi,
+      { headers }
+    );
+    console.log("success vendor", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export async function ListAllVendorListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/getAllVendor?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
+    console.log("vendor Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
+
+export const updateVendorApi = async (vendorDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/updateVendor`,
+      vendorDetailsforApi,
+      { headers }
+    );
+
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+export const deleteVendorApi = async (productDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-vendor-fnp/deleteVendor`,
+      productDetailforApi,
+      { headers }
+    );
+    console.log("success data", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export const BrandCreateApi = async (brandDetailsforApi: any) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_CREATE_BRAND_API}`,
+      brandDetailsforApi,
+      { headers }
+    );
+    console.log("success Brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+export async function ListAllBrandListApi(customerId: any, salonId: any) {
+  try {
+    const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/getAllBrand?customerId=099f9bf2-8ac2-4f84-8286-83bb46595fde&salonId=NRImf`, { headers })
+    console.log("brand Data", res.data)
+    return res
+  }
+
+  catch (err) {
+    return err;
+  }
+
+}
+
+export const updateBrandApi = async (BrandDetailsforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/updateBrand`,
+    BrandDetailsforApi,
+      { headers }
+    );
+
+    console.log("success update brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
+export const deleteBrandApi = async (BrandDetailforApi: any) => {
+  try {
+    const res = await axios.post(`https://karo-scan-dev-api.azure-api.net/st-brand-fnp/deleteBrand`,
+    BrandDetailforApi,
+      { headers }
+    );
+    console.log("success delete brand", res)
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+}
+
 
 
 
@@ -434,7 +552,7 @@ export async function CreateClientApi(updateClientData: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_CILENT_REGISTRATION_API}`, updateClientData, { headers })
 
-    console.log('success data', res) 
+    console.log('success data', res)
     return res.data
   } catch (err) {
     return err
@@ -450,14 +568,14 @@ export async function ListAllClientsApi(customerId:any,salonId:any) {
   catch(err){
     return err
   }
-  
+
 }
 
 export async function UpdateClientApi(updateClient: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
 
-    console.log('success data', res) 
+    console.log('success data', res)
     return res.data
   } catch (err) {
     return err
@@ -485,7 +603,7 @@ export async function deleteClientApi(ClientData:any) {
   {
     return err
   }
-  
+
 }
 
 

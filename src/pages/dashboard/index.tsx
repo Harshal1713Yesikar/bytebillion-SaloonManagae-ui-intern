@@ -22,11 +22,6 @@ import { Icon } from '@iconify/react'
 import { useRouter } from 'next/router'
 
 const Dashboard = () => {
-  const [age, setAge] = useState('')
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value)
-  }
 
   const service = useRouter();
   const handleService = () => {

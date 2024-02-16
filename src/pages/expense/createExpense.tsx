@@ -57,9 +57,9 @@ const CreateExpense = () => {
         </Grid>
         <Card>
           <Typography sx={{ m: 5, fontSize: 20 }} >Add Expense</Typography>
-          <Grid sx={{ backgroundColor: "rgb(238, 238, 238)", m: 1, mb: 0 }}>
+          <Grid sx={{ m: 1, mb: 0 }}>
             <TextField
-              sx={{ m: 5, width: "40%" }}
+              sx={{ m: 2, width: "35%" }}
               label="Receipt Number"
               fullWidth
               size='small'

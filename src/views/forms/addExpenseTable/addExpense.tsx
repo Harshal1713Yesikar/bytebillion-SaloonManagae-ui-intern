@@ -5,7 +5,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
 const AddExpense = ({ onRemove }: { index: number; onRemove: () => void }) => {
   const [category, setCategory] = useState('');
 
@@ -21,7 +20,7 @@ const AddExpense = ({ onRemove }: { index: number; onRemove: () => void }) => {
 
   return (
     <>
-      <Grid sx={{ display: 'flex', backgroundColor: "rgb(238, 238, 238)", ml: 1, mr: 1 }}>
+      <Grid sx={{ display: 'flex',  ml: 1, mr: 1 }}>
         <TextField
           sx={{ m: 2, width: "20%" }}
           label="Payee"
