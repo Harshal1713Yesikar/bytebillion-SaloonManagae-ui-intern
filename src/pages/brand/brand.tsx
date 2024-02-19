@@ -16,7 +16,8 @@ import { ThemeColor } from 'src/context/types'
 import { getInitials } from 'src/@core/utils/get-initials'
 import { BrandCreateApi, ListAllBrandListApi, deleteBrandApi, deleteVendorApi, updateBrandApi } from 'src/store/APIs/Api'
 import toast from 'react-hot-toast'
-
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { useRouter } from 'next/router'
 interface StatusObj {
   [key: number]: {
     title: string
@@ -260,12 +261,18 @@ const [brandlist,setBrandList]= useState<any[]>([])
     setOpenAddBrandDialog(true)
   }
 
+  const Back = useRouter();
+  const handleBack = () => {
+    Back.push('../products');
+  }
+
   return (
     <>
       <Card>
         <Grid sx={{display:'flex',alignItems:'center'}}>
 
-          <Button variant='contained'sx={{m:'20px'}} >
+          <Button variant='contained'sx={{m:'20px',pr:'25px'}} onClick={handleBack} >
+            <KeyboardReturnIcon/>
             Back
           </Button>
           <Typography sx={{fontSize:'20px',width:'100%'}}>Product Brand</Typography>
