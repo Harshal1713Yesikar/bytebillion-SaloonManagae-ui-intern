@@ -6,6 +6,7 @@ import { ListAllBrandListApi, ListAllProductListApi, ListAllVendorListApi, Produ
 import { debounce } from 'lodash'
 import * as yup from 'yup';
 import toast from 'react-hot-toast';
+import { DataGridRowType } from 'src/@fake-db/types';
 
 const validationSchema = yup.object().shape({
   productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
@@ -16,10 +17,7 @@ const validationSchema = yup.object().shape({
   productDescription: yup.string().required('Product Description is required'),
   inStockQuantity: yup.string().required('In Stock Quantity is required'),
   quantityAlert: yup.string().required('Quantity Alert is required'),
-  productUsage: yup.string().required('Product Usage is required'),
-  Brand: yup.string().required('Brand is required'),
-  productType: yup.string().required('Product Type is required'),
-  vendor: yup.string().required('Vendor is required'),
+  productUsage: yup.string().required('Product Usage is required')
 });
 
 
@@ -61,10 +59,21 @@ const AddProductPop = () => {
     setSelectedFile(event.target.files[0]);
   };
 
+  const ProductAllListData = async () => {
+    try {
+      const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+      setProductList(response?.data?.data)
+      console.log('aaa', response.data.data)
+    } catch (err) {
+      return err
+    }
+  }
+  useEffect(() => {
+    ProductAllListData()
+  }, [])
 
 
-
-
+  const [productList, setProductList] = useState<DataGridRowType[]>([])
   const [productName, setProductName] = useState('');
   const [fullPrice, setFullPrice] = useState('');
   const [sellPrice, setSellPrice] = useState('');
@@ -495,7 +504,13 @@ const AddProductPop = () => {
             </Grid>
           </Grid>
           <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
-            <Button variant="contained" onClick={debouncedSubmit}>Save</Button>
+            <Button variant="contained"
+            onClick={() => {
+              debouncedSubmit()
+              ProductAllListData()
+
+            }}
+            >Save</Button>
           </Grid>
         </Card >
       }
