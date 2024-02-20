@@ -28,25 +28,28 @@ import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { customDateFormat, customTimeFormat, convertToISODate } from 'src/@core/utils/format'
 import Dashboard from 'src/pages/dashboard'
-import { updateServicesApi, listAllEmployeeApi, getSingleServiceApi, createNewCategory, getAllCategoryList } from 'src/store/APIs/Api';
+import {
+  updateServicesApi,
+  listAllEmployeeApi,
+  getSingleServiceApi,
+  createNewCategory,
+  getAllCategoryList
+} from 'src/store/APIs/Api'
 // import serviceId from 'src/pages/service/serviceDetails/[serviceId]';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 import { styled, useTheme } from '@mui/material/styles'
 import { set } from 'nprogress'
 
-
 const UpdateService = (props: any) => {
-
-
-
   const [formUpdateButton, setFormUpdateButton] = useState<boolean>(false)
   const [maintainState, setMaintainState] = useState<any>()
   const [openAlert, setOpenAlert] = useState<any>({ open: false, mssg: '' })
   const [snackbarColor, setSnackbarColor] = useState<any>(true)
   const [openEdit, setOpenEdit] = useState<any>(false)
   const [inData, setInData] = useState<any>()
-  const router = useRouter();
-  const serviceId = router.query.serviceId;
+  const router = useRouter()
+
+  const serviceId = router.query.serviceId
   const [categoryData, setCategoryData] = useState<any>('')
   const [open, setOpen] = useState<boolean>(false)
   const [listServiceCategoryData, setServiceExpenseCategoryData] = useState<any>([])
@@ -54,28 +57,31 @@ const UpdateService = (props: any) => {
   const [categoryList, setCategoryList] = useState([])
   const [serviceTime, setServiceTime] = useState<any>(null)
   const [updateServiceTime, setUpdateServiceTime] = useState<any>(null)
-
+  const [getServiceAmountId, setGetServiceAmountId] = useState('')
+  const [getServiceAmount, setGetServiceAmount] = useState('')
   const handleClose = () => setOpen(false)
   const handleUpdate = () => {
     router.push('/service/service/')
   }
   const [singleServiceData, setSingleServiceData] = useState({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'jkmli',
     serviceId: serviceId,
-    serviceAmountId: "",
-    serviceCategoryId: "",
-    serviceName: "",
-    serviceTime: "",
-    serviceDescription: "",
+    serviceAmountId: '',
+    serviceCategoryId: '',
+    serviceName: '',
+    serviceTime: '',
+    serviceDescription: '',
     selectStaff: [
       {
-        employeeId: ""
+        employeeId: ''
       }
     ],
     amountHistory: [
       {
-        serviceAmount: 9980
+        serviceAmountId: "",
+        serviceAmount: "",
+        serviceAmountStatus: ""
       }
     ]
   })
@@ -89,7 +95,6 @@ const UpdateService = (props: any) => {
     }
   }))
 
-
   const Img = styled('img')(({ theme: any }) => ({
     left: 58,
     bottom: 0,
@@ -101,35 +106,40 @@ const UpdateService = (props: any) => {
   }))
 
   const [serviceCategoryData, setServiceCategoryData] = useState({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
-    serviceCategoryId: "",
-    serviceCategoryName: "",
-    serviceCategoryStatus: ""
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'jkmli',
+    serviceCategoryId: '',
+    serviceCategoryName: '',
+    serviceCategoryStatus: ''
   })
   const { direction } = theme
   const popperPlacement: ReactDatePickerProps['popperPlacement'] = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
 
   const [defaultServiceValues, setDefaultServiceValues] = useState<any>({
-    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
-    salonId: "jkmli",
+    customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+    salonId: 'jkmli',
     serviceId: serviceId,
-    serviceAmountId: "",
-    serviceCategoryId: "",
-    serviceName: "",
-    serviceTime: "",
-    serviceDescription: "",
+    serviceAmountId: '',
+    serviceCategoryId: '',
+    serviceName: '',
+    serviceTime: '',
+    serviceDescription: '',
     selectStaff: [
       {
-        employeeId: ""
+        employeeId: ''
       }
     ],
     amountHistory: [
       {
-        serviceAmount: 9980
+        serviceAmountId: '',
+        serviceAmount: '',
+        serviceAmountStatus:""
       }
     ]
   })
+  useEffect(()=>{
+    setDefaultServiceValues({...defaultServiceValues,serviceAmountId:getServiceAmountId})
+  },[getServiceAmountId])
 
   // const addServiceCategory = () => {
   //   try {
@@ -163,25 +173,34 @@ const UpdateService = (props: any) => {
         console.log('ABC', err)
       }
     }
-    data();
+    data()
   }, [])
 
-  useEffect(() => {
-    const singleServiceApiData = () => {
-      if (maintainState == true) {
-        if (serviceId) {
-          getSingleServiceApi('099f9bf2-8ac2-8286-83bb46595fde', 'jkmli', serviceId).then((res: any) => {
-            setDefaultServiceValues(res?.data.data)
-            setSingleServiceData(res?.data.data)
-            // setLoading(false)
-          })
-          setMaintainState(false)
-        }
-
-      }
+  const singleServiceApiData = async () => {
+    if (serviceId) {
+      const response: any = await getSingleServiceApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli', serviceId)
+      setDefaultServiceValues(response?.data.data)
+      setSingleServiceData(response?.data.data)
+        const amount = response.data.data.amountHistory.filter((value :any)=>{
+          return value.serviceAmountStatus=="active"
+        })
+        console.log(amount,"amount")
+        setGetServiceAmountId(amount[0].serviceAmountId)
+        setGetServiceAmount(amount[0].serviceAmount)
     }
+  }
+
+  useEffect(() => {
     singleServiceApiData()
-  }, [maintainState, serviceId])
+  }, [serviceId])
+
+  const handleServiceAmountChange = (amount : any) =>{
+    setDefaultServiceValues((prevState :any)=>({
+      ...prevState,
+      amountHistory : [{serviceAmount :amount}]
+    }))
+  }
+
 
   const handleChange = (e: any) => {
     setDefaultServiceValues({
@@ -190,8 +209,7 @@ const UpdateService = (props: any) => {
     })
   }
 
-
-  let CategoryName;
+  let CategoryName
   const categoryChange = (e: any) => {
     setFormUpdateButton(true)
     setDefaultServiceValues({
@@ -200,6 +218,11 @@ const UpdateService = (props: any) => {
       CategoryName: [{ serviceCategoryName: e.serviceCategoryName }]
     })
   }
+  // const handleServiceAmount = (e:any)=>{
+  //   setDefaultServiceValues({
+  //     getServiceAmountId : [{serviceAmountId :e.serviceAmountId}]
+  //   })
+  // }
   useEffect(() => {
     if (listServiceCategoryData) {
       const data = listServiceCategoryData?.find((e: any) => {
@@ -214,11 +237,10 @@ const UpdateService = (props: any) => {
     }
   }, [defaultServiceValues, listServiceCategoryData])
 
-
   let serviceCategoryName
   let serviceCategoryStatus
   if (defaultServiceValues?.serviceCategoryId) {
-    const firstElement = defaultServiceValues.serviceCategoryid[0]
+    const firstElement = defaultServiceValues.serviceCategoryId[0]
     try {
       const categoryInfo = JSON.parse(firstElement)
       serviceCategoryName = categoryInfo.serviceCategoryName
@@ -230,7 +252,7 @@ const UpdateService = (props: any) => {
 
   useEffect(() => {
     if (inData) {
-      console.log(inData, "121")
+      console.log(inData, '121')
       const jsonString = JSON.stringify(inData)
       const resultArrayString = `${JSON.stringify(jsonString)}`
       setDefaultServiceValues({
@@ -246,23 +268,20 @@ const UpdateService = (props: any) => {
 
   const updateServiceApiFunc = async () => {
     try {
-      await updateServicesApi(defaultServiceValues)
-      // setDefaultServiceValues(res?.data.data)
-    } catch (error: any) {
+      console.log({...defaultServiceValues,serviceAmountId:getServiceAmountId}, "fsg");
 
-    }
+      await updateServicesApi({...defaultServiceValues,serviceAmountId:getServiceAmountId})
+      // setDefaultServiceValues(res?.data.data)
+    } catch (error: any) {}
   }
 
   return (
     <>
-
       <Grid sx={{ display: 'flex', width: '100%' }}>
         <Grid sx={{ width: '25%', mr: 3 }}>
           <Dashboard />
         </Grid>
-        <Grid>
-
-        </Grid>
+        <Grid></Grid>
         <Card>
           <DialogTitle id='user-view-edit' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
             Edit Service
@@ -270,7 +289,6 @@ const UpdateService = (props: any) => {
           <DialogContent>
             <form style={{ padding: '15px 0' }}>
               <Grid container spacing={5}>
-
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -325,10 +343,10 @@ const UpdateService = (props: any) => {
                     label='Service Amount'
                     name='serviceAmount'
                     onChange={event => {
-                      handleChange(event)
+                      handleServiceAmountChange(event.target.value)
                       setFormUpdateButton(true)
                     }}
-                    value={defaultServiceValues ? defaultServiceValues.serviceAmount : singleServiceData.serviceAmountId}
+                    value={defaultServiceValues ? defaultServiceValues?.amountHistory[0].serviceAmount : ""}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -336,7 +354,7 @@ const UpdateService = (props: any) => {
                     fullWidth
                     label='Description'
                     name='serviceDescription'
-                    value={defaultServiceValues ? defaultServiceValues.serviceDescription : ""}
+                    value={defaultServiceValues ? defaultServiceValues.serviceDescription : ''}
                     onChange={event => {
                       handleChange(event)
                       setFormUpdateButton(true)
@@ -356,8 +374,6 @@ const UpdateService = (props: any) => {
                     value={defaultServiceValues ? defaultServiceValues.serviceAmount : ""}
                   />
                 </Grid> */}
-
-
 
                 {/* <Grid item xs={12} sm={6}>
                   <DatePickerWrapper>
@@ -389,7 +405,7 @@ const UpdateService = (props: any) => {
                     fullWidth
                     label='Service Time'
                     name='serviceTime'
-                    value={defaultServiceValues ? defaultServiceValues.serviceTime : ""}
+                    value={defaultServiceValues ? defaultServiceValues.serviceTime : ''}
                     onChange={event => {
                       handleChange(event)
                       setFormUpdateButton(true)
@@ -397,14 +413,10 @@ const UpdateService = (props: any) => {
                   />
                 </Grid>
               </Grid>
-            </form >
-          </DialogContent >
-          < DialogActions sx={{ justifyContent: 'right', width: '100%', display: 'flex', justifyItems: 'center' }}>
-            <Button
-              variant='outlined'
-              color='secondary'
-              onClick={() => router.push('/service/service/')}
-            >
+            </form>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'right', width: '100%', display: 'flex', justifyItems: 'center' }}>
+            <Button variant='outlined' color='secondary' onClick={() => router.push('/service/service/')}>
               Back
             </Button>
             <Button
@@ -419,16 +431,12 @@ const UpdateService = (props: any) => {
             >
               Update
             </Button>
-          </ DialogActions>
-
+          </DialogActions>
 
           {/* </Dialog> */}
-        </Card >
-      </Grid >
-
+        </Card>
+      </Grid>
     </>
   )
 }
-export default UpdateService;
-
-
+export default UpdateService

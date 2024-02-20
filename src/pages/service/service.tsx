@@ -264,7 +264,6 @@ const CategorySelected = async (organization: any) => {
     // setLoading(false)
   })
 }
-
 const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
@@ -275,9 +274,8 @@ const Service = () => {
   const [serviceIdForDelete, setServiceIdForDelete] = useState('')
 
   const router = useRouter();
-
+  console.log(router,"router2345")
   const handleCellClick = (row: any) => {
-    console.log("row", row)
     router.push(`/service/serviceDetails/${row}`)
   }
 
@@ -354,6 +352,7 @@ const Service = () => {
         </Typography>
       )
     },
+
     {
       flex: 0.15,
       minWidth: 110,
@@ -379,8 +378,6 @@ const Service = () => {
       )
     }
   ]
-
-
     // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {
@@ -413,7 +410,7 @@ const Service = () => {
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId: 'E7uqn',
+    salonId: 'jkmli',
     serviceCategoryId: 'HFm4p',
     serviceName: '',
     serviceDescription: '',
@@ -544,9 +541,6 @@ const Service = () => {
   }
 
   const handleImportSubmit = () => {
-    // Handle import logic here using the selected file
-    // You can dispatch an action or call a function to handle the import
-    // Remember to close the dialog after import is done
     handleDialogClose()
   }
 
@@ -563,17 +557,6 @@ const Service = () => {
   const handleSelectGroup = (event: SelectChangeEvent) => {
     setSelectGroup(event.target.value)
   }
-  useEffect(() => {
-    const singleServiceApiData = () => {
-      if (serviceId) {
-        getSingleServiceApi('099f9bf2-8ac2-8286-83bb46595fde', 'jkmli', serviceId).then((res: any) => {
-          setSingleServiceData(res?.data.data)
-          // setLoading(false)
-        })
-      }
-    }
-    singleServiceApiData()
-  }, [serviceId])
 
   const handleAdded = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAddServiceDialogOpen(true)
@@ -639,6 +622,7 @@ const Service = () => {
   }
 
   const onSubmit = (data: any) => {
+    console.log(data,"data")
     AddServicesApi(data)
     setDefaultStudentValues(data)
 
