@@ -371,6 +371,7 @@ export const staffRegistrationApi = async (staffDetailsforApi: any) => {
 
 
 
+
 export const ProductCreateRegistrationApi = async (productDetailsforApi: any) => {
   try {
     const res = await axios.post(
@@ -386,7 +387,6 @@ export const ProductCreateRegistrationApi = async (productDetailsforApi: any) =>
   }
 }
 
-
 export async function ListAllProductListApi(customerId: any, salonId: any) {
   try {
     const res = await axios.get(`https://karo-scan-dev-api.azure-api.net/st-products-fnp/getAllProduct?customerId=${customerId}&salonId=${salonId}`, { headers })
@@ -399,8 +399,6 @@ export async function ListAllProductListApi(customerId: any, salonId: any) {
   }
 
 }
-
-
 
 export const updateProductApi = async (productDetailsforApi: any) => {
   try {

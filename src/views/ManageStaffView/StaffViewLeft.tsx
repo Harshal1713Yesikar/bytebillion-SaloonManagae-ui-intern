@@ -30,7 +30,8 @@ import {
   TextField,
   Skeleton,
   TableContainer,
-  CardHeader
+  CardHeader,
+  FormHelperText
 } from '@mui/material'
 import Icon from 'src/@core/components/icon'
 import Tab from '@mui/material/Tab'
@@ -83,6 +84,7 @@ const ViewSingleManageStaff = () => {
     employeeName: '',
     employeePhone: '',
     employeeJoiningDate: '',
+    employeeStatus:''
 
   })
 
@@ -374,13 +376,17 @@ const ViewSingleManageStaff = () => {
                 }}
                 onChange={handleUpdateEmployeeData}
                 value={updateEmployeeData.employeeName}
+                error={updateEmployeeData?.employeeName?.length > 25}
               />
+               {updateEmployeeData?.employeeName?.length>25 && (
+                      <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                    )}
             </Grid>
 
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                label='employeePhone'
+                label='Employee Phone'
                 name='employeePhone'
                 required
                 inputProps={{
@@ -388,20 +394,46 @@ const ViewSingleManageStaff = () => {
                 }}
                 onChange={handleUpdateEmployeeData}
                 value={updateEmployeeData.employeePhone}
+                error={updateEmployeeData?.employeePhone?.length > 10}
               />
+                {updateEmployeeData?.employeePhone?.length>10 && (
+                      <FormHelperText sx={{ color: 'error.main' }}>required,10-digit phone number</FormHelperText>
+                    )}
             </Grid>
 
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                label='Employee Joining Date'
+                label='Joining Date'
                 name='employeeJoiningDate'
                 type='date'
                 required
                 onChange={handleUpdateEmployeeData}
                 value={updateEmployeeData.employeeJoiningDate}
               />
+                 
             </Grid>
+
+            {/* <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={updateEmployeeData.employeeStatus}
+                    label="Status"
+                    onChange={(e: any) => {
+                      setFormUpdateButton(true)
+                      setUpdationData({
+                        ...updateEmployeeData, "status": e.target.value
+                      })
+                    }}
+                  >
+                    <MenuItem value={"active"}>Active</MenuItem>
+                    <MenuItem value={"in active"}>In active</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid> */}
           </Grid>
         </Box>
       </DialogContent>

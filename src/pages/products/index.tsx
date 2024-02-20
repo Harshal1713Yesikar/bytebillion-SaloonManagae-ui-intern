@@ -380,7 +380,7 @@ const Index = () => {
       await updateProductApi(updateSingleData);
       await ProductAllListData()
       handleCloseDialogUpdate()
-    } catch (error) {
+    } catch (error:any) {
       error.inner.forEach(err => {
         switch (err.path) {
           case 'productName':

@@ -397,7 +397,7 @@ const CreateStaff = () => {
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <TextField
-                          type='number'
+                          type='text'
                           value={value}
 
                           onChange={onChange}

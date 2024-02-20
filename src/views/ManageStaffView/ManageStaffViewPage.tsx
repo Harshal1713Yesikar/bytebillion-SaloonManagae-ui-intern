@@ -56,11 +56,9 @@ const ManageStaffViewPage = () => {
     const [updateCollegeState, setUpdateCollegeState] = React.useState<any>(false);
   return (
     <>
-    <Grid container spacing={1}>
-      <Grid item xs={12} md={3} lg={3}>
-        <Dashboard/>
-      </Grid>
-        <Grid item xs={12} md={9} lg={9} sx={{paddingRight:1}}>
+    <Grid >
+    
+        <Grid>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={value}
@@ -72,16 +70,16 @@ const ManageStaffViewPage = () => {
           >
             <Tab label="Employee List" {...a11yProps(0)} />
             <Tab label="Add Employee" {...a11yProps(1)} /> 
-            <Tab label="Staff Schedule" {...a11yProps(2)} />
+            {/* <Tab label="Staff Schedule" {...a11yProps(2)} />
             <Tab label="Upload Attendance" {...a11yProps(3)} />
-            <Tab label="Inactive Staff" {...a11yProps(4)} />
+            <Tab label="Inactive Staff" {...a11yProps(4)} /> */}
             </Tabs>
           </Box>
           <TabPanel value={value} index={0}><StaffList setUpdateCollegeState={setUpdateCollegeState} updateCollegeState={updateCollegeState}/></TabPanel>
           <TabPanel value={value} index={1}><CreateStaff/></TabPanel>
-          <TabPanel value={value} index={2}><StaffSchedule/></TabPanel>
+          {/* <TabPanel value={value} index={2}><StaffSchedule/></TabPanel>
           <TabPanel value={value} index={3}><UploadAttendace/></TabPanel>
-          <TabPanel value={value} index={4}><InactiveStaff/></TabPanel>
+          <TabPanel value={value} index={4}><InactiveStaff/></TabPanel> */}
          
           </Grid>
         </Grid>

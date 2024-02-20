@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   Dialog,
+  DialogTitle,
   Grid,
   Menu,
   MenuItem,
@@ -614,11 +615,10 @@ const Service = () => {
 
   return (
     <>
-      <Grid sx={{ display: 'flex', width: '100%' }}>
-        <Grid sx={{ width: '25%', mr: 3 }}>
-          <Dashboard />
+      <Grid >
+        <Grid>
         </Grid>
-        <Card sx={{ width: '75%', p: 6, height: '100%' }}>
+        <Card sx={{ p: 7,}}>
           <Grid sx={{ display: 'flex', width: '100%' }}>
             <Grid sx={{ width: '100%' }}>
               <Typography sx={{ fontSize: '20px', fontWeight: '600' }}>Services List</Typography>

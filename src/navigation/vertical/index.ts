@@ -24,10 +24,17 @@ const navigation = (): VerticalNavItemsType => {
       icon: 'ic:baseline-people-outline',
     },
     {
+      title: 'Servics',
+      path: 'service/service',
+      icon: 'material-symbols:add-notes-outline',
+
+    },
+    {
       title: 'Products',
       path: '/products',
       icon: 'material-symbols:production-quantity-limits-sharp',
     },
+ 
     
     // demo
     {

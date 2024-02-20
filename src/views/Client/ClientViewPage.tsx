@@ -112,9 +112,11 @@ const AddClientSchema = yup.object().shape({
     .min(10)
     .matches(/^[0-9]+$/)
     .max(10)
-    .required()
+    .required(),
+    
+   clientGender: yup.string(),
+  
 })
-
 const AddClientReSchema = yup.object().shape({
   clientName: yup
     .string()
@@ -209,8 +211,6 @@ const ClientViewPage = () => {
     clientStatus: ''
   })
 
-
-  
   const [defaultClientReValues, setDefaultClientReValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'dqXUs',
@@ -222,19 +222,17 @@ const ClientViewPage = () => {
     clientStatus: 'inactive'
   })
 
-
-
-  const isFormValid  = () => {
+  const isFormValid = () => {
     // Add your form validation logic here
     // For example, you can check if all required fields are filled
     return (
       defaultClientReValues.clientName !== '' &&
-      defaultClientReValues.clientPhoneNumber !== ''&&
-      defaultClientReValues.clientEmail!==''&&
-      defaultClientReValues.clientGender!==''
+      defaultClientReValues.clientPhoneNumber !== '' &&
+      defaultClientReValues.clientEmail !== '' &&
+      defaultClientReValues.clientGender !== ''
       // defaultClientReValues.clientStatus!==''
-    );
-  };
+    )
+  }
 
   const columns: GridColDef[] = [
     {
@@ -338,7 +336,7 @@ const ClientViewPage = () => {
     }
   ]
 
-  const handleOpenDialogUpdate = (data: any) => {
+  const handleOpenDialogUpdate = async (data: any) => {
     console.log('data', data)
     setUpdateClientId(data.clientId)
     singleClientDetailsFunc(data)
@@ -353,12 +351,9 @@ const ClientViewPage = () => {
     setIsOpen(false)
   }
 
-  const handleOpan = ()=>{
+  const handleOpan = () => {
     handleClose()
   }
-
-
- 
 
   const handleUpdateEmployeeData = (e: { target: { name: any; value: any } }) => {
     setDefaultClientReValues({ ...defaultClientReValues, [e.target.name]: e.target.value })
@@ -403,14 +398,14 @@ const ClientViewPage = () => {
     FatchData()
   }, [])
 
-  const onUpdateData = async () => {
-    try {
-      await updateEmployeeApi(defaultClientReValues)
-      await FatchData()
-    } catch (err) {
-      return err
-    }
-  }
+  // const onUpdateData = async () => {
+  //   try {
+  //     await updateEmployeeApi(defaultClientReValues)
+  //     await FatchData()
+  //   } catch (err) {
+  //     return err
+  //   }
+  // }
 
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
@@ -444,7 +439,6 @@ const ClientViewPage = () => {
     setAnchorEl(null)
   }
 
-
   const openModal = () => {
     setModalOpen(true)
   }
@@ -462,8 +456,6 @@ const ClientViewPage = () => {
   const handleCustomer = () => {
     router.push('../second-page/clientCustomerCreate')
   }
-
- 
 
   const handleImportClick = () => {
     handleClose()
@@ -527,6 +519,7 @@ const ClientViewPage = () => {
     try {
       await CreateClientApi(studentValues())
       console.log(studentValues(), 'defaultClientValues')
+      setModalOpen(false)
       await FatchData()
       toast.success('New Client created successfully', {
         position: 'bottom-right'
@@ -541,7 +534,8 @@ const ClientViewPage = () => {
     try {
       await UpdateClientApi({ ...clientsValues(), clientId: updateClientId })
       console.log(clientsValues(), 'DDSS')
-      toast.success('New Client created successfully', {
+      await FatchData()
+      toast.success(' Client Update successfully', {
         position: 'bottom-right'
       })
       // singleClientDetailsFunc()
@@ -551,9 +545,10 @@ const ClientViewPage = () => {
   }
 
   const handleDeleteClient = async () => {
-    console.log(deleteClientFunc, 'deleteClient')
     try {
       await deleteClientApi(deleteClientFunc)
+      setDialogOpenDelete(false)
+     
       toast.error(' Client InActive ', {
         position: 'bottom-right'
       })
@@ -562,7 +557,7 @@ const ClientViewPage = () => {
     }
   }
 
-  
+
   const handleCloss = () => {
     setIsOpen(false)
   }
@@ -860,17 +855,21 @@ const ClientViewPage = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  {/* <Button size='large' type='submit' variant='contained' onSubmit={updateClientSubmit} >
+                  <Button size='large' type='submit' variant='contained' onSubmit={()=>{
+
+                  handleCloseDialogDelete()
+                    setDialogOpenUpdate(false)
+                  }}>
                     Update
-                  </Button> */}
-                    <Button size='large' type='submit' variant='contained' onClick={() =>
+                  </Button>
+                    {/* <Button size='large' type='submit' variant='contained' onClick={() =>
                        { updateClientSubmit();
-                      handleCloseDialogUpdate();
+                      // handleCloseDialogUpdate();
                      }}
                     //  disabled={!isFormVaild()}
                      >
                 Update
-              </Button>
+              </Button> */}
 
                 </Grid>
               </Grid>
@@ -879,69 +878,87 @@ const ClientViewPage = () => {
             <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}></Grid>
           </Card>
 
+
           // <DialogContent>
           //   <Box>
-          //     <Grid container spacing={2}>
-          //       <Grid item md={6} xs={12}>
-          //         <TextField
-          //           fullWidth
-          //           label='clientName'
-          //           name='clientName'
-          //           required
-          //           inputProps={{
-          //             maxLength: 50
-          //           }}
-          //           onChange={handleUpdateEmployeeData}
-          //           value={defaultClientReValues.clientName}
-          //         />
-          //       </Grid>
+          //     <form onSubmit={handleClientReSubmit(updateClientSubmit)}>
+          //       <Grid container spacing={2}>
+          //         <Grid item md={6} xs={12}>
+          //           <TextField
+          //             fullWidth
+          //             label='clientName'
+          //             name='clientName'
+          //             required
+          //             inputProps={{
+          //               maxLength: 50
+          //             }}
+          //             onChange={handleUpdateEmployeeData}
+          //             value={defaultClientReValues.clientName}
+          //           />
+          //         </Grid>
 
-          //       <Grid item md={6} xs={12}>
-          //         <TextField
-          //           fullWidth
-          //           label='clientPhoneNumber'
-          //           name='clientPhoneNumber'
-          //           required
-          //           inputProps={{
-          //             maxLength: 50
-          //           }}
-          //           onChange={handleUpdateEmployeeData}
-          //           value={defaultClientReValues.clientPhoneNumber}
-          //         />
-          //       </Grid>
+          //         <Grid item md={6} xs={12}>
+          //           <TextField
+          //             fullWidth
+          //             label='clientPhoneNumber'
+          //             name='clientPhoneNumber'
+          //             required
+          //             inputProps={{
+          //               maxLength: 50
+          //             }}
+          //             onChange={handleUpdateEmployeeData}
+          //             value={defaultClientReValues.clientPhoneNumber}
+          //           />
+          //         </Grid>
 
-          //       <Grid item md={6} xs={12}>
-          //         <TextField
-          //           fullWidth
-          //           label='clientEmail'
-          //           name='clientEmail'
-          //           required
-          //           onChange={handleUpdateEmployeeData}
-          //           value={defaultClientReValues.clientEmail}
-          //         />
-          //       </Grid>
+          //         <Grid item md={6} xs={12}>
+          //           <TextField
+          //             fullWidth
+          //             label='clientEmail'
+          //             name='clientEmail'
+          //             required
+          //             onChange={handleUpdateEmployeeData}
+          //             value={defaultClientReValues.clientEmail}
+          //           />
+          //         </Grid>
 
-          //       <Grid item md={6} xs={12}>
-          //         <TextField
-          //           fullWidth
-          //           label='clientGender'
-          //           name='clientGender'
-          //           required
-          //           onChange={handleUpdateEmployeeData}
-          //           value={defaultClientReValues.clientGender}
-          //         />
-          //       </Grid>
+          //         {/* <Grid item md={6} xs={12}>
+          //           <TextField
+          //             fullWidth
+          //             label='clientGender'
+          //             name='clientGender'
+          //             required
+          //             onChange={handleUpdateEmployeeData}
+          //             value={defaultClientReValues.clientGender}
+          //           />
+          //         </Grid> */}
 
-          //     </Grid>
+          //         <Grid item md={6} xs={12}>
+          //           <FormControl fullWidth>
+          //             <InputLabel id='clientGender-label'>Client Gender</InputLabel>
+          //             <Select
+          //               labelId='clientGender-label'
+          //               id='clientGender'
+          //               name='clientGender'
+          //               required
+          //               onChange={handleUpdateEmployeeData}
+          //               value={defaultClientReValues.clientGender}
+          //             >
+          //               <MenuItem value='male'>Male</MenuItem>
+          //               <MenuItem value='female'>Female</MenuItem>
+          //               {/* Add more options as needed */}
+          //             </Select>
+          //           </FormControl>
+          //         </Grid>
+          //       </Grid>
+          //     </form>
           //   </Box>
 
           //   <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'right' }}>
           //     <Button
           //       size='large'
           //       variant='contained'
-          //       onClick={() => {
-              
-          //       }}
+          //       onClick={() => {}}
           //       // Disable the button if the form is not valid
           //     >
           //       Cancel
@@ -962,7 +979,6 @@ const ClientViewPage = () => {
           // </DialogContent>
         )}
       </Dialog>
-
       <Dialog maxWidth='md' sx={{ overflow: 'auto' }} open={isDialogOpenDalete} onClose={handleCloseDialogDelete}>
         <Grid>
           <DialogContent sx={{ pb: 4 }}>
@@ -977,7 +993,7 @@ const ClientViewPage = () => {
             </Box>
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'right' }}>
-            <Button variant='outlined' color='secondary' onClick={() => handleClose()}>
+            <Button variant='outlined' color='secondary'>
               Cancel
             </Button>
             <Button
@@ -985,6 +1001,7 @@ const ClientViewPage = () => {
               sx={{ mr: 1.5 }}
               onClick={() => {
                 handleDeleteClient()
+                // handleCloseDialogDelete(data)
               }}
             >
               Delete

@@ -29,6 +29,11 @@ const navigation = (): HorizontalNavItemsType => [
     icon: 'bx:home-circle',
   },
   {
+    title: 'Serices',
+    path: '/serive',
+    icon: 'bx:home-circle',
+  },
+  {
     title: 'Clients',
     path: '/clients',
     icon: 'bx:home-circle',
