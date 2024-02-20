@@ -211,6 +211,8 @@ const ClientViewPage = () => {
     clientStatus: ''
   })
 
+
+
   const [defaultClientReValues, setDefaultClientReValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
     salonId: 'dqXUs',
@@ -355,6 +357,9 @@ const ClientViewPage = () => {
     handleClose()
   }
 
+
+
+
   const handleUpdateEmployeeData = (e: { target: { name: any; value: any } }) => {
     setDefaultClientReValues({ ...defaultClientReValues, [e.target.name]: e.target.value })
     console.log('AAA')
@@ -457,6 +462,8 @@ const ClientViewPage = () => {
     router.push('../second-page/clientCustomerCreate')
   }
 
+
+
   const handleImportClick = () => {
     handleClose()
     setOpenImportDialog(true)
@@ -537,6 +544,7 @@ const ClientViewPage = () => {
       await FatchData()
       toast.success(' Client Update successfully', {
         position: 'bottom-right'
+
       })
       // singleClientDetailsFunc()
     } catch (err) {
@@ -547,8 +555,8 @@ const ClientViewPage = () => {
   const handleDeleteClient = async () => {
     try {
       await deleteClientApi(deleteClientFunc)
-      setDialogOpenDelete(false)
-     
+      await FatchData()
+      handleCloseDialogDelete(false)
       toast.error(' Client InActive ', {
         position: 'bottom-right'
       })
@@ -857,7 +865,7 @@ const ClientViewPage = () => {
                 <Grid item xs={12}>
                   <Button size='large' type='submit' variant='contained' onSubmit={()=>{
 
-                  handleCloseDialogDelete()
+                  // handleCloseDialogDelete()
                     setDialogOpenUpdate(false)
                   }}>
                     Update

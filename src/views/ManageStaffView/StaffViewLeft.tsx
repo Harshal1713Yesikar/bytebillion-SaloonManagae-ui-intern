@@ -411,7 +411,6 @@ const ViewSingleManageStaff = () => {
                 onChange={handleUpdateEmployeeData}
                 value={updateEmployeeData.employeeJoiningDate}
               />
-                 
             </Grid>
 
             {/* <Grid md={5} sm={3} sx={{ marginLeft: 5, marginBottom: 3, marginTop: 5 }}>

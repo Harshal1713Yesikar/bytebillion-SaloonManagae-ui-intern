@@ -13,6 +13,9 @@ import { ListAllVendorListApi, VendorCreateApi, deleteVendorApi, updateVendorApi
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomChip from 'src/@core/components/mui/chip'
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 
 interface StatusObj {
   [key: number]: {
@@ -118,6 +121,10 @@ const Vendor = () => {
       const res = await VendorCreateApi(formData);
       console.log("success vendor", res);
       handleDialogCloseVendor()
+      toast.success('vendor Created successfully', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error creating vendor", err);
     }
@@ -210,6 +217,10 @@ const Vendor = () => {
       await deleteVendorApi(deleteVendorFunc);
       handleCloseDialogDelete();
       await FatchData()
+      toast.success('vendor InActive successfully', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -233,10 +244,12 @@ const Vendor = () => {
       await ListAllVendorListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
       handleDialogCloseEditVendor()
       await FatchData()
-      // Optionally, you can handle the success response here
+      toast.success('vendor Updated ', {
+        position: 'bottom-right'
+
+      })
     } catch (err) {
       console.error("Error updating vendor", err);
-      // Optionally, you can handle the error here
     }
   };
 
@@ -314,14 +327,21 @@ const Vendor = () => {
     }
   ]
 
+  const Back = useRouter();
+  const handleBack = () => {
+    Back.push('../products');
+  }
+
+
   return (
     <>
       <Grid sx={{ display: 'flex', width: '100%' }}>
-        <Grid sx={{ width: '25%', mr: 3 }}>
-          <Dashboard />
-        </Grid>
-        <Card sx={{ width: '75%', p: 6, height: '100%' }}>
-          <Grid sx={{ display: 'flex' }}>
+        <Card sx={{ width: '100%', p: 6, height: '100%' }}>
+          <Grid sx={{ display: 'flex',alignItems:'center' }}>
+          <Button variant='contained'sx={{m:'20px',pr:'25px'}} onClick={handleBack} >
+            <KeyboardReturnIcon/>
+            Back
+          </Button>
             <Typography sx={{ fontSize: '20px', width: "100%" }}>Vendor List</Typography>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
               <Button
@@ -402,7 +422,6 @@ const Vendor = () => {
                         name="vendorStatus"
                         value={formData.vendorStatus}
                         onChange={(e) =>  handleChange(e)}
-
                         size='small'
                         fullWidth
                         id="outlined-basic"

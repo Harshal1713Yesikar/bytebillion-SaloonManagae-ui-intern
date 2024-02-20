@@ -15,7 +15,9 @@ import { DataGridRowType } from 'src/@fake-db/types'
 import { ThemeColor } from 'src/context/types'
 import { getInitials } from 'src/@core/utils/get-initials'
 import { BrandCreateApi, ListAllBrandListApi, deleteBrandApi, deleteVendorApi, updateBrandApi } from 'src/store/APIs/Api'
-
+import toast from 'react-hot-toast'
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { useRouter } from 'next/router'
 interface StatusObj {
   [key: number]: {
     title: string
@@ -185,6 +187,9 @@ const [brandlist,setBrandList]= useState<any[]>([])
       const res = await BrandCreateApi(brandData);
       console.log("success Brand", res);
       setOpenAddBrandDialog(false)
+      toast.success('Brand Created successfully', {
+        position: 'bottom-right'
+      })
     } catch (err) {
       console.error("Error creating Brand", err);
     }
@@ -198,10 +203,11 @@ const [brandlist,setBrandList]= useState<any[]>([])
       await ListAllBrandListApi('099f9bf2-8ac2-4f84-8286-83bb46595fde', '6GZr2')
       handleDialogCloseUpdateBrand()
       await FatchData()
-      // Optionally, you can handle the success response here
+      toast.success('Brand Updated successfully', {
+        position: 'bottom-right'
+      })
     } catch (err) {
       console.error("Error updating vendor", err);
-      // Optionally, you can handle the error here
     }
   };
 
@@ -209,7 +215,6 @@ const [brandlist,setBrandList]= useState<any[]>([])
     console.log(rowData, "rowData");
     setBrandData({
       ...rowData,
-      // Populate other fields similarly
     });
     setOpenUpdateBrandDialog(true);
   };
@@ -220,6 +225,9 @@ const [brandlist,setBrandList]= useState<any[]>([])
       await deleteBrandApi(deleteBrandFunc);
       handleCloseDialogDeleteBrand();
       await FatchData()
+      toast.success('Brand InActive successfully', {
+        position: 'bottom-right'
+      })
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -253,12 +261,18 @@ const [brandlist,setBrandList]= useState<any[]>([])
     setOpenAddBrandDialog(true)
   }
 
+  const Back = useRouter();
+  const handleBack = () => {
+    Back.push('../products');
+  }
+
   return (
     <>
       <Card>
         <Grid sx={{display:'flex',alignItems:'center'}}>
 
-          <Button variant='contained'sx={{m:'20px'}} >
+          <Button variant='contained'sx={{m:'20px',pr:'25px'}} onClick={handleBack} >
+            <KeyboardReturnIcon/>
             Back
           </Button>
           <Typography sx={{fontSize:'20px',width:'100%'}}>Product Brand</Typography>

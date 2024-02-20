@@ -33,7 +33,7 @@
     "globals.d.ts",
     "src",
     "declaration.d.ts"
-  ],
+, "App.test.js"  ],
   "exclude": [
     "node_modules"
   ]

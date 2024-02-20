@@ -1,4 +1,5 @@
-import { Box, Button, Card, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputAdornment, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid,
+IconButton, InputAdornment, InputLabel, Menu, MenuItem, TextField, Typography } from '@mui/material'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import Select from '@mui/material/Select'
 import { MouseEvent } from 'react';
@@ -14,18 +15,11 @@ import { ListAllProductListApi } from 'src/store/APIs/Api';
 import { debounce } from 'lodash'
 import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
-
-
-// ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-
-// ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 import { DataGridRowType } from 'src/@fake-db/types'
-
-
-
+import toast from 'react-hot-toast';
 
 const validationSchema = yup.object().shape({
   productName: yup.string().matches(/^[A-Z a-z]+$/).required('Product Name is required'),
@@ -39,7 +33,6 @@ const escapeRegExp = (value: string) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-// ** renders client column
 const renderClient = (params: GridRenderCellParams) => {
   const { row } = params
 
@@ -55,7 +48,6 @@ const renderClient = (params: GridRenderCellParams) => {
 }
 
 const Index = () => {
-  // ** State
   const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [anchorAl, setAnchorAl] = useState<null | HTMLElement>(null)
@@ -71,15 +63,6 @@ const Index = () => {
   const [productList, setProductList] = useState<DataGridRowType[]>([])
   const [isOpen, setIsOpen] = useState(true);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
-
-  // const [productName, setProductName] = useState('');
-  // const [fullPrice, setFullPrice] = useState('');
-  // const [sellPrice, setSellPrice] = useState('');
-  // const [costPrice, setCostPrice] = useState('');
-  // const [productDescription, setDescription] = useState('');
-  // const [inStockQuantity, setInStockQuantity] = useState('');
-  // const [quantityAlert, setQuantityAlert] = useState('');
-  // const [productUsage, setProductUsage] = useState('');
   const [errorName, setErrorName] = useState('');
   const [errorBarcode, setErrorBarcode] = useState('');
   const [errorCostPrice, setErrorCostPrice] = useState('');
@@ -106,7 +89,6 @@ const Index = () => {
   const [deleteProductFunc, setDeleteProductFunc] = useState({})
   const handleCommon = (e: any) => {
     setUpdateSingleData({ ...updateSingleData, [e.target.name]: e.target.value });
-    // Clear the error message for the corresponding field
     switch (e.target.name) {
       case 'productName':
         setErrorName('');
@@ -196,10 +178,14 @@ const Index = () => {
   };
 
   const handleDeleteProduct = async () => {
-    console.log(deleteProductFunc, "deleteClient gfhgf");
+    console.log(deleteProductFunc, "deleteClient ");
     try {
       await deleteProductApi(deleteProductFunc);
       handleCloseDialogDelete();
+      ProductAllListData()
+      toast.success('Product InActive successfully', {
+        position: 'bottom-right'
+      })
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -212,7 +198,7 @@ const Index = () => {
       productId: data.productId,
       productStatus: "inActive"
     }
-    console.log(data,"hjfhgdfgdfd")
+    console.log(data, "hjfhgdfgdfd")
     setDeleteProductFunc(deleteProductData)
     setOpenDialogDelete(true)
   }
@@ -344,6 +330,7 @@ const Index = () => {
       )
     }
   ]
+
   const handleSearch = (searchValue: string) => {
     setSearchText(searchValue)
     const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
@@ -359,6 +346,7 @@ const Index = () => {
       setFilteredData([])
     }
   }
+
   const ProductAllListData = async () => {
     try {
       const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
@@ -369,7 +357,6 @@ const Index = () => {
     }
   }
   useEffect(() => {
-
     ProductAllListData()
   }, [])
 
@@ -380,7 +367,10 @@ const Index = () => {
       await updateProductApi(updateSingleData);
       await ProductAllListData()
       handleCloseDialogUpdate()
-    } catch (error:any) {
+      toast.success('Product Updated', {
+        position: 'bottom-right'
+      })
+    } catch (error) {
       error.inner.forEach(err => {
         switch (err.path) {
           case 'productName':
@@ -407,30 +397,33 @@ const Index = () => {
 
   return (
     <>
-      <Card sx={{ paddingTop: '40px' }}>
-      <Box sx={{ padding: '20px' }}>
-        <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <TextField size='small' id='outlined-basic' label='Search' sx={{ width: '40%' }} />
-          <FormControl sx={{ width: '40%',ml:5 }} size='small'>
-          <InputLabel id='demo-simple-select-outlined-label'>Select Products</InputLabel>
-            <Select
-              label='Select Products'
-              id='demo-simple-select-outlined'
-              labelId='demo-simple-select-outlined-label'
-              sx={{ width: '100%' }}
-            >
-              <MenuItem value=''>
-                <em>Select Products</em>
-              </MenuItem>
-              <MenuItem value={10}>Products for sale (Retail)</MenuItem>
-              <MenuItem value={20}>Products for Business use (In House)</MenuItem>
-            </Select>
-          </FormControl>
-          <Button sx={{ ml: 2 }} variant='contained'>
-            Search
-          </Button>
-        </Grid>
-        <Grid sx={{ display: 'flex', justifyContent: 'center', margin: "20px", alignItems: 'center' }}>
+      <Card sx={{ padding: '20px', pt: 15 }}>
+        <Box sx={{ padding: '10px' }}>
+          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField size='small' id='outlined-basic' label='Search' sx={{ width: '40%' }} />
+            <FormControl sx={{ width: '40%', ml: 5 }} size='small'>
+              <InputLabel id='demo-simple-select-outlined-label'>Select Products</InputLabel>
+              <Select
+                label='Select Products'
+                id='demo-simple-select-outlined'
+                labelId='demo-simple-select-outlined-label'
+                sx={{ width: '100%' }}
+              >
+                <MenuItem value=''>
+                  <em>Select Products</em>
+                </MenuItem>
+                <MenuItem value={10}>Products for sale (Retail)</MenuItem>
+                <MenuItem value={20}>Products for Business use (In House)</MenuItem>
+              </Select>
+            </FormControl>
+
+          </Grid>
+          <Grid sx={{ display: 'flex', justifyContent: 'center', margin: "20px", alignItems: 'center' }}>
+            <Button sx={{ ml: 2 }} variant='contained'>
+              Search
+            </Button>
+          </Grid>
+          {/* <Grid sx={{ display: 'flex', justifyContent: 'center', margin: "20px", alignItems: 'center' }}>
           <label>
             <input
               type="checkbox"
@@ -458,8 +451,8 @@ const Index = () => {
           <Grid>
             <Button variant='contained' onClick={handleButtonClick}>Advanced Filters</Button>
           </Grid>
-        </Grid>
-        <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        </Grid> */}
+          {/* <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 
 {showAdvancedFilters && (
   <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center', mb: 5 }} >
@@ -504,7 +497,7 @@ const Index = () => {
     </FormControl>
   </Grid>
 )}
-</Grid>
+        </Grid> */}
         </Box >
       </Card>
       <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: '10px' }}>
@@ -512,52 +505,12 @@ const Index = () => {
           <Button sx={{ mr: 2 }} variant='contained' onClick={handleOpenDialog}>
             Add Product
           </Button>
-          <Button sx={{ mr: 2, width: '180px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleReturn} endIcon={<ArrowDropDownIcon />} >
-            Return Order
+          <Button sx={{ mr: 2 }} variant='contained' onClick={handlevendor}>
+            Vendor List
           </Button>
-          <Grid>
-            <Menu keepMounted id='simple-menu' anchorEl={anchorAl} onClose={handleCloseReturn} open={Boolean(anchorAl)}>
-              <MenuItem onClick={handleInventory}>Inventory Return</MenuItem>
-              <MenuItem onClick={handleReturnOrder}>Return Order</MenuItem>
-            </Menu>
-          </Grid>
-        </Box>
-        <Box sx={{ marginTop: "10px" }} >
-          <Button sx={{ mr: 2, width: '190px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleProduct} endIcon={<ArrowDropDownIcon />}>
-            Product Order
+          <Button sx={{ mr: 2 }} variant='contained' onClick={handleBrand}>
+            Brand List
           </Button>
-          <Grid >
-            <Menu keepMounted id='simple-menu' anchorEl={productBl} onClose={handleCloseProduct} open={Boolean(productBl)} sx={{}}>
-              <MenuItem onClick={handleProductOrder}>Create New</MenuItem>
-              <MenuItem onClick={handleCloseProduct}>View Orders</MenuItem>
-            </Menu>
-          </Grid>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }} >
-          <Button sx={{ mr: 2, width: '80px' }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleAssign} endIcon={<ArrowDropDownIcon />}>
-            Edit
-          </Button>
-          <Grid>
-            <Menu keepMounted id='simple-menu' anchorEl={anchorDl} onClose={handleCloseAssign} open={Boolean(anchorDl)}>
-              <MenuItem onClick={handlevendor}>Vendors List</MenuItem>
-              <MenuItem onClick={handleBrand}>Brand View</MenuItem>
-              <MenuItem onClick={handleCloseEdit}>Product Types</MenuItem>
-              <MenuItem onClick={handleCloseEdit}>Print Barcode/label</MenuItem>
-              <MenuItem onClick={handleCloseEdit}>Sample File</MenuItem>
-              <MenuItem onClick={handleCloseEdit}>Import Products</MenuItem>
-            </Menu>
-          </Grid>
-        </Box>
-        <Box sx={{ marginTop: "10px" }} >
-          <Button sx={{ width: '205px', m: 0 }} variant='contained' aria-controls='simple-menu' aria-haspopup='true' onClick={handleEdit} endIcon={<ArrowDropDownIcon />}>
-            Assign Products
-          </Button>
-          <Grid>
-            <Menu keepMounted id='simple-menu' anchorEl={anchorCl} onClose={handleCloseEdit} open={Boolean(anchorCl)}>
-              <MenuItem onClick={handleCloseEdit}>Retail Products New</MenuItem>
-              <MenuItem onClick={handleCloseEdit}>In-House Products</MenuItem>
-            </Menu>
-          </Grid>
         </Box>
       </Grid>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpen} onClose={handleCloseDialog}>
@@ -565,12 +518,11 @@ const Index = () => {
       </Dialog >
       <Card>
         <Card>
-          <CardHeader title='Quick Filter' />
+          <CardHeader title='Product List' />
           <DataGrid
             autoHeight
             columns={columns}
             pageSize={pageSize}
-            // rows={filteredData.length ? filteredData : data}
             rows={productList}
             rowsPerPageOptions={[7, 10, 25, 50]}
             components={{ Toolbar: QuickSearchToolbar }}
@@ -587,10 +539,8 @@ const Index = () => {
             }}
           />
         </Card>
-
       </Card>
       <Dialog maxWidth="md" sx={{ overflow: 'auto' }} open={isDialogOpenUpdate} onClose={handleCloseDialogUpdate}>
-
         <Card sx={{ width: '100%', height: '100%', overflow: 'auto' }} >
           <Grid sx={{ borderBottom: '2px solid lightGray' }}>
             <Grid sx={{ p: 3 }}>
@@ -632,14 +582,12 @@ const Index = () => {
                     id='outlined-basic'
                     sx={{ m: 1, width: '25ch' }}
                     value={updateSingleData && updateSingleData.costPrice}
-                    // value={swati.costprice?swati.costprice:updateSingleData.costPrice}
-
                     onChange={handleCommon}
                     error={!!errorCostPrice}
                     helperText={errorCostPrice}
                     name='costPrice'
-                    type="number" // Specify input type as number
-                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                    type="number"
+                    inputProps={{ pattern: "[0-9]*" }}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -656,8 +604,8 @@ const Index = () => {
                     error={!!errorFullPrice}
                     helperText={errorFullPrice}
                     name='fullPrice'
-                    type="number" // Specify input type as number
-                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                    type="number"
+                    inputProps={{ pattern: "[0-9]*" }}
                   />
 
                 </Grid>
@@ -675,8 +623,8 @@ const Index = () => {
                     error={!!errorSellPrice}
                     helperText={errorSellPrice}
                     name='sellPrice'
-                    type="number" // Specify input type as number
-                    inputProps={{ pattern: "[0-9]*" }} // Restrict input to numeric values only
+                    type="number"
+                    inputProps={{ pattern: "[0-9]*" }}
                   />
                 </Grid>
               </Grid>
@@ -685,7 +633,6 @@ const Index = () => {
             </Grid>
           </Grid>
           <Grid sx={{ display: 'flex', justifyContent: 'flex-end', m: 4 }}>
-            {/* <Button variant="contained" onClick={{debouncedSubmit}>Save</Button> */}
             <Button variant="contained" onClick={() => {
               handleClose
               debouncedSubmit()
