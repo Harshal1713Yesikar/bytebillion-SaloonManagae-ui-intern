@@ -32,7 +32,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useRouter } from 'next/router'
 import PrintIcon from '@mui/icons-material/Print';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 interface StatusObj {
   [key: number]: {
@@ -186,7 +186,7 @@ const Index = () => {
     setAnchorEl(null)
   }
   const router = useRouter();
-  const handleBack = () => {
+  const handleAddExpense = () => {
     router.push('./expense/createExpense');
   }
 
@@ -228,7 +228,7 @@ const Index = () => {
           <Typography >You can see which one s you have, their methods, notes and amounts</Typography>
         </Grid>
         <Grid style={{ display: "flex", justifyContent: 'flex-end', width: "100%", margin: "20px" }}>
-          <Icon baseClassName="fas" className="fa-plus-circle" sx={{ fontSize: 40, color: "black", cursor: 'pointer' }} onClick={handleBack} />
+          <AddCircleIcon sx={{ fontSize: 40, color: "black", cursor: 'pointer' }} onClick={handleAddExpense} />
         </Grid>
       </Grid>
       <Grid style={{ display: "flex", width: "100%" }}>
@@ -253,7 +253,7 @@ const Index = () => {
               slotProps={{
                 textField: {
                   size: 'small',
-                  style: { width: '150px', marginLeft: "5px" }
+                  style: { width: '270px', marginLeft: "5px" }
                 }
               }}
             />
@@ -261,12 +261,12 @@ const Index = () => {
           <Grid style={{ display: 'flex', flexDirection: "column", margin: "0px", marginLeft: "5px", }}>
 
             <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
-              <InputLabel id="demo-select-small-label">All Clients</InputLabel>
+              <InputLabel id="demo-select-small-label">All Category</InputLabel>
               <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 value={age}
-                label="All Clients"
+                label="All Category"
                 onChange={handleChange}
               >
                 <MenuItem value="">

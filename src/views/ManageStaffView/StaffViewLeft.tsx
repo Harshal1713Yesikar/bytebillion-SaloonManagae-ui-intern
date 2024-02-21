@@ -69,6 +69,8 @@ const ViewSingleManageStaff = () => {
   const [formUpdateButton, setFormUpdateButton] = useState<boolean>(false)
   const [followUp, setFollowUp] = useState<any>([])
   const [submitted, setSubmitted] = useState<boolean>(false)
+  const [employeeStatus, setEmployeeStatus] = useState<any>()
+
   const [open, setOpen] = useState(false)
   const employeeId = router.query.managesaff
   console.log('ABC', employeeId)
@@ -81,8 +83,19 @@ const ViewSingleManageStaff = () => {
     employeeName: '',
     employeePhone: '',
     employeeJoiningDate: '',
-    employeeStatus: ''
+
   })
+
+  const isFormValid = () => {
+    // Add your form validation logic here
+    // For example, you can check if all required fields are filled
+    return (
+      updateEmployeeData.employeeName !== '' &&
+      updateEmployeeData.employeeJoiningDate !== ''&&
+      updateEmployeeData.employeePhone!==''
+     
+    );
+  };
 
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
@@ -123,6 +136,8 @@ const ViewSingleManageStaff = () => {
       // Assuming response.data contains updated employee data
       setUpdationData(response?.data?.data)
       singleEmployeeeDetailsFunc()
+      setEmployeeStatus('')
+
     } catch (error) {
       console.error('Error updating employee:', error)
       // Handle error if needed
@@ -149,6 +164,7 @@ const ViewSingleManageStaff = () => {
       followUp: data
     }
   }
+  
 
   useEffect(() => {
     setUpdationData({
@@ -319,6 +335,7 @@ const ViewSingleManageStaff = () => {
                   Delete
                 </Button>
               )}
+
             </CardActions>
           </Card>
         </Grid>
@@ -344,96 +361,81 @@ const ViewSingleManageStaff = () => {
         {/* Edit Form Filled */}
 
         <DialogContent>
-          <Box>
-            <Grid container spacing={2}>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  fullWidth
-                  label='Employee Name'
-                  name='employeeName'
-                  required
-                  inputProps={{
-                    maxLength: 50
-                  }}
-                  onChange={handleUpdateEmployeeData}
-                  value={updateEmployeeData.employeeName}
-                />
-              </Grid>
-
-              <Grid item md={6} xs={12}>
-                <TextField
-                  fullWidth
-                  label='Mobile Number'
-                  name='employeePhone'
-                  type='number'
-                  required
-                  error={updateEmployeeData?.employeePhone?.length > 13}
-                  onChange={handleUpdateEmployeeData}
-                  value={updateEmployeeData?.employeePhone}
-                />
-              </Grid>
-
-              <Grid item md={6} xs={12}>
-                <TextField
-                  fullWidth
-                  label='Employee Joining Date'
-                  name='employeeJoiningDate'
-                  type='date'
-                  required
-                  onChange={handleUpdateEmployeeData}
-                  value={updateEmployeeData?.employeeJoiningDate}
-                />
-              </Grid>
+        <Box>
+          <Grid container spacing={2}>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                label='Employee Name'
+                name='employeeName'
+                required
+                inputProps={{
+                  maxLength: 50,
+                }}
+                onChange={handleUpdateEmployeeData}
+                value={updateEmployeeData.employeeName}
+              />
             </Grid>
 
-            {/* <Grid sx={{ marginBottom: 3, marginTop: 2 }}>
-              <FormControl sx={{ width: 300 }}>
-                <InputLabel id='demo-simple-select-label'>Status</InputLabel>
-                <Select
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  value={updateEmployeeData?.employeeStatus}
-                  label='Status'
-                  onChange={handleUpdateEmployeeData}
-                >
-                  <MenuItem value={'active'}>Active</MenuItem>
-                  <MenuItem value={'in active'}>In active</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid> */}
-            
-         
-          </Box>
-        </DialogContent>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                label='employeePhone'
+                name='employeePhone'
+                required
+                inputProps={{
+                  maxLength: 50,
+                }}
+                onChange={handleUpdateEmployeeData}
+                value={updateEmployeeData.employeePhone}
+              />
+            </Grid>
 
-        <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'right' }}>
-          <Box className='demo-space-x'>
-            <Button
-              size='large'
-              color='secondary'
-              variant='outlined'
-              onClick={() => {
-                handleClose()
-                setFormUpdateButton(false)
-                setSubmitted(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              size='large'
-              type='submit'
-              variant='contained'
-              onClick={() => {
-                UpdateEmployeeFunc()
-                singleEmployeeeDetailsFunc()
-                handleOpan()
-              }}
-            >
-              Update
-            </Button>
-          </Box>
-        </DialogActions>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                label='Employee Joining Date'
+                name='employeeJoiningDate'
+                type='date'
+                required
+                onChange={handleUpdateEmployeeData}
+                value={updateEmployeeData.employeeJoiningDate}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'right' }}>
+      <Button
+          size='large'
+          type='submit'
+          variant='contained'
+          onClick={() => {
+         
+            handleClose();
+          }}
+          // Disable the button if the form is not valid
+        >
+          Cancel
+        </Button>
+        <Button
+          size='large'
+          type='submit'
+          variant='contained'
+          onClick={() => {
+            UpdateEmployeeFunc();
+            singleEmployeeeDetailsFunc();
+            handleOpan();
+          }}
+          disabled={!isFormValid()} // Disable the button if the form is not valid
+        >
+          Update
+        </Button>
+        
+      </DialogActions>
+
+       
       </Dialog>
       <Dialog open={deleteAlert} onClose={() => setDeleteAlert(false)}>
         <Grid container justifyContent='flex-end'>

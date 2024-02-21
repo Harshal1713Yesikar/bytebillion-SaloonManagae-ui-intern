@@ -58,14 +58,14 @@ const navigation = (): HorizontalNavItemsType => [
     path: '/expense',
     icon: 'bx:home-circle',
   },
- 
-  // {
-  //   path: '/entity',
-  //   action: 'read',
-  //   subject: 'acl-page',
-  //   title: 'Entity',
-  //   icon: 'bx:shield',
-  // },
+
+  {
+    path: '/entity',
+    action: 'read',
+    subject: 'acl-page',
+    title: 'Entity',
+    icon: 'bx:shield',
+  },
   {
     path: '/settings',
     action: 'read',
@@ -80,5 +80,5 @@ const navigation = (): HorizontalNavItemsType => [
     title: 'Settings',
     icon: 'bx:shield',
   }
-] 
+]
 export default navigation

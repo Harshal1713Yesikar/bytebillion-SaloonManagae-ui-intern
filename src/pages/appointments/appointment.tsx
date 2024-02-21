@@ -1,9 +1,10 @@
 import React from 'react'
+import AppointmentViewPage from 'src/views/appointmentView/AppointmentViewPage'
 
 const index = () => {
   return (
     <div>
-      cnvdfbdf asdfghjklasdfghjk
+      <AppointmentViewPage/>
     </div>
   )
 }
