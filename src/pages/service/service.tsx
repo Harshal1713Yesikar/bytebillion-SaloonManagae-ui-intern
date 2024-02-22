@@ -697,7 +697,7 @@ const Service = () => {
                   open={addServiceDialogOpen}
                   onClose={handleCloseAddServiceDialog}
                 >
-                  <DialogTitle> Add Service</DialogTitle>
+                  {/* <DialogTitle> Add Service</DialogTitle> */}
 
                   <CardContent sx={{ width: '100%', height: '1000px' }}>
                     <form onSubmit={handleServiceSubmit(onSubmit)}>
@@ -992,6 +992,7 @@ const Service = () => {
               rows={serviceData}
               columns={columns}
               pageSize={pageSize}
+
               disableSelectionOnClick
               rowsPerPageOptions={[7, 10, 25, 50, 80, 100]}
               onPageSizeChange={newPageSize => setPageSize(newPageSize)}

@@ -321,6 +321,7 @@ export async function AddServicesApi(serviceFormData: any) {
   }
 }
 
+
 export async function ListAllServiceApi(customerId: any, salonId: any) {
   try {
     const res = await axios.get(
@@ -333,6 +334,17 @@ export async function ListAllServiceApi(customerId: any, salonId: any) {
   }
 }
 
+export async function getSingleService(customerId: any, salonId: any, serviceId: any) {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_Single_SERVICE_API}?customerId=${customerId}&salonId=${salonId}&serviceId=${serviceId}`,
+      { headers }
+    )
+    return res
+  } catch (err) {
+    return err
+  }
+}
 
 
 
