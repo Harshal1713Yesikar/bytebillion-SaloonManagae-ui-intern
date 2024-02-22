@@ -8,8 +8,12 @@ import {
   DialogContent
 } from '@mui/material'
 import { useState, Fragment } from 'react'
+
 import Icon from 'src/@core/components/icon'
+import QuickSearchToolbar from 'src/views/table/TableFilter';
 import { alpha } from '@mui/material/styles'
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import { ThemeColor } from 'src/@core/layouts/types'
@@ -25,7 +29,8 @@ import {
   getAllCategoryList,
   listAllEmployeeApi,
   createNewCategory,
-  getSingleService
+  getSingleService,
+  ListAllProductListApi
 } from 'src/store/APIs/Api'
 import { AddDailyServicesApi } from 'src/store/APIs/Api'
 import DialogTitle from '@mui/material'
@@ -119,6 +124,26 @@ interface FormInputs {
     serviceAmount: ''
   }
 }
+// interface FormInputs {
+
+//   customerId: '',
+//   salonId: '',
+//   clientId: '',
+//   services: [
+//     {
+//       serviceId: '',
+//       serviceProvider: [
+//         {
+//           employeeId: ''
+//         }
+//       ],
+//       servicetiming: '',
+//       serviceAmount: '',
+//       serviceDiscount: '',
+//       totalServiceAmount: ''
+//     }
+//   ]
+// }
 
 interface FormInput {
   customerId: string
@@ -287,6 +312,104 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   )
 }
 
+
+// product List part
+
+const productListColumns: GridColumns = [
+  {
+    flex: 0.275,
+    minWidth: 290,
+    field: 'productName',
+    headerName: 'productName',
+    renderCell: (params: GridRenderCellParams) => {
+      const { row } = params
+
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {renderClient(params)}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+              {row.productName}
+            </Typography>
+          </Box>
+        </Box>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 120,
+    headerName: 'Barcode',
+    field: 'Barcode',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.Barcode}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 110,
+    field: 'costPrice',
+    headerName: 'costPrice',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.costPrice}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.125,
+    field: 'fullPrice',
+    minWidth: 80,
+    headerName: 'fullPrice',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.fullPrice}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.175,
+    minWidth: 150,
+    field: 'productStatus',
+    headerName: 'Status',
+    renderCell: (params: GridRenderCellParams) => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        <CustomChip
+          rounded
+          size='small'
+          skin='light'
+          color={params.row.productStatus === 'active' ? 'success' : 'error'}
+          label={params.row.productStatus}
+        />
+      </Typography>
+    )
+  },
+  // {
+  //   flex: 0.1,
+  //   minWidth: 100,
+  //   field: 'edit',
+  //   headerName: 'Edit',
+  //   renderCell: (params: GridRenderCellParams) => (
+  //     <IconButton aria-label="edit" onClick={() => handleEditProduct(params.row)}>
+  //       <EditIcon />
+  //     </IconButton>
+  //   )
+  // },
+  // {
+  //   flex: 0.1,
+  //   minWidth: 100,
+  //   field: 'delete',
+  //   headerName: 'Delete',
+  //   renderCell: (params: GridRenderCellParams) => (
+  //     <IconButton aria-label="delete" onClick={() => handleOpenDialogDelete(params.row)}>
+  //       <DeleteIcon />
+  //     </IconButton>
+  //   )
+  // }
+]
+
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [showService, setShowService] = useState<any[]>([]);
@@ -295,13 +418,18 @@ const Index = () => {
   const [showPackage, setShowPackage] = useState<any[]>([]);
   const [clientList, setClientList] = useState([])
   const [serviceList, setServiceList] = useState([])
+  const [productList, setProductList] = useState([])
   const [addServiceDialogOpen, setAddServiceDialogOpen] = useState(false)
+  const [addProductDialogOpen, setAddProductDialogOpen] = useState(false)
   const [addServiceListOpen, setAddServiceListOpen] = useState(false)
+  const [addProductListOpen, setAddProductListOpen] = useState(false)
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
+  const [productAdd, setProductAdd] = useState<null | HTMLElement>(null)
   const [employeeList, setEmployeeList] = useState([])
   const [selected, setSelected] = useState<readonly string[]>([])
   const [pageSize, setPageSize] = useState<number>(7)
+  const [productPageSize, setProductPageSize] = useState<number>(7)
   const [serviceData, setServiceData] = useState<any>([])
 
   const [clientData, setClientData] = useState({
@@ -410,6 +538,21 @@ const Index = () => {
     fatchServiceData()
   }, [])
 
+  useEffect(() => {
+    const ProductAllListData = async () => {
+      try {
+        const response: any = await ListAllProductListApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+        setProductList(response?.data?.data)
+        console.log('aaa', response.data.data)
+      } catch (err) {
+        return err
+      }
+    }
+    ProductAllListData()
+  }, [])
+
+
+
   const ServiceSelected = async (organization: any) => {
     await getSingleService('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', organization.serviceId).then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
@@ -447,8 +590,27 @@ const Index = () => {
       </MenuItem>
     )
   })
+  const handleProductList = productList.map((organization: any, index: number) => {
+    return (
+      <MenuItem onClick={() => productSelected(organization)} key={index} value={organization.productName}>
+        <Typography> {organization.productName}</Typography>
+      </MenuItem>
+    )
+  })
+
+  const productSelected = async (organization: any) => {
+    await getSingleService('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', organization.serviceId).then((res: any) => {
+      // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
+      // setLoading(false)
+      console.log(res, "ssss")
+      // setClientList()
+    })
+  }
   const handleCloseAdd = () => {
     setAdd(null)
+  }
+  const handleCloseProductAdd = () => {
+    setProductAdd(null)
   }
   const handleCloseDailyServiceList = () => {
     setAdd(null)
@@ -457,10 +619,19 @@ const Index = () => {
     setAddServiceDialogOpen(true)
     // setAddServiceListOpen(true)
   }
+  const handleProduyctAdded = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAddProductDialogOpen(true)
+    // setAddServiceListOpen(true)
+  }
 
   const handleCloseAddServiceDialog = () => {
     setAddServiceDialogOpen(false)
     setAddServiceListOpen(false)
+  }
+
+  const handleCloseAddProductDialog = () => {
+    setAddProductDialogOpen(false)
+    setAddProductListOpen(false)
   }
 
   useEffect(() => {
@@ -659,6 +830,9 @@ const Index = () => {
   const handleAdd = (event: MouseEvent<HTMLButtonElement>) => {
     setAdd(event.currentTarget)
   }
+  const handleProductAdd = (event: MouseEvent<HTMLButtonElement>) => {
+    setProductAdd(event.currentTarget)
+  }
   const handleServiceList = (event: MouseEvent<HTMLButtonElement>) => {
     setAdd(event.currentTarget)
   }
@@ -741,6 +915,10 @@ const Index = () => {
           </Grid>
         </Card>
         <div style={{ margin: '5px', display: "flex", justifyContent: "start", padding: "30px" }}>
+
+
+          {/*Daily service Dialogs start */}
+
           <Button variant='contained' sx={{ marginRight: '10px' }} aria-controls='simple-menu'
             aria-haspopup='true'
             onClick={handleAdd} startIcon={<AddIcon />}>
@@ -778,7 +956,7 @@ const Index = () => {
           </Grid>
 
 
-
+          {/* Add Daily Service */}
           <Dialog
             sx={{
               height: '100%',
@@ -789,7 +967,7 @@ const Index = () => {
           >
             {/* <DialogTitle > Add Service</DialogTitle> */}
 
-            <CardContent sx={{ width: "1000px", height: '1000px' }}>
+            <CardContent sx={{ width: "500px", height: '550px' }}>
               <form onSubmit={handleServiceSubmit(onSubmit)}>
                 <Grid item xs={12} sm={6} sx={{ margin: 1, display: 'flex', justifyContent: 'end', gap: 3 }}>
                   <FormControl fullWidth>
@@ -798,7 +976,7 @@ const Index = () => {
                       error={Boolean(ServiceErrors.selectCategory)}
                       htmlFor='validation-basic-select'
                     >
-                      Select Categary*
+                      Select Service*
                     </InputLabel>
                     <Controller
                       name='selectCategory'
@@ -807,7 +985,7 @@ const Index = () => {
                       render={({ field: { value, onChange } }) => (
                         <Select
                           value={value}
-                          label='Select Categary'
+                          label='Select Service'
                           onChange={onChange}
                           error={Boolean(ServiceErrors.selectCategory)}
                           labelId='validation-basic-select'
@@ -826,7 +1004,7 @@ const Index = () => {
                   </FormControl>
 
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6} sx={{ paddingTop: "15px" }}>
                   <FormControl fullWidth>
                     <InputLabel
                       id='validation-basic-select'
@@ -842,7 +1020,7 @@ const Index = () => {
                       render={({ field: { value, onChange } }) => (
                         <Select
                           value={value}
-                          label='Select Staff '
+                          label='Select Employee '
                           onChange={onChange}
                           error={Boolean(ServiceErrors.selectStaff)}
                           labelId='validation-basic-select'
@@ -859,129 +1037,159 @@ const Index = () => {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid>
-                  <Grid container spacing={5}>
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <Controller
-                          name='serviceName'
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field: { value, onChange } }) => (
-                            <TextField
-                              value={value}
-                              label='Service Name'
-                              onChange={onChange}
-                              placeholder='Type Here'
-                              error={Boolean(ServiceErrors.serviceName)}
-                              aria-describedby='validation-basic-first-name'
-                            />
-                          )}
-                        />
-                        {ServiceErrors.serviceName && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                            This field is required
-                          </FormHelperText>
+                <Grid sx={{ paddingTop: "15px" }}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='serviceTime'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            value={value}
+                            label='Service Time'
+                            onChange={onChange}
+                            // value = "time"
+                            placeholder='Service Time'
+                            error={Boolean(ServiceErrors.serviceTime)}
+                            aria-describedby='validation-basic-last-name'
+                          />
                         )}
-                      </FormControl>
-                    </Grid>
+                      />
+                      {ServiceErrors.serviceTime && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                          This field is required
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
 
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <Controller
-                          control={control}
-                          name='amountHistory.serviceAmount'
-                          rules={{ required: true }}
-                          render={({ field: { value, onChange } }) => (
-                            <TextField
-                              type='amountHistory'
-                              value={value}
-                              onChange={onChange}
-                              label='Amount'
-                              placeholder='Type Here '
-                              error={Boolean(ServiceErrors.amountHistory)}
-                            />
-                          )}
-                        />
-                        {ServiceErrors.amountHistory && (
-                          <FormHelperText sx={{ color: 'error.main' }}>
-                            required,10-digit phone number
-                          </FormHelperText>
+                  <Grid item xs={12} sm={6} sx={{ paddingTop: "15px" }}>
+                    <FormControl fullWidth>
+                      <Controller
+                        control={control}
+                        name='amountHistory.serviceAmount'
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            type='amountHistory'
+                            value={value}
+                            onChange={onChange}
+                            label='Amount'
+                            placeholder='Type Here '
+                            error={Boolean(ServiceErrors.amountHistory)}
+                          />
                         )}
-                      </FormControl>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <Controller
-                          name='serviceTime'
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field: { value, onChange } }) => (
-                            <TextField
-                              value={value}
-                              label='Service Time'
-                              onChange={onChange}
-                              // value = "time"
-                              placeholder='Service Time'
-                              error={Boolean(ServiceErrors.serviceTime)}
-                              aria-describedby='validation-basic-last-name'
-                            />
-                          )}
-                        />
-                        {ServiceErrors.serviceTime && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
-                            This field is required
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-
-
-
-                    <Grid item xs={12} sm={16}>
-                      <FormControl fullWidth>
-                        <Controller
-                          name='serviceDescription'
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field }) => (
-                            <TextField
-                              rows={4}
-                              multiline
-                              {...field}
-                              label='Designation'
-                              placeholder='Type Here'
-                              error={Boolean(ServiceErrors.serviceDescription)}
-                              aria-describedby='validation-basic-textarea'
-                            />
-                          )}
-                        />
-                        {ServiceErrors.serviceDescription && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
-                            This field is required
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
+                      />
+                      {ServiceErrors.amountHistory && (
+                        <FormHelperText sx={{ color: 'error.main' }}>
+                          required,10-digit phone number
+                        </FormHelperText>
+                      )}
+                    </FormControl>
                   </Grid>
                 </Grid>
-                <Button onClick={handleCloseAddServiceDialog} color='primary'>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCloseAddServiceDialog}
-                  size='large'
-                  type='submit'
-                  variant='contained'
-                  color='primary'
-                  onSubmit={onSubmit}
-                >
-                  Submit
-                </Button>
+
+
+                <Grid container spacing={5} sx={{ paddingTop: "15px" }}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='serviceName'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            value={value}
+                            label='Quantity'
+                            onChange={onChange}
+                            placeholder='Type Here'
+                            error={Boolean(ServiceErrors.serviceName)}
+                            aria-describedby='validation-basic-first-name'
+                          />
+                        )}
+                      />
+                      {ServiceErrors.serviceName && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                          This field is required
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='serviceName'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            value={value}
+                            label='Discount'
+                            onChange={onChange}
+                            placeholder='Type Here'
+                            error={Boolean(ServiceErrors.serviceName)}
+                            aria-describedby='validation-basic-first-name'
+                          />
+                        )}
+                      />
+                      {ServiceErrors.serviceName && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                          This field is required
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name='serviceName'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field: { value, onChange } }) => (
+                          <TextField
+                            value={value}
+                            label='Total'
+                            onChange={onChange}
+                            placeholder='Type Here'
+                            error={Boolean(ServiceErrors.serviceName)}
+                            aria-describedby='validation-basic-first-name'
+                          />
+                        )}
+                      />
+                      {ServiceErrors.serviceName && (
+                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                          This field is required
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                </Grid>
+
+                <Grid sx={{ paddingTop: "15px" }}>
+                  <Button onClick={handleCloseAddServiceDialog} color='primary'>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCloseAddServiceDialog}
+                    size='large'
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    onSubmit={onSubmit}
+                  >
+                    Submit
+                  </Button>
+                </Grid>
               </form>
             </CardContent>
           </Dialog>
+
+          {/* Daily Service List */}
           <Dialog sx={{
             height: '100%',
             width: "100vw",
@@ -1029,42 +1237,329 @@ const Index = () => {
               />
             </Grid>
           </Dialog>
-          <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddProduct} startIcon={<AddIcon />}>
+
+          {/* Daily Service Dialog End           */}
+
+          {/* Daily Product sell Start */}
+
+          <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleProductAdd} startIcon={<AddIcon />}>
             Add Product
           </Button>
-          {/* <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handleAddMemberShip} startIcon={<AddIcon />}>
-            Add Membership
-          </Button>
-          <Button variant='contained' sx={{ marginRight: '10px' }} onClick={handlePackage} startIcon={<AddIcon />}>
-            Add Package
-          </Button>
-          <Button variant='contained' sx={{ marginRight: '10px' }} startIcon={<CardGiftcardIcon />}>
-            Gift Card
-          </Button> */}
+
+          <Grid>
+            <Menu
+              keepMounted
+              id='simple-menu'
+              anchorEl={productAdd}
+              onClose={handleCloseProductAdd}
+              open={Boolean(productAdd)}
+              sx={{}}
+            >
+              {/* <MenuItem onClick={handleCloseAdd}>Add Group</MenuItem> */}
+              <MenuItem
+                onClick={() => {
+                  handleCloseProductAdd()
+                  setAddProductDialogOpen(true)
+
+                }}
+              >
+                Add Product
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleCloseProductAdd()
+                  setAddProductListOpen(true)
+
+                }}
+              >
+                Product List
+              </MenuItem>
+            </Menu>
+          </Grid>
+
+          {/* Add product Dialog start */}
+          <Dialog
+            sx={{
+              height: '100%',
+
+            }}
+            open={addProductDialogOpen}
+            onClose={handleCloseAddProductDialog}
+          >
+            {/* <DialogTitle > Add Service</DialogTitle> */}
+
+            <CardContent sx={{ height: '400px' }}>
+              <form onSubmit={handleServiceSubmit(onSubmit)}>
+                <Grid item xs={12} sm={6} sx={{ margin: 1, display: 'flex', justifyContent: 'end', gap: 3 }}>
+                  <FormControl fullWidth>
+                    <InputLabel
+                      id='validation-basic-select'
+                      error={Boolean(ServiceErrors.selectCategory)}
+                      htmlFor='validation-basic-select'
+                    >
+                      Select Product*
+                    </InputLabel>
+                    <Controller
+                      name='selectCategory'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <Select
+                          value={value}
+                          label='Select Product'
+                          onChange={onChange}
+                          error={Boolean(ServiceErrors.selectCategory)}
+                          labelId='validation-basic-select'
+                          aria-describedby='validation-basic-select'
+                        >
+                          {handleProductList}
+
+                        </Select>
+                      )}
+                    />
+                    {ServiceErrors.selectCategory && (
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                        {ServiceErrors.selectCategory.message}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ paddingTop: "15px" }}>
+                  <FormControl fullWidth>
+                    <InputLabel
+                      id='validation-basic-select'
+                      error={Boolean(ServiceErrors.selectStaff)}
+                      htmlFor='validation-basic-select'
+                    >
+                      Select Employee*
+                    </InputLabel>
+                    <Controller
+                      name='selectStaff'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <Select
+                          value={value}
+                          label='Select Staff '
+                          onChange={onChange}
+                          error={Boolean(ServiceErrors.selectStaff)}
+                          labelId='validation-basic-select'
+                          aria-describedby='validation-basic-select'
+                        >
+                          {renderedOrganizations}
+                        </Select>
+                      )}
+                    />
+                    {ServiceErrors.selectStaff && (
+                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                        {ServiceErrors.selectStaff.message}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid sx={{ paddingTop: "15px" }}>
+                  <Grid container spacing={5}>
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <Controller
+                          name='serviceName'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <TextField
+                              value={value}
+                              label='Price'
+                              onChange={onChange}
+                              placeholder='Type Here'
+                              error={Boolean(ServiceErrors.serviceName)}
+                              aria-describedby='validation-basic-first-name'
+                            />
+                          )}
+                        />
+                        {ServiceErrors.serviceName && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <Controller
+                          control={control}
+                          name='amountHistory.serviceAmount'
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <TextField
+                              type='amountHistory'
+                              value={value}
+                              onChange={onChange}
+                              label='Quantity'
+                              placeholder='Type Here '
+                              error={Boolean(ServiceErrors.amountHistory)}
+                            />
+                          )}
+                        />
+                        {ServiceErrors.amountHistory && (
+                          <FormHelperText sx={{ color: 'error.main' }}>
+                            required,10-digit phone number
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <Controller
+                          name='serviceTime'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <TextField
+                              value={value}
+                              label='Discount'
+                              onChange={onChange}
+                              // value = "time"
+                              placeholder='Service Time'
+                              error={Boolean(ServiceErrors.serviceTime)}
+                              aria-describedby='validation-basic-last-name'
+                            />
+                          )}
+                        />
+                        {ServiceErrors.serviceTime && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <Controller
+                          name='serviceDescription'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: { value, onChange } }) => (
+                            <TextField
+                              value={value}
+                              label='Total'
+                              onChange={onChange}
+                              // value = "time"
+                              placeholder='Total'
+                              error={Boolean(ServiceErrors.serviceDescription)}
+                              aria-describedby='validation-basic-last-name'
+                            />
+                          )}
+                        />
+                        {ServiceErrors.serviceDescription && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+
+
+                    {/* <Grid item xs={12} sm={16}>
+                      <FormControl fullWidth>
+                        <Controller
+                          name='serviceDescription'
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field }) => (
+                            <TextField
+                              rows={4}
+                              multiline
+                              {...field}
+                              label='De'
+                              placeholder='Type Here'
+                              error={Boolean(ServiceErrors.serviceDescription)}
+                              aria-describedby='validation-basic-textarea'
+                            />
+                          )}
+                        />
+                        {ServiceErrors.serviceDescription && (
+                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
+                            This field is required
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid> */}
+                  </Grid>
+                </Grid>
+                <Grid sx={{ paddingTop: "15px" }}>
+                  <Button onClick={handleCloseAddServiceDialog} color='primary'>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCloseAddServiceDialog}
+                    size='large'
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    onSubmit={onSubmit}
+                  >
+                    Submit
+                  </Button>
+                </Grid>
+              </form>
+            </CardContent>
+          </Dialog>
+          {/* Add product Dialog End */}
+
+          {/* Daily Product List Part Start */}
+          <Dialog sx={{
+            height: '100%',
+            width: "100vw",
+            display: "flex",
+            justifyContent: "center"
+          }}
+            open={addProductListOpen}
+            onClose={handleCloseAddProductDialog}>
+            <Card>
+              <Card>
+                <CardHeader title='Quick Filter' />
+                <DataGrid
+                  autoHeight
+                  columns={productListColumns}
+                  pageSize={productPageSize}
+                  // rows={filteredData.length ? filteredData : data}
+                  rows={productList}
+                  rowsPerPageOptions={[7, 10, 25, 50]}
+                  components={{ Toolbar: QuickSearchToolbar }}
+                  onPageSizeChange={newPageSize => setProductPageSize(newPageSize)}
+                  componentsProps={{
+                    baseButton: {
+                      variant: 'outlined'
+                    },
+                    // toolbar: {
+                    //   value: searchText,
+                    //   clearSearch: () => handleSearch(''),
+                    //   onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+                    // }
+                  }}
+                />
+              </Card>
+
+            </Card>
+          </Dialog>
+
+          {/* Daily product list part End */}
+
+          {/* Daily product sell End          */}
         </div>
-        {/* {showService.map((index) => (
-          <AddDailyService key={index} index={index} onRemove={() => handleRemoveService(showService.length - 1)} />
-        ))} */}
-        {/* {showService.map((value, index) => (
-          <AddDailyService
-            key={index}
-            index={index}
-            onRemove={() => handleRemoveService(showService.length - 1)}
-          />
-        ))} */}
-        {showProduct.map((index) => (
+
+
+        {/* {showProduct.map((index) => (
           <AddProduct key={index} index={index} onRemove={() => handleRemoveProduct(showProduct.length - 1)} />
-        ))}
-
-
-        {/* {showMemberShip.map((index) => (
-          <AddMemberShip key={index} index={index} onRemove={() => handleRemoveMemberShip(showMemberShip.length - 1)} />
-        ))}
-
-        {showPackage.map((index) => (
-          <AddPackage key={index} index={index} onRemove={() => handleRemovePackage(showPackage.length - 1)} />
         ))} */}
 
+
+        {/* Calculation Part of Daily Service and Product */}
 
         <div style={{ display: 'flex', marginTop: '20px' }}>
           <Grid style={{ marginLeft: "1px" }}>
