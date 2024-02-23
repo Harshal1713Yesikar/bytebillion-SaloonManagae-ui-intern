@@ -11,6 +11,7 @@ import { useState, Fragment } from 'react'
 
 import Icon from 'src/@core/components/icon'
 import QuickSearchToolbar from 'src/views/table/TableFilter';
+import { SelectChangeEvent } from '@mui/material/Select'
 import { alpha } from '@mui/material/styles'
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -124,26 +125,26 @@ interface FormInputs {
     serviceAmount: ''
   }
 }
-// interface FormInputs {
+interface FormInputs {
 
-//   customerId: '',
-//   salonId: '',
-//   clientId: '',
-//   services: [
-//     {
-//       serviceId: '',
-//       serviceProvider: [
-//         {
-//           employeeId: ''
-//         }
-//       ],
-//       servicetiming: '',
-//       serviceAmount: '',
-//       serviceDiscount: '',
-//       totalServiceAmount: ''
-//     }
-//   ]
-// }
+  customerId: '',
+  salonId: '',
+  clientId: '',
+  services: [
+    {
+      serviceId: '',
+      serviceProvider: [
+        {
+          employeeId: ''
+        }
+      ],
+      servicetiming: '',
+      serviceAmount: '',
+      serviceDiscount: '',
+      totalServiceAmount: ''
+    }
+  ]
+}
 
 interface FormInput {
   customerId: string
@@ -431,6 +432,16 @@ const Index = () => {
   const [pageSize, setPageSize] = useState<number>(7)
   const [productPageSize, setProductPageSize] = useState<number>(7)
   const [serviceData, setServiceData] = useState<any>([])
+  const [servicePrice, setServicePrice] = useState('');
+  const [service, setService] = useState<any>('')
+  const [totalServiceData, setTotalServiceData] = useState<
+    number | undefined
+  >();
+  const [serviceSaleData, setServiceSaleData] = useState({
+    quantity: '',
+    serviceDiscount: '',
+    servicetiming: '',
+  });
 
   const [clientData, setClientData] = useState({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -552,11 +563,13 @@ const Index = () => {
   }, [])
 
 
-
+  // const [serviceRate, setServiceRate] = useState<any>()
   const ServiceSelected = async (organization: any) => {
     await getSingleService('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', organization.serviceId).then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
       // setLoading(false)
+      // setServiceRate(organization.serviceAmount)
+      // setServicePrice(organization.currentServiceAmount)
       console.log(res, "ssss")
       // setClientList()
     })
@@ -757,6 +770,18 @@ const Index = () => {
   // } = useForm<FormInput>({
   //   defaultValues: clientData
   // })
+  const handleService = (event: SelectChangeEvent) => {
+    setService(event.target.value)
+    setDailyServiceData(event.target.value);
+    const price = event.target.value ? service.currentServiceAmount : 0; // Assuming price field name is servicePrice
+    setServicePrice(price);
+  }
+  const handleServiceSelection = (item: any) => {
+    setDailyServiceData(item);
+    // Update service price based on the selected service
+    const price = item ? item.currentServiceAmount : 0; // Assuming price field name is servicePrice
+    setServicePrice(price);
+  };
 
   const {
     reset: ClientReset,
@@ -786,14 +811,15 @@ const Index = () => {
       </MenuItem>
     )
   })
+
   const renderedDailyService = serviceList.map((organization: any, index: number) => {
     return (
       <MenuItem onClick={() => ServiceSelected(organization)} key={index} value={organization.serviceId}>
         <Typography> {organization.serviceName}</Typography>
+
       </MenuItem>
     )
   })
-
   const addServiceToList = async (data: any) => {
     const dailyData = {
       customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
@@ -801,22 +827,23 @@ const Index = () => {
       clientId: '',
       services: [
         {
-          serviceId: '',
-          serviceProvider: [
-            {
-              employeeId: '',
-            },
-          ],
-          serviceName: '',
-          currentServiceAmount: '',
-          quantity: '',
-          serviceDiscount: '',
-          // servicetiming: serviceSaleData.servicetiming,
-          // totalServiceAmount: totalServiceData,
+          serviceId: dailyServiceData.serviceId,
+          // serviceProvider: [
+          //   {
+          //     employeeId: dailyEmployeeNameList.employeeId,
+          //   },
+          // ],
+          serviceName: dailyServiceData.serviceName,
+          currentServiceAmount: serviceRate,
+          quantity: serviceSaleData.quantity,
+          serviceDiscount: enteredData,
+          servicetiming: enteredTime,
+          totalServiceAmount: totalServiceData,
         },
       ],
     };
     console.log(dailyData, 'new datasssss');
+
     try {
       const res = await AddDailyServicesApi(data)
       console.log(res, "res")
@@ -847,9 +874,52 @@ const Index = () => {
 
     console.log('kvjvb', data)
   }
+  const [enteredData, setEnteredData] = useState<any>()
+  const [enteredTime, setEnteredTime] = useState<any>()
 
+  const handleProductSaleDataChange = (key: any, value: any) => {
+    setServiceSaleData({ ...serviceSaleData, [key]: value });
+  };
+  const handleQuantity = (event: any) => {
+    handleProductSaleDataChange('quantity', event.target.value)
+  }
+  const handleDiscountData = (event: any) => {
+    // console.log(event.target.value, "event.target.value")
+    setEnteredData({ ...enteredData, [event.target.name]: event.target.value })
+    // handleProductSaleDataChange('Discount', event.target.value)
+  }
+  // console.log(enteredData, "event.target.value")
 
-
+  const handleServiceTimeData = (event: any) => {
+    // console.log(event.target.value, "event.target.value")
+    setEnteredTime({ ...enteredTime, [event.target.name]: event.target.value })
+    // handleProductSaleDataChange('Discount', event.target.value)
+  }
+  useEffect(() => {
+    if (
+      servicePrice &&
+      serviceSaleData.quantity &&
+      serviceSaleData.serviceDiscount
+    ) {
+      const total =
+        parseFloat(serviceSaleData.quantity) * parseFloat(servicePrice) -
+        parseFloat(serviceSaleData.serviceDiscount);
+      setTotalServiceData(total);
+    } else if (servicePrice && serviceSaleData.serviceDiscount) {
+      const total =
+        parseFloat(servicePrice) - parseFloat(serviceSaleData.serviceDiscount);
+      setTotalServiceData(total);
+    } else if (servicePrice && serviceSaleData.quantity) {
+      const total =
+        parseFloat(serviceSaleData.quantity) * parseFloat(servicePrice);
+      setTotalServiceData(total);
+    } else if (servicePrice) {
+      const total = parseFloat(servicePrice);
+      setTotalServiceData(total);
+    } else {
+      setTotalServiceData(0);
+    }
+  }, [servicePrice, serviceSaleData.serviceDiscount, serviceSaleData.quantity]);
   return (
 
     <>
@@ -984,10 +1054,10 @@ const Index = () => {
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <Select
-                          value={value}
+                          value={dailyServiceData}
                           label='Select Service'
-                          onChange={onChange}
-                          error={Boolean(ServiceErrors.selectCategory)}
+                          onChange={handleService}
+                          // error={Boolean(ServiceErrors.selectCategory)}
                           labelId='validation-basic-select'
                           aria-describedby='validation-basic-select'
                         >
@@ -996,11 +1066,11 @@ const Index = () => {
                         </Select>
                       )}
                     />
-                    {ServiceErrors.selectCategory && (
+                    {/* {ServiceErrors.selectCategory && (
                       <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
                         {ServiceErrors.selectCategory.message}
                       </FormHelperText>
-                    )}
+                    )} */}
                   </FormControl>
 
                 </Grid>
@@ -1021,6 +1091,7 @@ const Index = () => {
                         <Select
                           value={value}
                           label='Select Employee '
+
                           onChange={onChange}
                           error={Boolean(ServiceErrors.selectStaff)}
                           labelId='validation-basic-select'
@@ -1040,52 +1111,13 @@ const Index = () => {
                 <Grid sx={{ paddingTop: "15px" }}>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <Controller
-                        name='serviceTime'
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <TextField
-                            value={value}
-                            label='Service Time'
-                            onChange={onChange}
-                            // value = "time"
-                            placeholder='Service Time'
-                            error={Boolean(ServiceErrors.serviceTime)}
-                            aria-describedby='validation-basic-last-name'
-                          />
-                        )}
-                      />
-                      {ServiceErrors.serviceTime && (
-                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
-                          This field is required
-                        </FormHelperText>
-                      )}
+                      <TextField id="outlined-basic" label="ServiceTime" name='ServiceTime' variant="outlined" size='small' onChange={handleServiceTimeData}></TextField>
                     </FormControl>
                   </Grid>
 
                   <Grid item xs={12} sm={6} sx={{ paddingTop: "15px" }}>
                     <FormControl fullWidth>
-                      <Controller
-                        control={control}
-                        name='amountHistory.serviceAmount'
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <TextField
-                            type='amountHistory'
-                            value={value}
-                            onChange={onChange}
-                            label='Amount'
-                            placeholder='Type Here '
-                            error={Boolean(ServiceErrors.amountHistory)}
-                          />
-                        )}
-                      />
-                      {ServiceErrors.amountHistory && (
-                        <FormHelperText sx={{ color: 'error.main' }}>
-                          required,10-digit phone number
-                        </FormHelperText>
-                      )}
+                      <TextField id="outlined-basic" label="price" variant="outlined" size='small' value={servicePrice}>{servicePrice}</TextField>
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -1094,21 +1126,10 @@ const Index = () => {
                 <Grid container spacing={5} sx={{ paddingTop: "15px" }}>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <Controller
-                        name='serviceName'
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <TextField
-                            value={value}
-                            label='Quantity'
-                            onChange={onChange}
-                            placeholder='Type Here'
-                            error={Boolean(ServiceErrors.serviceName)}
-                            aria-describedby='validation-basic-first-name'
-                          />
-                        )}
-                      />
+
+
+                      <TextField id="outlined-basic" label="Quantity" variant="outlined" size='small' onChange={handleQuantity} />
+
                       {ServiceErrors.serviceName && (
                         <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
                           This field is required
@@ -1119,26 +1140,8 @@ const Index = () => {
 
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <Controller
-                        name='serviceName'
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <TextField
-                            value={value}
-                            label='Discount'
-                            onChange={onChange}
-                            placeholder='Type Here'
-                            error={Boolean(ServiceErrors.serviceName)}
-                            aria-describedby='validation-basic-first-name'
-                          />
-                        )}
-                      />
-                      {ServiceErrors.serviceName && (
-                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                          This field is required
-                        </FormHelperText>
-                      )}
+                      <TextField id="outlined-basic" label="discount" name='Discount' variant="outlined" size='small' onChange={handleDiscountData}></TextField>
+
                     </FormControl>
                   </Grid>
 
@@ -1146,26 +1149,7 @@ const Index = () => {
 
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <Controller
-                        name='serviceName'
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <TextField
-                            value={value}
-                            label='Total'
-                            onChange={onChange}
-                            placeholder='Type Here'
-                            error={Boolean(ServiceErrors.serviceName)}
-                            aria-describedby='validation-basic-first-name'
-                          />
-                        )}
-                      />
-                      {ServiceErrors.serviceName && (
-                        <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                          This field is required
-                        </FormHelperText>
-                      )}
+                      <TextField id="outlined-basic" label="" variant="outlined" size='small' value={totalServiceData}>{totalServiceData}</TextField>
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -1175,12 +1159,12 @@ const Index = () => {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleCloseAddServiceDialog}
+                    // onClick={handleCloseAddServiceDialog}
                     size='large'
                     type='submit'
                     variant='contained'
                     color='primary'
-                    onSubmit={onSubmit}
+                    onClick={addServiceToList}
                   >
                     Submit
                   </Button>
@@ -1561,7 +1545,7 @@ const Index = () => {
 
         {/* Calculation Part of Daily Service and Product */}
 
-        <div style={{ display: 'flex', marginTop: '20px' }}>
+        {/* <div style={{ display: 'flex', marginTop: '20px' }}>
           <Grid style={{ marginLeft: "1px" }}>
             <Typography>Reward Points</Typography>
             <FormControl sx={{ minWidth: 200 }} size="small">
@@ -1741,6 +1725,99 @@ const Index = () => {
           >
             <TextField fullWidth id="fullWidth" placeholder='Enter Notes' />
           </Box>
+        </Grid> */}
+
+
+        {/* Daily Service List */}
+        <Grid sx={{
+          height: '100%',
+          width: "80vw",
+          display: "flex",
+          justifyContent: "center"
+        }}
+        >
+          <Card sx={{ width: "80vw" }}>
+            {/* <CardHeader title='Daily Service List' /> */}
+            {/* <h1 >Daily Service List</h1> */}
+            <EnhancedTableToolbar numSelected={selected.length} />
+            <Grid item xs={6}>
+              <TextField
+                size='small'
+                variant='outlined'
+                value={searchTerm}
+                sx={{ paddingLeft: "20px" }}
+                placeholder='Search'
+                onChange={handleSearchChange}
+                InputProps={{
+                  endAdornment: <SearchIcon />
+                }}
+              />
+            </Grid>
+
+            {/* <TablePagination
+              page={page}
+              component='div'
+              // rows = {serviceData}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handleChangePage}
+              rowsPerPageOptions={[5, 10, 25]}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            /> */}
+            <DataGrid
+              autoHeight
+              rows={serviceList}
+              columns={columns}
+              sx={{ padding: "20px" }}
+              pageSize={pageSize}
+              disableSelectionOnClick
+              rowsPerPageOptions={[7, 10, 25, 50, 80, 100]}
+              onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            />
+          </Card>
+        </Grid>
+
+
+        {/* Daily Product List */}
+
+        <Grid sx={{
+          height: '100%',
+          width: "80vw",
+          display: "flex",
+          justifyContent: "center",
+          paddingTop: "10px"
+        }}
+        >
+          <Card>
+            <Card sx={{
+              height: '100%',
+              width: "80vw",
+
+            }}>
+              <CardHeader title='Daily Product List' />
+              <DataGrid
+                autoHeight
+                columns={productListColumns}
+                pageSize={productPageSize}
+                // rows={filteredData.length ? filteredData : data}
+                rows={productList}
+                rowsPerPageOptions={[7, 10, 25, 50]}
+                components={{ Toolbar: QuickSearchToolbar }}
+                onPageSizeChange={newPageSize => setProductPageSize(newPageSize)}
+                componentsProps={{
+                  baseButton: {
+                    variant: 'outlined'
+                  },
+                  // toolbar: {
+                  //   value: searchText,
+                  //   clearSearch: () => handleSearch(''),
+                  //   onChange: (event: ChangeEvent<HTMLInputElement>) => handleSearch(event.target.value)
+                  // }
+                }}
+              />
+            </Card>
+
+          </Card>
         </Grid>
 
 
