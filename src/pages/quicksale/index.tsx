@@ -434,6 +434,7 @@ const Index = () => {
   const [serviceData, setServiceData] = useState<any>([])
   const [servicePrice, setServicePrice] = useState('');
   const [service, setService] = useState<any>('')
+  const [selectedClientId, setSelectedClientId] = useState<any>()
   const [totalServiceData, setTotalServiceData] = useState<
     number | undefined
   >();
@@ -563,12 +564,14 @@ const Index = () => {
   }, [])
 
 
-  // const [serviceRate, setServiceRate] = useState<any>()
+  const [serviceRate, setServiceRate] = useState<any>()
+  const [selectedServiceId, setSelectedServiceId] = useState<any>()
   const ServiceSelected = async (organization: any) => {
     await getSingleService('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', organization.serviceId).then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
       // setLoading(false)
-      // setServiceRate(organization.serviceAmount)
+      setSelectedServiceId(organization.serviceId)
+      setServiceRate(organization.currentServiceAmount)
       // setServicePrice(organization.currentServiceAmount)
       console.log(res, "ssss")
       // setClientList()
@@ -588,6 +591,7 @@ const Index = () => {
     await getSingleClient('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'dqXUs', organization.clientId).then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
       // setLoading(false)
+      setSelectedClientId(organization.clientId)
       console.log(res, "ssss")
       // setClientList()
     })
@@ -773,10 +777,11 @@ const Index = () => {
   const handleService = (event: SelectChangeEvent) => {
     setService(event.target.value)
     setDailyServiceData(event.target.value);
-    const price = event.target.value ? service.currentServiceAmount : 0; // Assuming price field name is servicePrice
+    const price = event ? service.currentServiceAmount : 0; // Assuming price field name is servicePrice
     setServicePrice(price);
   }
   const handleServiceSelection = (item: any) => {
+    setService(item)
     setDailyServiceData(item);
     // Update service price based on the selected service
     const price = item ? item.currentServiceAmount : 0; // Assuming price field name is servicePrice
@@ -814,7 +819,7 @@ const Index = () => {
 
   const renderedDailyService = serviceList.map((organization: any, index: number) => {
     return (
-      <MenuItem onClick={() => ServiceSelected(organization)} key={index} value={organization.serviceId}>
+      <MenuItem onClick={() => ServiceSelected(organization)} key={index} value={organization.serviceName}>
         <Typography> {organization.serviceName}</Typography>
 
       </MenuItem>
@@ -824,19 +829,19 @@ const Index = () => {
     const dailyData = {
       customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
       salonId: 'dqXUs',
-      clientId: '',
+      clientId: selectedClientId,
       services: [
         {
-          serviceId: dailyServiceData.serviceId,
+          serviceId: selectedServiceId,
           // serviceProvider: [
           //   {
           //     employeeId: dailyEmployeeNameList.employeeId,
           //   },
           // ],
-          serviceName: dailyServiceData.serviceName,
+          serviceName: dailyServiceData,
           currentServiceAmount: serviceRate,
           quantity: serviceSaleData.quantity,
-          serviceDiscount: enteredData,
+          serviceDiscount: enteredDiscountData,
           servicetiming: enteredTime,
           totalServiceAmount: totalServiceData,
         },
@@ -845,10 +850,37 @@ const Index = () => {
     console.log(dailyData, 'new datasssss');
 
     try {
-      const res = await AddDailyServicesApi(data)
+      const res = await AddDailyServicesApi(dailyData)
       console.log(res, "res")
-      setDailyServiceData(data)
-      console.log(data, "serviceValues")
+      // setDailyServiceData(dailyData)
+      // console.log(dailyData, "serviceValues")
+
+      // toggleModal();
+      setDailyServiceData({
+        customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+        salonId: 'dqXUs',
+        clientId: '',
+        services: [
+          {
+            serviceId: '',
+            serviceProvider: [
+              {
+                employeeId: '',
+              },
+            ],
+            servicetiming: '',
+            serviceAmount: '',
+            quantity: '',
+            serviceDiscount: '',
+            totalServiceAmount: '',
+          },
+        ],
+      });
+      setEnteredDiscountData('')
+      setEnteredTime('')
+      setServiceRate('');
+      setTotalServiceData(0);
+
     } catch (err) {
       console.log('error', err)
     }
@@ -874,7 +906,7 @@ const Index = () => {
 
     console.log('kvjvb', data)
   }
-  const [enteredData, setEnteredData] = useState<any>()
+  const [enteredDiscountData, setEnteredDiscountData] = useState<any>()
   const [enteredTime, setEnteredTime] = useState<any>()
 
   const handleProductSaleDataChange = (key: any, value: any) => {
@@ -885,10 +917,10 @@ const Index = () => {
   }
   const handleDiscountData = (event: any) => {
     // console.log(event.target.value, "event.target.value")
-    setEnteredData({ ...enteredData, [event.target.name]: event.target.value })
+    setEnteredDiscountData({ ...enteredDiscountData, [event.target.name]: event.target.value })
     // handleProductSaleDataChange('Discount', event.target.value)
   }
-  // console.log(enteredData, "event.target.value")
+  // console.log(enteredDiscountData, "event.target.value")
 
   const handleServiceTimeData = (event: any) => {
     // console.log(event.target.value, "event.target.value")
@@ -896,30 +928,35 @@ const Index = () => {
     // handleProductSaleDataChange('Discount', event.target.value)
   }
   useEffect(() => {
+
+    // Number(serviceRate)
+    // Number(serviceSaleData.quantity)
+    // Number(enteredDiscountData)
     if (
-      servicePrice &&
+      serviceRate &&
       serviceSaleData.quantity &&
-      serviceSaleData.serviceDiscount
+      enteredDiscountData
     ) {
       const total =
-        parseFloat(serviceSaleData.quantity) * parseFloat(servicePrice) -
-        parseFloat(serviceSaleData.serviceDiscount);
+        parseFloat(serviceSaleData.quantity) * parseFloat(serviceRate) -
+        parseFloat(enteredDiscountData);
       setTotalServiceData(total);
-    } else if (servicePrice && serviceSaleData.serviceDiscount) {
+    } else if (serviceRate && enteredDiscountData) {
       const total =
-        parseFloat(servicePrice) - parseFloat(serviceSaleData.serviceDiscount);
+        parseInt(serviceRate) - parseFloat(enteredDiscountData);
       setTotalServiceData(total);
-    } else if (servicePrice && serviceSaleData.quantity) {
+    } else if (serviceRate && serviceSaleData.quantity) {
       const total =
-        parseFloat(serviceSaleData.quantity) * parseFloat(servicePrice);
+        parseFloat(serviceSaleData.quantity) * parseFloat(serviceRate);
       setTotalServiceData(total);
-    } else if (servicePrice) {
-      const total = parseFloat(servicePrice);
+    } else if (serviceRate) {
+      const total = parseFloat(serviceRate);
       setTotalServiceData(total);
     } else {
       setTotalServiceData(0);
     }
-  }, [servicePrice, serviceSaleData.serviceDiscount, serviceSaleData.quantity]);
+
+  }, [serviceRate, enteredDiscountData, serviceSaleData.quantity]);
   return (
 
     <>
@@ -1117,7 +1154,7 @@ const Index = () => {
 
                   <Grid item xs={12} sm={6} sx={{ paddingTop: "15px" }}>
                     <FormControl fullWidth>
-                      <TextField id="outlined-basic" label="price" variant="outlined" size='small' value={servicePrice}>{servicePrice}</TextField>
+                      <TextField id="outlined-basic" label="price" variant="outlined" size='small' value={serviceRate}>{serviceRate}</TextField>
                     </FormControl>
                   </Grid>
                 </Grid>
