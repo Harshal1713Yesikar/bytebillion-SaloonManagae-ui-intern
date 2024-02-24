@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { Controller } from 'react-hook-form';
 import { useTheme } from '@emotion/react';
-import { AES, enc } from 'crypto-js';
+// import { AES, enc } from 'crypto-js';
 import Card from '@mui/material/Card';
 
 

@@ -1,0 +1,6 @@
+{
+    "extends" :"./tsconfig.json",
+    "compilerOption": {
+        "jsx":"typescript"
+    }
+}

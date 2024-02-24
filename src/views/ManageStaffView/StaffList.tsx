@@ -216,6 +216,7 @@ const StaffList = (props: Props) => {
       )
     },
 
+    
     {
       flex: 0.15,
       minWidth: 110,

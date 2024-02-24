@@ -136,9 +136,13 @@ export const salonRegistration = async ({ newOrganizationDetails }: any) => {
 
 export const organizationDetails = async (id: string) => {
   try {
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`, { headers })
-    console.log('AAAAA')
-    return res.data
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_CUSTOMER_REGISTRATION_API}?customerId=${id}`,
+      { headers }
+    );
+    console.log("AAAAA")
+    return res.data;
+
   } catch (err) {
     console.error(err)
     throw err // Rethrow the error to be caught by the caller
@@ -265,11 +269,9 @@ export async function getAllOrganizationList(customerId: any) {
 export async function createNewCategory(categoryData: any) {
   try {
     const response = await axios.post(`${process.env.NEXT_PUBLIC_CREATE_CATEGORY_API}`, categoryData, { headers })
-    // console.l""og((await response).data)
     console.log('category data service', response)
     return response
   } catch (err: any) {
-    // console.log(err, "errrr")
     return err
   }
 }
@@ -285,9 +287,6 @@ export async function getAllCategoryList(customerId: any, salonId: any) {
     return err
   }
 }
-
-
-
 
 
 
@@ -316,8 +315,37 @@ export async function ListAllServiceApi(customerId: any, salonId: any) {
   }
 }
 
+export async function updateServicesApi(defaultServiceValues: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_SERVICES_API}`, defaultServiceValues, { headers })
+    return res?.data
 
+  } catch (error) {
+    return error
+  }
+}
 
+export async function getSingleServiceApi(customerId: any, salonId: any, serviceId: any) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_GET_SINGLE_SERVICE_API}customerId=${customerId}&salonId=${salonId}&serviceId=${serviceId}`,
+      { headers }
+    )
+    console.log("single-service", res)
+    return res
+  } catch (error) {
+    return error
+  }
+}
+
+export async function deleteServiceApi(singleServiceData: any) {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_DELETE_SERVICE_API}`, singleServiceData,
+      { headers })
+    return res?.data
+  } catch (error) {
+    return error
+  }
+}
 
 
 // -------------------employee API--------------------
@@ -563,12 +591,13 @@ export async function ListAllClientsApi(customerId:any,salonId:any) {
     console.log("data",res)
     return res
   }
-  catch(err){
+  catch (err) {
+
     return err
   }
 
-}
 
+}
 export async function UpdateClientApi(updateClient: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
@@ -601,11 +630,7 @@ export async function deleteClientApi(ClientData:any) {
   {
     return err
   }
-
 }
-
-
-
 
 
 

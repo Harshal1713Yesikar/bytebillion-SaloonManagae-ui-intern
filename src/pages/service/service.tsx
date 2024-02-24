@@ -5,6 +5,8 @@ import {
   CardContent,
   CardHeader,
   Dialog,
+  DialogActions,
+  DialogContent,
   DialogTitle,
   Grid,
   Menu,
@@ -16,26 +18,30 @@ import {
 import React, { Fragment, useEffect, useState } from 'react'
 import { MouseEvent } from 'react'
 import Dashboard from '../dashboard'
-import { ArrowDropDownIcon, DatePicker, DateTimePicker } from '@mui/x-date-pickers'
+import { ArrowDropDownIcon } from '@mui/x-date-pickers'
 import SearchIcon from '@mui/icons-material/Search'
 import { getInitials } from 'src/@core/utils/get-initials'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { ThemeColor } from 'src/@core/layouts/types'
 
+
 // ** MUI Imports
 import Table from '@mui/material/Table'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
+import { visuallyHidden } from '@mui/utils'
 import { alpha } from '@mui/material/styles'
-import toast from 'react-hot-toast'
 
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
 import IconButton from '@mui/material/IconButton'
 import TableContainer from '@mui/material/TableContainer'
+import TableSortLabel from '@mui/material/TableSortLabel'
+import TablePagination from '@mui/material/TablePagination'
 import InputLabel from '@mui/material/InputLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import FormControl from '@mui/material/FormControl'
@@ -43,25 +49,30 @@ import Select from '@mui/material/Select'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import TimePicker from '@mui/lab/TimePicker'
+import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import {
   AddServicesApi,
   ListAllServiceApi,
   getAllCategoryList,
   listAllEmployeeApi,
-  createNewCategory
+  createNewCategory,
+  getSingleServiceApi,
+  deleteServiceApi
+
 } from 'src/store/APIs/Api'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 
+import { yupResolver } from '@hookform/resolvers/yup'
+// import { rows } from 'src/@fake-db/table/static-data'
+import ListItemText from '@mui/material/ListItemText'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { Router } from 'react-router-dom'
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-
+import { useRouter } from 'next/router';
 type Order = 'asc' | 'desc'
 
 interface FormInputs {
@@ -71,7 +82,7 @@ interface FormInputs {
   serviceName: ''
   serviceDescription: ''
   serviceTime: ''
-  selectStaff: ''
+  selectEmployee: ''
   amountHistory: {
     serviceAmount: ''
   }
@@ -156,13 +167,17 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
+// This method is created for cross-browser compatibility, if you don't
+// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0])
     if (order !== 0) return order
+
     return a[1] - b[1]
   })
+
   return stabilizedThis.map(el => el[0])
 }
 
@@ -186,92 +201,9 @@ const renderClient = (params: GridRenderCellParams) => {
     )
   }
 }
-const columns: GridColDef[] = [
-  {
-    flex: 0.25,
-    minWidth: 290,
-    field: 'serviceName',
-    headerName: 'Service Name',
-    // hide: hideNameColumn,
-    renderCell: (params: GridRenderCellParams) => {
-      const { row } = params
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(params)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.serviceName.toUpperCase() + row.serviceName.slice(1)}
-            </Typography>
-          </Box>
-        </Box>
-      )
-    }
-  },
-  {
-    flex: 0.175,
-    minWidth: 120,
-    headerName: 'Service Time',
-    field: 'serviceTime',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceTime}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.15,
-    minWidth: 110,
-    field: 'selectStaff ',
-    headerName: 'Staff Name',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
-        {/* {params.row.selectStaff} */}
 
-      </Typography>
-    )
-  },
 
-  // {
-  //   flex: 0.15,
-  //   minWidth: 110,
-  //   field: 'employeePhone ',
-  //   headerName: 'contact',
-  //   renderCell: (params: GridRenderCellParams) => (
-  //     <Typography variant='body2' sx={{ color: 'text.primary' }}>
-  //       {params.row.serviceName}
-  //     </Typography>
-  //   )
-  // },
 
-  {
-    flex: 0.1,
-    field: 'employeeId',
-    minWidth: 80,
-    headerName: 'Staff ID',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceCategoryId}
-      </Typography>
-    )
-  },
-
-  {
-    flex: 0.175,
-    minWidth: 150,
-    field: 'serviceStatus',
-    headerName: 'Service Status',
-    renderCell: (params: GridRenderCellParams) => (
-      <Typography variant='body2' sx={{ color: 'text.primary' }}>
-        {params.row.serviceStatus == 'active' ? (
-          <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
-        ) : (
-          <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
-        )}
-      </Typography>
-    )
-  }
-]
 
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -332,15 +264,120 @@ const CategorySelected = async (organization: any) => {
     // setLoading(false)
   })
 }
-
 const Service = () => {
   const [option, setOption] = useState<null | HTMLElement>(null)
   const [add, setAdd] = useState<null | HTMLElement>(null)
   const [serviceData, setServiceData] = useState<any>([])
   const [hideNameColumn, setHideNameColumn] = useState(false)
   const [categoryList, setCategoryList] = useState([])
+  const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
+  const [serviceIdForDelete, setServiceIdForDelete] = useState('')
 
-  useEffect(() => {
+  const router = useRouter();
+  console.log(router,"router2345")
+  const handleCellClick = (row: any) => {
+    router.push(`/service/serviceDetails/${row}`)
+  }
+
+
+  const serviceId = router.query.serviceId;
+  const columns: GridColDef[] = [
+    {
+      flex: 0.75,
+      minWidth: 160,
+      field: 'serviceName',
+      headerName: 'Service Name',
+      // hide: hideNameColumn,
+      renderCell: (params: GridRenderCellParams) => {
+        const { row } = params
+
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row?.serviceName}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      }
+    },
+    {
+      flex: 0.75,
+      minWidth: 120,
+      headerName: 'Service Time',
+      field: 'serviceTime',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceTime}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.75,
+      minWidth: 110,
+      field: 'selectStaff ',
+      headerName: 'Staff Name',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params?.selectStaff?.charAt(0).toUpperCase() + params?.row?.selectStaff.slice(1)}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.75,
+      field: 'employeeId',
+      minWidth: 80,
+      headerName: 'Staff ID',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceCategoryId}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.175,
+      minWidth: 150,
+      field: 'serviceStatus',
+      headerName: 'Service Status',
+      renderCell: (params: GridRenderCellParams) => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.serviceStatus == 'active' ? (
+            <CustomChip rounded size='small' skin='light' color='success' label={params.row.serviceStatus} />
+          ) : (
+            <CustomChip rounded size='small' skin='light' color='secondary' label={params.row.serviceStatus} />
+          )}
+        </Typography>
+      )
+    },
+
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'editService ',
+      headerName: 'Edit',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button onClick={() => handleCellClick(params.row.serviceId)}>
+          <Icon style={{ cursor: "pointer" }} icon='bx:pencil' />
+        </Button>
+      )
+    },
+    {
+      flex: 0.15,
+      minWidth: 110,
+      field: 'deleteService ',
+      headerName: 'Delete',
+      renderCell: (params: GridRenderCellParams) => (
+        <Button onClick={() => {
+          setSuspendDialogOpen(true);
+          setServiceIdForDelete(params.row.serviceId);
+        }}>          <Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+        </Button>
+      )
+    }
+  ]
     // Fetch staff data using listAllEmployeeApi
     const fetchData = async () => {
       try {
@@ -352,13 +389,10 @@ const Service = () => {
         console.error('Error fetching Service data:', error)
       }
     }
-
+    useEffect(() => {
     // Call the fetchData function
     fetchData()
   }, [])
-
-
-
 
   // Fetch staff data using listAllCategoryList
   const data = async () => {
@@ -370,29 +404,13 @@ const Service = () => {
       console.log('ABC', err)
     }
   }
-  useEffect(() => {}, [])
-
-
-
-  // Fetch staff data using listAllEmployeeList
   useEffect(() => {
-    const fatchData = async () => {
-      try {
-        const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
-        setEmployeeList(response?.data?.data)
-        console.log('aaa', response?.data?.data)
-      } catch (err) {
-        return err
-      }
-    }
-    fatchData()
+    data()
   }, [])
-
-
 
   const [defaultStudentValues, setDefaultStudentValues] = useState<any>({
     customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-    salonId: 'E7uqn',
+    salonId: 'jkmli',
     serviceCategoryId: 'HFm4p',
     serviceName: '',
     serviceDescription: '',
@@ -425,9 +443,6 @@ const Service = () => {
   const [selected, setSelected] = useState<readonly string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [pageSize, setPageSize] = useState<number>(7)
-   const [openImportDialog, setOpenImportDialog] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [employeeList, setEmployeeList] = useState([])
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
@@ -436,7 +451,7 @@ const Service = () => {
 
   const [open, setOpen] = useState<boolean>(false)
 
-  const handleClickOpen = () => setOpen(true)
+  // const handleClickOpen = () => setOpen(true)
 
   const handleClose = () => setOpen(false)
 
@@ -489,7 +504,26 @@ const Service = () => {
     return row.serviceName.toLowerCase().includes(searchTermLower)
   })
 
+  const [openImportDialog, setOpenImportDialog] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [employeeList, setEmployeeList] = useState([])
 
+  useEffect(() => {
+    const fatchData = async () => {
+      try {
+        const response: any = await listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn')
+        setEmployeeList(response?.data?.data)
+        console.log('aaa', response?.data?.data)
+      } catch (err) {
+        return err
+      }
+    }
+    fatchData()
+  }, [])
+
+  const handleDelete = () => {
+    router.push('/service/service/')
+  }
 
 
   const handleImportClick = () => {
@@ -507,16 +541,19 @@ const Service = () => {
   }
 
   const handleImportSubmit = () => {
-    // Handle import logic here using the selected file
-    // You can dispatch an action or call a function to handle the import
-    // Remember to close the dialog after import is done
     handleDialogClose()
   }
 
   const [selectGroup, setSelectGroup] = useState('')
   const [addServiceDialogOpen, setAddServiceDialogOpen] = useState(false)
   const [categoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
-
+  const [status, setStatus] = useState<any>('')
+  const [singleServiceData, setSingleServiceData] = useState({
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "jkmli",
+    serviceId: serviceIdForDelete,
+    serviceStatus: 'inActive'
+  })
   const handleSelectGroup = (event: SelectChangeEvent) => {
     setSelectGroup(event.target.value)
   }
@@ -534,7 +571,20 @@ const Service = () => {
   const handleChange = (event: SelectChangeEvent<typeof personName>) => {
     console.log(event.target.value)
   }
+  const deleteData = {
+    "customerId": singleServiceData?.customerId,
+    "salonId": singleServiceData?.salonId,
+    "serviceId": serviceIdForDelete,
+    "serviceStatus": "inActive"
+  }
 
+  const handleDeleteApi = async () => {
+    const res =await deleteServiceApi({ ...deleteData })
+    if (res?.statuscode == 204) {
+
+      router.push('/service/service/')
+    }
+  }
   const renderedOrganizations = employeeList.map((organization: any, index: number) => {
     return (
       <MenuItem onClick={() => orgSelected(organization)} key={index} value={organization.employeeName}>
@@ -557,23 +607,27 @@ const Service = () => {
     serviceCategoryName: ''
   })
 
+  const handleClickOpen = () => {
+    setOpen(true)
+    // setStatus(singleServiceData.serviceStatus)
+  }
+  const handleDeleteClose = () => {
+    // setStatus(singleServiceData.serviceStatus)
+    setOpen(false)
+  }
+
+
   const onSubmitButtom = () => {
     console.log(categoryData)
   }
 
-
   const onSubmit = (data: any) => {
+    console.log(data,"data")
     AddServicesApi(data)
     setDefaultStudentValues(data)
-    toast.success('New Service created successfully',{
-      position: "bottom-right"
-  });
-
 
     console.log('kvjvb', data)
   }
-
-
 
   const handleSubmit = async () => {
     try {
@@ -584,12 +638,9 @@ const Service = () => {
       console.log('error', err)
     }
   }
-
-
   const handleInputChange = (key: any, value: any) => {
     setCategoryData({ ...categoryData, [key]: value })
   }
-
   const {
     reset: serviceReset,
     control,
@@ -611,14 +662,11 @@ const Service = () => {
     defaultValues: categoryData
   })
 
-
-
   return (
     <>
-      <Grid >
-        <Grid>
-        </Grid>
-        <Card sx={{ p: 7,}}>
+      <Grid>
+        
+        <Card sx={{ width: '100%', p: 6, height: '100%' }}>
           <Grid sx={{ display: 'flex', width: '100%' }}>
             <Grid sx={{ width: '100%' }}>
               <Typography sx={{ fontSize: '20px', fontWeight: '600' }}>Services List</Typography>
@@ -651,14 +699,14 @@ const Service = () => {
               </Box>
               <Box sx={{ marginTop: '10px' }}>
                 <Button
-                  sx={{ mr: 2, width: '90px', cursor: 'pointer', textTransform: 'none' }}
+                  sx={{ mr: 2, width: '145px', cursor: 'pointer', textTransform: 'none' }}
                   variant='contained'
                   aria-controls='simple-menu'
                   aria-haspopup='true'
                   onClick={handleAdd}
                   endIcon={<ArrowDropDownIcon />}
                 >
-                  Add
+                  Add service
                 </Button>
                 <Grid>
                   <Menu
@@ -695,21 +743,21 @@ const Service = () => {
                         <FormControl fullWidth>
                           <InputLabel
                             id='validation-basic-select'
-                            error={Boolean(ServiceErrors.selectStaff)}
+                            error={Boolean(ServiceErrors.selectEmployee)}
                             htmlFor='validation-basic-select'
                           >
                             Select Categary*
                           </InputLabel>
                           <Controller
-                            name='selectStaff'
+                            name='selectEmployee'
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
                               <Select
                                 value={value}
-                                label='Select Categary '
+                                label='Select Category '
                                 onChange={onChange}
-                                error={Boolean(ServiceErrors.selectStaff)}
+                                error={Boolean(ServiceErrors.selectEmployee)}
                                 labelId='validation-basic-select'
                                 aria-describedby='validation-basic-select'
                               >
@@ -717,9 +765,9 @@ const Service = () => {
                               </Select>
                             )}
                           />
-                          {ServiceErrors.selectStaff && (
+                          {ServiceErrors.selectEmployee && (
                             <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                              {ServiceErrors.selectStaff.message}
+                              {ServiceErrors.selectEmployee.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -732,6 +780,17 @@ const Service = () => {
                             +
                           </Button>
                           <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
+                            {/* <DialogTitle id='form-dialog-title'> Add Categary</DialogTitle>
+                            <DialogContent>
+                              <TextField
+                                id='name'
+                                autoFocus
+                                fullWidth
+                                type='Name'
+                                label='Name'
+                              />Edit Service
+                            </DialogContent> */}
+
                             <Grid>
                               <Card>
                                 <CardHeader title='Add Category' />
@@ -777,6 +836,8 @@ const Service = () => {
                                 </CardContent>
                               </Card>
                             </Grid>
+
+                            {/* <Button variant='outlined' color='secondary' type='submit' onSubmit={handleSubmit}> */}
                             <Button variant='outlined' color='secondary' type='submit' onClick={handleSubmit}>
                               Submit
                             </Button>
@@ -865,13 +926,13 @@ const Service = () => {
                             <FormControl fullWidth>
                               <InputLabel
                                 id='validation-basic-select'
-                                error={Boolean(ServiceErrors.selectStaff)}
+                                error={Boolean(ServiceErrors.selectEmployee)}
                                 htmlFor='validation-basic-select'
                               >
                                 Select Employee*
                               </InputLabel>
                               <Controller
-                                name='selectStaff'
+                                name='selectEmployee'
                                 control={control}
                                 rules={{ required: true }}
                                 render={({ field: { value, onChange } }) => (
@@ -879,7 +940,7 @@ const Service = () => {
                                     value={value}
                                     label='Select Employee '
                                     onChange={onChange}
-                                    error={Boolean(ServiceErrors.selectStaff)}
+                                    error={Boolean(ServiceErrors.selectEmployee)}
                                     labelId='validation-basic-select'
                                     aria-describedby='validation-basic-select'
                                   >
@@ -887,9 +948,9 @@ const Service = () => {
                                   </Select>
                                 )}
                               />
-                              {ServiceErrors.selectStaff && (
+                              {ServiceErrors.selectEmployee && (
                                 <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                                  {ServiceErrors.selectStaff.message}
+                                  {ServiceErrors.selectEmployee.message}
                                 </FormHelperText>
                               )}
                             </FormControl>
@@ -958,31 +1019,29 @@ const Service = () => {
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle'>
                 <TableBody>
-                  {/* if you don't need to support IE11, you can replace the `stableSort` call with: rows.slice().sort(getComparator(order, orderBy)) */}
                   {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                     const isItemSelected = selected.includes(row.serviceName)
                     const labelId = `enhanced-table-checkbox-${index}`
 
                     return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.serviceName}
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                        onClick={event => handleClick(event, row.serviceName)}
-                      >
-                        <TableCell>
-                          {/* <Checkbox checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} /> */}
-                        </TableCell>
-                        <TableCell component='th' id={labelId} scope='row' padding='none'>
-                          {row.serviceName}
-                        </TableCell>
-                        <TableCell align='right'>{row.serviceId}</TableCell>
-                        {/* <TableCell align='right'>{row.serviceId}</TableCell> */}
-                        <TableCell align='right'>{row.currentServiceAmount}</TableCell>
-                        <TableCell align='right'>{row.serviceStatus}</TableCell>
-                      </TableRow>
+                      <></>
+                      // <TableRow
+                      //   hover
+                      //   tabIndex={-1}
+                      //   key={row.serviceName}
+                      //   selected={isItemSelected}
+                      //   aria-checked={isItemSelected}
+                      //   onClick={event => handleClick(event, row.serviceName)}
+                      // >
+                      //   <TableCell component='th' id={labelId} scope='row' padding='none'>
+                      //     {row.serviceName}
+                      //   </TableCell>
+                      //   <TableCell align='right'>{row.serviceId}</TableCell>
+                      //   <TableCell align='right'>{row.currentServiceAmount}</TableCell>
+                      //   <TableCell align='right'>{row.serviceStatus}</TableCell>
+                      //   <TableCell align='right'><Icon style={{ cursor: "pointer" }} icon='ic:baseline-delete' />
+                      //   </TableCell>
+                      // </TableRow>
                     )
                   })}
                   {emptyRows > 0 && (
@@ -997,16 +1056,6 @@ const Service = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {/* <TablePagination
-              page={page}
-              component='div'
-              // rows = {serviceData}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            /> */}
             <DataGrid
               autoHeight
               rows={serviceData}
@@ -1018,7 +1067,49 @@ const Service = () => {
             />
           </Grid>
         </Card>
-      </Grid>
+        <Dialog fullWidth open={suspendDialogOpen} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <Grid container justifyContent="flex-end">
+            <Icon
+              className="iconContainer"
+              onClick={() => setSuspendDialogOpen(false)}
+              style={{
+                cursor: "pointer",
+                fontSize: "30px",
+                margin: "8px",
+                transition: "background-color 0.3s",
+              }}
+              icon='bx:x'
+            /></Grid>
+          <DialogContent sx={{ pb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <Box sx={{ mb: 9, maxWidth: '85%', textAlign: 'center', '& svg': { color: 'warning.main' } }}>
+                <Icon icon='bx:error-circle' fontSize='5.5rem' style={{ marginTop: '-30px' }} />
+                <Typography variant='h4' sx={{ color: 'text.secondary' }}>
+                  Are you sure?
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '1.125rem', mb: 5 }}>You won't be able to revert Category!</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'right' }}>
+            <Button variant='outlined' color='secondary' onClick={() => setSuspendDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant='contained' sx={{ mr: 1.5 }} onClick={() => {
+              handleDeleteApi()
+              handleDelete()
+              fetchData()
+              setSuspendDialogOpen(false)
+            }
+            }>
+              Yes, I am Sure!
+            </Button>
+
+          </DialogActions>
+        </Dialog>
+      </Grid >
+
     </>
   )
 }

@@ -557,7 +557,7 @@ const ClientViewPage = () => {
       await deleteClientApi(deleteClientFunc)
       await FatchData()
       handleCloseDialogDelete(false)
-      toast.error(' Client InActive ', {
+      toast.error(' Client Deleted Successfully ', {
         position: 'bottom-right'
       })
     } catch (err) {
