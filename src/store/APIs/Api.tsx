@@ -610,6 +610,8 @@ export async function ListAllClientsApi(customerId: any, salonId: any) {
 
 }
 
+
+
 export async function UpdateClientApi(updateClient: any) {
   try {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_UPDATE_CLIENT_DETAILS}`, updateClient, { headers })
@@ -646,16 +648,35 @@ export async function deleteClientApi(ClientData: any) {
 
 // daily service api
 
-export async function AddDailyServicesApi(serviceFormData: any) {
+export async function AddDailyServicesApi(dailyData: any) {
   try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_CREATE_DAILY_SERVICE}`,
-      serviceFormData,
-      { headers }
+    const response = await axios.post(
+      "https://karo-scan-dev-api.azure-api.net/st-quickSale-fnp/dailyService",
+      dailyData,
+      { headers },
     );
 
-    console.log("success data", res)
-    return res.data;
+    console.log("success data", response)
+    return response;
+  } catch (err) {
+    return err;
+  }
+}
+
+
+// daily Product Api
+
+
+export async function AddDailyProductApi(dailyProductSellData: any) {
+  try {
+    const response = await axios.post(
+      "https://karo-scan-dev-api.azure-api.net/st-quickSale-fnp/quickProductSale",
+      dailyProductSellData,
+      { headers },
+    );
+
+    console.log("success data", response)
+    return response;
   } catch (err) {
     return err;
   }

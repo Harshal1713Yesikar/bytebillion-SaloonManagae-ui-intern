@@ -31,7 +31,8 @@ import {
   listAllEmployeeApi,
   createNewCategory,
   getSingleService,
-  ListAllProductListApi
+  ListAllProductListApi,
+  AddDailyProductApi
 } from 'src/store/APIs/Api'
 import { AddDailyServicesApi } from 'src/store/APIs/Api'
 import DialogTitle from '@mui/material'
@@ -157,6 +158,13 @@ interface Data {
   serviceName: string
   serviceStatus: number
   currentServiceAmount: number
+}
+
+interface Data {
+  productId: number
+  productName: string
+  // serviceStatus: number
+  currentProductAmount: number
 }
 
 interface HeadCell {
@@ -433,7 +441,11 @@ const Index = () => {
   const [productPageSize, setProductPageSize] = useState<number>(7)
   const [serviceData, setServiceData] = useState<any>([])
   const [servicePrice, setServicePrice] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+  const [enteredDiscountData, setEnteredDiscountData] = useState<any>()
   const [service, setService] = useState<any>('')
+  const [product, setProduct] = useState<any>('')
+  const [enteredTime, setEnteredTime] = useState<any>()
   const [selectedClientId, setSelectedClientId] = useState<any>()
   const [totalServiceData, setTotalServiceData] = useState<
     number | undefined
@@ -466,6 +478,30 @@ const Index = () => {
         serviceAmount: '',
         serviceDiscount: '',
         totalServiceAmount: ''
+      }
+    ]
+  }
+  )
+
+  const [dailyProductData, setDailyProductData] = useState<any>({
+
+    customerId: "099f9bf2-8ac2-4f84-8286-83bb46595fde",
+    salonId: "dqXUs",
+    clientId: '',
+    product: [
+      {
+        productId: '',
+        productSale: [
+          {
+            employeeId: '',
+            clientId: '',
+            productName: '',
+            price: '',
+            quantity: '',
+            discount: '',
+            total: ''
+          }
+        ]
       }
     ]
   }
@@ -528,11 +564,14 @@ const Index = () => {
     }
     fatchData()
   }, [])
-
+  const [serviceProviderData, setServiceProviderData] = useState()
+  const [productSeller, setProductSeller] = useState('')
   const orgSelected = (organization: any) => {
     listAllEmployeeApi('99f9bf2-8ac2-4f84-8286-83bb46595fde', 'jkmli').then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
       // setLoading(false)
+      setServiceProviderData(organization.employeeId)
+      setProductSeller(organization.employeeId)
     })
   }
 
@@ -615,10 +654,16 @@ const Index = () => {
     )
   })
 
+  const [productRate, setProductRate] = useState<any>()
+  const [selectedProductId, setSelectedProductId] = useState<any>('')
+
   const productSelected = async (organization: any) => {
     await getSingleService('099f9bf2-8ac2-4f84-8286-83bb46595fde', 'E7uqn', organization.serviceId).then((res: any) => {
       // localStorage.setItem('organizationLogo', JSON.stringify({ logo: res.data.data.organizationLogo }))
       // setLoading(false)
+      setSelectedProductId(organization.productId)
+      setProductRate(organization.fullPrice)
+
       console.log(res, "ssss")
       // setClientList()
     })
@@ -780,13 +825,20 @@ const Index = () => {
     const price = event ? service.currentServiceAmount : 0; // Assuming price field name is servicePrice
     setServicePrice(price);
   }
-  const handleServiceSelection = (item: any) => {
-    setService(item)
-    setDailyServiceData(item);
-    // Update service price based on the selected service
-    const price = item ? item.currentServiceAmount : 0; // Assuming price field name is servicePrice
-    setServicePrice(price);
-  };
+
+  const handleProduct = (event: SelectChangeEvent) => {
+    setProduct(event.target.value)
+    setDailyProductData(event.target.value);
+    const price = event ? product.currentProductAmount : 0; // Assuming price field name is servicePrice
+    setProductPrice(price);
+  }
+  // const handleServiceSelection = (item: any) => {
+  //   setService(item)
+  //   setDailyServiceData(item);
+  //   // Update service price based on the selected service
+  //   const price = item ? item.currentServiceAmount : 0; // Assuming price field name is servicePrice
+  //   setServicePrice(price);
+  // };
 
   const {
     reset: ClientReset,
@@ -825,7 +877,7 @@ const Index = () => {
       </MenuItem>
     )
   })
-  const addServiceToList = async (data: any) => {
+  const addServiceToList = async () => {
     const dailyData = {
       customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
       salonId: 'dqXUs',
@@ -833,57 +885,97 @@ const Index = () => {
       services: [
         {
           serviceId: selectedServiceId,
-          // serviceProvider: [
-          //   {
-          //     employeeId: dailyEmployeeNameList.employeeId,
-          //   },
-          // ],
-          serviceName: dailyServiceData,
-          currentServiceAmount: serviceRate,
-          quantity: serviceSaleData.quantity,
-          serviceDiscount: enteredDiscountData,
-          servicetiming: enteredTime,
+          serviceProvider: [
+            {
+              employeeId: serviceProviderData,
+            },
+          ],
+          // serviceName: dailyServiceData,
+          serviceAmount: parseInt(serviceRate),
+          quantity: parseInt(serviceSaleData.quantity),
+          serviceDiscount: parseInt(enteredDiscountData.Discount),
+          servicetiming: String(enteredTime.ServiceTime),
           totalServiceAmount: totalServiceData,
         },
       ],
     };
     console.log(dailyData, 'new datasssss');
 
-    try {
-      const res = await AddDailyServicesApi(dailyData)
-      console.log(res, "res")
-      // setDailyServiceData(dailyData)
-      // console.log(dailyData, "serviceValues")
 
-      // toggleModal();
-      setDailyServiceData({
-        customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
-        salonId: 'dqXUs',
-        clientId: '',
-        services: [
-          {
-            serviceId: '',
-            serviceProvider: [
-              {
-                employeeId: '',
-              },
-            ],
-            servicetiming: '',
-            serviceAmount: '',
-            quantity: '',
-            serviceDiscount: '',
-            totalServiceAmount: '',
-          },
-        ],
-      });
-      setEnteredDiscountData('')
-      setEnteredTime('')
-      setServiceRate('');
-      setTotalServiceData(0);
+    await AddDailyServicesApi(dailyData)
+    // console.log(res, "swatiii")
+    // setDailyServiceData(dailyData)
+    // console.log(dailyData, "serviceValues")
 
-    } catch (err) {
-      console.log('error', err)
-    }
+    // toggleModal();
+    setDailyServiceData({
+      customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+      salonId: 'dqXUs',
+      clientId: '',
+      services: [
+        {
+          serviceId: '',
+          serviceProvider: [
+            {
+              employeeId: '',
+            },
+          ],
+          servicetiming: '',
+          serviceAmount: '',
+          quantity: '',
+          serviceDiscount: '',
+          totalServiceAmount: '',
+        },
+      ],
+    });
+    setEnteredDiscountData('')
+    // setEnteredTime('')
+    setServiceRate('');
+    setTotalServiceData(0);
+
+
+  }
+
+
+
+  const addProductToList = async () => {
+    const dailyProductSellData = {
+      customerId: '099f9bf2-8ac2-4f84-8286-83bb46595fde',
+      salonId: 'dqXUs',
+      product: [
+        {
+          productId: selectedProductId,
+          productSale: [
+            {
+              employeeId: productSeller,
+              clientId: selectedClientId,
+              price: productRate,
+              quantity: 0,
+              discount: 0,
+              total: 0
+            },
+          ],
+          // serviceName: dailyServiceData,
+          //  serviceAmount: parseInt(serviceRate),
+          // quantity: parseInt(serviceSaleData.quantity),
+          // serviceDiscount: parseInt(enteredDiscountData.Discount),
+          // servicetiming: String(enteredTime.ServiceTime),
+          // totalServiceAmount: totalServiceData,
+        },
+      ],
+    };
+    console.log(dailyProductSellData, 'newProductData');
+
+
+    await AddDailyProductApi(dailyProductSellData)
+    // console.log(res, "swatiii")
+    // setDailyServiceData(dailyData)
+    // console.log(dailyData, "serviceValues")
+
+    // toggleModal();
+
+
+
   }
 
   const handleAdd = (event: MouseEvent<HTMLButtonElement>) => {
@@ -906,8 +998,7 @@ const Index = () => {
 
     console.log('kvjvb', data)
   }
-  const [enteredDiscountData, setEnteredDiscountData] = useState<any>()
-  const [enteredTime, setEnteredTime] = useState<any>()
+
 
   const handleProductSaleDataChange = (key: any, value: any) => {
     setServiceSaleData({ ...serviceSaleData, [key]: value });
@@ -929,28 +1020,30 @@ const Index = () => {
   }
   useEffect(() => {
 
-    // Number(serviceRate)
-    // Number(serviceSaleData.quantity)
-    // Number(enteredDiscountData)
+    // parseInt(serviceRate)
+
+    parseInt(serviceSaleData.quantity)
+    parseInt(enteredDiscountData)
+    console.log(parseInt(serviceRate), parseInt(enteredDiscountData), parseInt(serviceSaleData.quantity), typeof (enteredDiscountData), "hello swati")
     if (
       serviceRate &&
       serviceSaleData.quantity &&
       enteredDiscountData
     ) {
       const total =
-        parseFloat(serviceSaleData.quantity) * parseFloat(serviceRate) -
-        parseFloat(enteredDiscountData);
+        parseFloat(serviceSaleData.quantity) * parseInt(serviceRate) -
+        parseInt(enteredDiscountData.Discount);
       setTotalServiceData(total);
     } else if (serviceRate && enteredDiscountData) {
       const total =
-        parseInt(serviceRate) - parseFloat(enteredDiscountData);
+        parseInt(serviceRate) - parseInt(enteredDiscountData.Discount);
       setTotalServiceData(total);
     } else if (serviceRate && serviceSaleData.quantity) {
       const total =
-        parseFloat(serviceSaleData.quantity) * parseFloat(serviceRate);
+        parseFloat(serviceSaleData.quantity) * parseInt(serviceRate);
       setTotalServiceData(total);
     } else if (serviceRate) {
-      const total = parseFloat(serviceRate);
+      const total = parseInt(serviceRate);
       setTotalServiceData(total);
     } else {
       setTotalServiceData(0);
@@ -1177,7 +1270,7 @@ const Index = () => {
 
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <TextField id="outlined-basic" label="discount" name='Discount' variant="outlined" size='small' onChange={handleDiscountData}></TextField>
+                      <TextField id="outlined-basic" label="discount" type='number' name='Discount' variant="outlined" size='small' onChange={handleDiscountData}></TextField>
 
                     </FormControl>
                   </Grid>
@@ -1309,7 +1402,7 @@ const Index = () => {
           >
             {/* <DialogTitle > Add Service</DialogTitle> */}
 
-            <CardContent sx={{ height: '400px' }}>
+            <CardContent sx={{ height: '550px' }}>
               <form onSubmit={handleServiceSubmit(onSubmit)}>
                 <Grid item xs={12} sm={6} sx={{ margin: 1, display: 'flex', justifyContent: 'end', gap: 3 }}>
                   <FormControl fullWidth>
@@ -1326,10 +1419,10 @@ const Index = () => {
                       rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <Select
-                          value={value}
+                          value={dailyProductData}
                           label='Select Product'
-                          onChange={onChange}
-                          error={Boolean(ServiceErrors.selectCategory)}
+                          onChange={handleProduct}
+
                           labelId='validation-basic-select'
                           aria-describedby='validation-basic-select'
                         >
@@ -1338,11 +1431,7 @@ const Index = () => {
                         </Select>
                       )}
                     />
-                    {ServiceErrors.selectCategory && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {ServiceErrors.selectCategory.message}
-                      </FormHelperText>
-                    )}
+
                   </FormControl>
 
                 </Grid>
@@ -1350,7 +1439,7 @@ const Index = () => {
                   <FormControl fullWidth>
                     <InputLabel
                       id='validation-basic-select'
-                      error={Boolean(ServiceErrors.selectStaff)}
+
                       htmlFor='validation-basic-select'
                     >
                       Select Employee*
@@ -1364,7 +1453,7 @@ const Index = () => {
                           value={value}
                           label='Select Staff '
                           onChange={onChange}
-                          error={Boolean(ServiceErrors.selectStaff)}
+
                           labelId='validation-basic-select'
                           aria-describedby='validation-basic-select'
                         >
@@ -1372,11 +1461,7 @@ const Index = () => {
                         </Select>
                       )}
                     />
-                    {ServiceErrors.selectStaff && (
-                      <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
-                        {ServiceErrors.selectStaff.message}
-                      </FormHelperText>
-                    )}
+
                   </FormControl>
                 </Grid>
                 <Grid sx={{ paddingTop: "15px" }}>
@@ -1388,21 +1473,10 @@ const Index = () => {
                           control={control}
                           rules={{ required: true }}
                           render={({ field: { value, onChange } }) => (
-                            <TextField
-                              value={value}
-                              label='Price'
-                              onChange={onChange}
-                              placeholder='Type Here'
-                              error={Boolean(ServiceErrors.serviceName)}
-                              aria-describedby='validation-basic-first-name'
-                            />
+                            <TextField id="outlined-basic" label="price" variant="outlined" size='small' value={productRate}>{productRate}</TextField>
                           )}
                         />
-                        {ServiceErrors.serviceName && (
-                          <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
-                            This field is required
-                          </FormHelperText>
-                        )}
+
                       </FormControl>
                     </Grid>
 
@@ -1517,12 +1591,12 @@ const Index = () => {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleCloseAddServiceDialog}
+                    // onClick={handleCloseAddServiceDialog}
                     size='large'
                     type='submit'
                     variant='contained'
                     color='primary'
-                    onSubmit={onSubmit}
+                    onClick={addProductToList}
                   >
                     Submit
                   </Button>
